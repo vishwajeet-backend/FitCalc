@@ -31,8 +31,7 @@ function IdealWeightCalculatorPage() {
       const data = unit === 'us' 
         ? {
             gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             frame: formData.frame,
             unit: 'us',
           }

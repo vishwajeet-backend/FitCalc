@@ -31,11 +31,10 @@ function PaceCalculatorPage() {
     try {
       const data = {
         distance: unit === 'us' ? formData.distance : formData.distanceKm,
-        distanceUnit: unit === 'us' ? 'miles' : 'km',
         hours: formData.hours,
         minutes: formData.minutes,
         seconds: formData.seconds,
-        unit,
+        unit: unit === 'us' ? 'mi' : 'km',
       };
 
       const result = await calculatePace(data);

@@ -35,8 +35,7 @@ function ProteinCalculatorPage() {
         ? {
             age: formData.age,
             gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             weight: formData.weight,
             activityLevel: formData.activityLevel,
             goal: formData.goal,
@@ -66,7 +65,7 @@ function ProteinCalculatorPage() {
     { value: 'light', label: 'Light (exercise 1-3 times/week)' },
     { value: 'moderate', label: 'Moderate (exercise 4-5 times/week)' },
     { value: 'active', label: 'Active (daily exercise)' },
-    { value: 'very_active', label: 'Very Active (intense exercise daily)' },
+    { value: 'veryActive', label: 'Very Active (intense exercise daily)' },
   ];
 
   const goalOptions = [

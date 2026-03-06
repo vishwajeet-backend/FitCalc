@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
 
   const faqItems = [
     {
       question: "Are calculators free?",
-      answer: "Yes! All calculators on FitCalc are completely free to use. There are no hidden fees or premium limitations."
+      answer: "Yes! All calculators on FitCalc are completely free to use. There are no hidden fees or premium features."
     },
     {
       question: "Are results accurate?",
@@ -33,9 +33,8 @@ const FAQ = () => {
   return (
     <section className="faq-section">
       <div className="faq-header">
-        <div className="faq-icon">ℹ️</div>
-        <h2 className="section-title">Frequently Asked Questions</h2>
-        <p className="section-subtitle">Everything you need to know about FitCalc</p>
+        <h2 className="faq-title">Frequently Asked Questions</h2>
+        <p className="faq-subtitle">Everything you need to know about FitCalc</p>
       </div>
       
       <div className="faq-container">
@@ -46,7 +45,21 @@ const FAQ = () => {
               onClick={() => toggleFAQ(index)}
             >
               <span>{item.question}</span>
-              <span className="faq-arrow">{openIndex === index ? '−' : '+'}</span>
+              <svg 
+                className={`faq-chevron ${openIndex === index ? 'rotated' : ''}`}
+                width="20" 
+                height="20" 
+                viewBox="0 0 20 20" 
+                fill="none"
+              >
+                <path 
+                  d="M5 7.5L10 12.5L15 7.5" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
             {openIndex === index && (
               <div className="faq-answer">

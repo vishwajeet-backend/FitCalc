@@ -33,8 +33,7 @@ function PregnancyWeightGainCalculatorPage() {
     try {
       const data = unit === 'us' 
         ? {
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             prePregnancyWeight: formData.prePregnancyWeight,
             currentWeight: formData.currentWeight,
             weeksPregnant: formData.weeksPregnant,

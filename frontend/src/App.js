@@ -7,6 +7,7 @@ import ResultsDisplay from './components/ResultsDisplay';
 import WhatIsFitCalc from './components/WhatIsFitCalc';
 import PowerfulFeatures from './components/PowerfulFeatures';
 import WhyUseFitCalc from './components/WhyUseFitCalc';
+import AdsSupportSection from './components/AdsSupportSection';
 import ComparisonTable from './components/ComparisonTable';
 import HowItWorks from './components/HowItWorks';
 import PrivacyTrust from './components/PrivacyTrust';
@@ -49,10 +50,12 @@ function App() {
         <WhatIsFitCalc />
         <PowerfulFeatures />
         <WhyUseFitCalc />
+        <AdsSupportSection />
         <ComparisonTable />
         <PrivacyTrust />
         <WhatToExpect />
         <FAQ />
+        <FeedbackForm />
         <FinalCTA />
       </main>
 

@@ -1,344 +1,627 @@
 import React, { useState } from 'react';
-import CalculatorLayout from '../components/CalculatorLayout';
-import CalculatorForm, { FormGroup, Input, RadioGroup } from '../components/CalculatorForm';
-import ResultsContainer, { ResultCard, ResultsGrid, BodyFatChart } from '../components/ResultsContainer';
-import { calculateBodyFat } from '../utils/apiService';
+import { Link } from 'react-router-dom';
 
 function BodyFatCalculatorPage() {
   const [unit, setUnit] = useState('us');
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState(null);
-  
   const [formData, setFormData] = useState({
-    age: 25,
+    age: '25',
     gender: 'male',
-    heightFeet: 5,
-    heightInches: 10,
-    heightCm: 178,
-    weight: 180,
-    neck: 15,
-    waist: 33,
-    hip: 38,
+    heightFeet: '5',
+    heightInches: '10',
+    heightCm: '178',
+    weight: '65',
+    neckFeet: '5',
+    neckInches: '11',
+    waistFeet: '5',
+    waistInches: '11',
   });
+  const [result, setResult] = useState(null);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsCalculating(true);
-    setError(null);
-
-    try {
-      const data = unit === 'us' 
-        ? {
-            age: formData.age,
-            gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
-            weight: formData.weight,
-            neck: formData.neck,
-            waist: formData.waist,
-            hip: formData.hip,
-            unit: 'us',
-          }
-        : {
-            age: formData.age,
-            gender: formData.gender,
-            height: formData.heightCm,
-            weight: formData.weight,
-            neck: formData.neck,
-            waist: formData.waist,
-            hip: formData.hip,
-            unit: 'metric',
-          };
-
-      const result = await calculateBodyFat(data);
-      setResults(result);
-    } catch (err) {
-      setError(err.message || 'Failed to calculate. Please try again.');
-    } finally {
-      setIsCalculating(false);
-    }
-  };
-
-  const getColorForBodyFat = (bodyFat, gender) => {
-    if (gender === 'male') {
-      if (bodyFat < 6) return '#ef4444';
-      if (bodyFat < 14) return '#3b82f6';
-      if (bodyFat < 18) return '#10b981';
-      if (bodyFat < 25) return '#f59e0b';
-      return '#ef4444';
+  const calculateBodyFat = () => {
+    // Convert measurements to inches/pounds
+    let height, weight, neck, waist;
+    
+    if (unit === 'us') {
+      height = parseFloat(formData.heightFeet) * 12 + parseFloat(formData.heightInches);
+      weight = parseFloat(formData.weight);
+      neck = parseFloat(formData.neckFeet) * 12 + parseFloat(formData.neckInches);
+      waist = parseFloat(formData.waistFeet) * 12 + parseFloat(formData.waistInches);
     } else {
-      if (bodyFat < 14) return '#ef4444';
-      if (bodyFat < 21) return '#3b82f6';
-      if (bodyFat < 25) return '#10b981';
-      if (bodyFat < 32) return '#f59e0b';
-      return '#ef4444';
+      height = parseFloat(formData.heightCm) / 2.54;
+      weight = parseFloat(formData.weight) * 2.205;
+      neck = parseFloat(formData.neckCm) / 2.54;
+      waist = parseFloat(formData.waistCm) / 2.54;
     }
+
+    // U.S. Navy Method formula for males
+    const bodyFat = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+
+    // Calculate fat mass and lean mass
+    const weightInKg = unit === 'us' ? parseFloat(formData.weight) * 0.453592 : parseFloat(formData.weight);
+    const fatMass = weightInKg * (bodyFat / 100);
+    const leanMass = weightInKg - fatMass;
+
+    // Get category
+    let category = '';
+    if (bodyFat < 6) category = 'Essential';
+    else if (bodyFat < 14) category = 'Athletes';
+    else if (bodyFat < 18) category = 'Fitness';
+    else if (bodyFat < 25) category = 'Average';
+    else category = 'Obese';
+
+    // Calculate ideal body fat based on age
+    const age = parseInt(formData.age);
+    let idealBodyFat;
+    if (age < 20) idealBodyFat = 8.5;
+    else if (age < 40) idealBodyFat = 11;
+    else if (age < 60) idealBodyFat = 15;
+    else idealBodyFat = 17;
+
+    const bodyFatToLose = Math.max(0, bodyFat - idealBodyFat);
+
+    // Calculate BMI body fat estimate
+    const bmi = weightInKg / Math.pow(height * 0.0254, 2);
+    const bmiFat = (1.20 * bmi) + (0.23 * age) - 16.2;
+
+    setResult({
+      bodyFat: bodyFat.toFixed(1),
+      category,
+      fatMass: fatMass.toFixed(1),
+      leanMass: leanMass.toFixed(1),
+      idealBodyFat: idealBodyFat.toFixed(1),
+      bodyFatToLose: bodyFatToLose.toFixed(1),
+      bmiFat: bmiFat.toFixed(1)
+    });
+  };
+
+  const handleClear = () => {
+    setFormData({
+      age: '25',
+      gender: 'male',
+      heightFeet: '5',
+      heightInches: '10',
+      heightCm: '178',
+      weight: '65',
+      neckFeet: '5',
+      neckInches: '11',
+      waistFeet: '5',
+      waistInches: '11',
+    });
+    setResult(null);
+  };
+
+  // Get position on the body fat bar (percentage)
+  const getBarPosition = () => {
+    if (!result) return 50;
+    const bf = parseFloat(result.bodyFat);
+    // Map body fat percentage to bar position (0-100%)
+    if (bf < 6) return (bf / 6) * 12.5;
+    if (bf < 14) return 12.5 + ((bf - 6) / 8) * 25;
+    if (bf < 18) return 37.5 + ((bf - 14) / 4) * 12.5;
+    if (bf < 25) return 50 + ((bf - 18) / 7) * 25;
+    return Math.min(75 + ((bf - 25) / 10) * 25, 95);
+  };
+
+  const styles = {
+    container: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '2rem 1rem',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    },
+    breadcrumb: {
+      fontSize: '0.875rem',
+      marginBottom: '1.5rem',
+      color: '#6b7280',
+    },
+    breadcrumbLink: {
+      color: '#3b82f6',
+      textDecoration: 'none',
+    },
+    title: {
+      fontSize: '2rem',
+      fontWeight: '600',
+      marginBottom: '0.5rem',
+      color: '#111827',
+    },
+    description: {
+      fontSize: '0.875rem',
+      color: '#6b7280',
+      marginBottom: '2rem',
+      lineHeight: '1.6',
+      maxWidth: '900px',
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '2rem',
+    },
+    formContainer: {
+      background: 'white',
+      border: '1px solid #e5e7eb',
+      borderRadius: '8px',
+      padding: '1.5rem',
+      height: 'fit-content',
+    },
+    toggleContainer: {
+      display: 'flex',
+      gap: '0.5rem',
+      marginBottom: '1.5rem',
+    },
+    toggleButton: {
+      flex: 1,
+      padding: '0.625rem 1rem',
+      border: '1px solid #d1d5db',
+      background: 'white',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      transition: 'all 0.2s',
+      color: '#374151',
+    },
+    toggleButtonActive: {
+      background: '#3b82f6',
+      color: 'white',
+      borderColor: '#3b82f6',
+    },
+    formGroup: {
+      marginBottom: '1rem',
+    },
+    label: {
+      display: 'block',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      marginBottom: '0.5rem',
+      color: '#374151',
+    },
+    input: {
+      width: '100%',
+      padding: '0.625rem 2.5rem 0.625rem 0.75rem',
+      border: '1px solid #d1d5db',
+      borderRadius: '4px',
+      fontSize: '0.875rem',
+      boxSizing: 'border-box',
+      outline: 'none',
+    },
+    inputGroup: {
+      display: 'flex',
+      gap: '0.5rem',
+    },
+    inputWithUnit: {
+      flex: 1,
+      position: 'relative',
+    },
+    unit: {
+      position: 'absolute',
+      right: '0.75rem',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      fontSize: '0.875rem',
+      color: '#6b7280',
+      pointerEvents: 'none',
+    },
+    radioGroup: {
+      display: 'flex',
+      gap: '1.5rem',
+    },
+    radioLabel: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      color: '#374151',
+    },
+    button: {
+      width: '100%',
+      padding: '0.75rem',
+      border: 'none',
+      borderRadius: '4px',
+      fontSize: '0.875rem',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.2s',
+    },
+    calculateButton: {
+      background: '#3b82f6',
+      color: 'white',
+      marginBottom: '0.5rem',
+    },
+    clearButton: {
+      background: 'white',
+      color: '#374151',
+      border: '1px solid #d1d5db',
+    },
+    resultsContainer: {
+      background: 'white',
+      border: '1px solid #e5e7eb',
+      borderRadius: '8px',
+      overflow: 'hidden',
+    },
+    resultsHeader: {
+      background: '#10b981',
+      color: 'white',
+      padding: '1rem 1.5rem',
+      fontSize: '1rem',
+      fontWeight: '600',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    resultsBody: {
+      padding: '2rem',
+    },
+    mainResult: {
+      textAlign: 'center',
+      marginBottom: '2rem',
+    },
+    mainResultLabel: {
+      fontSize: '0.875rem',
+      color: '#6b7280',
+      marginBottom: '0.5rem',
+    },
+    mainResultValue: {
+      fontSize: '2rem',
+      fontWeight: '600',
+      color: '#111827',
+      marginBottom: '0.5rem',
+    },
+    arrow: {
+      fontSize: '1.5rem',
+      color: '#374151',
+      fontWeight: 'bold',
+    },
+    barContainer: {
+      marginBottom: '0.5rem',
+      position: 'relative',
+      paddingTop: '1.5rem',
+    },
+    bar: {
+      display: 'flex',
+      height: '40px',
+      borderRadius: '4px',
+      overflow: 'hidden',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    },
+    barSegment: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '0.75rem',
+      fontWeight: '600',
+      color: 'white',
+      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+    },
+    pointer: {
+      position: 'absolute',
+      top: '0',
+      transform: 'translateX(-50%)',
+      fontSize: '1.5rem',
+      zIndex: 10,
+    },
+    barLabels: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: '0.75rem',
+      color: '#6b7280',
+      marginTop: '0.5rem',
+      marginBottom: '2rem',
+    },
+    resultCard: {
+      background: '#3b82f6',
+      color: 'white',
+      padding: '1rem 1.25rem',
+      borderRadius: '6px',
+      marginBottom: '0.75rem',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    resultCardLabel: {
+      fontSize: '0.875rem',
+      fontWeight: '500',
+    },
+    resultCardValue: {
+      fontSize: '1.125rem',
+      fontWeight: 'bold',
+    },
   };
 
   return (
-    <CalculatorLayout
-      title="Body Fat Calculator"
-      description="Calculate your body fat percentage using the U.S. Navy Method, which uses height, neck, waist, and hip measurements to estimate body composition."
-      breadcrumbPath="body fat calculator"
-    >
-      <CalculatorForm
-        unit={unit}
-        onUnitChange={setUnit}
-        onSubmit={handleSubmit}
-        isCalculating={isCalculating}
-      >
-        <FormGroup label="Age">
-          <Input
-            value={formData.age}
-            onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
-            min="1"
-            max="120"
-          />
-        </FormGroup>
+    <div style={styles.container}>
+      {/* Breadcrumb */}
+      <div style={styles.breadcrumb}>
+        <Link to="/" style={styles.breadcrumbLink}>home</Link>
+        {' / '}
+        <Link to="/fitness" style={styles.breadcrumbLink}>fitness & health</Link>
+        {' / '}
+        <span>target heart rate calculator</span>
+      </div>
 
-        <FormGroup label="Gender">
-          <RadioGroup
-            value={formData.gender}
-            onChange={(val) => handleInputChange('gender', val)}
-            options={[
-              { value: 'male', label: 'Male' },
-              { value: 'female', label: 'Female' },
-            ]}
-          />
-        </FormGroup>
+      {/* Title */}
+      <h1 style={styles.title}>Body Fat Calculator</h1>
+      <p style={styles.description}>
+        The Body Fat Calculator can be used to estimate your total body fat based on specific measurements. Use the "Metric Units" tab for the International System of Units or the "Other Units" tab to convert units into either US or metric units. Your ideal body fat percentage is determined by age and gender according to the International System of Units (SI).
+      </p>
 
-        <FormGroup label="Height">
-          {unit === 'us' ? (
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <Input
-                value={formData.heightFeet}
-                onChange={(e) => handleInputChange('heightFeet', parseInt(e.target.value))}
-                min="1"
-                max="8"
-                unit="ft"
-              />
-              <Input
-                value={formData.heightInches}
-                onChange={(e) => handleInputChange('heightInches', parseInt(e.target.value))}
-                min="0"
-                max="11"
-                unit="in"
-              />
-            </div>
-          ) : (
-            <Input
-              value={formData.heightCm}
-              onChange={(e) => handleInputChange('heightCm', parseInt(e.target.value))}
-              min="50"
-              max="250"
-              unit="cm"
-            />
-          )}
-        </FormGroup>
+      {/* Main Grid */}
+      <div style={styles.grid}>
+        {/* Form Section */}
+        <div style={styles.formContainer}>
+          {/* Unit Toggle */}
+          <div style={styles.toggleContainer}>
+            <button
+              style={{
+                ...styles.toggleButton,
+                ...(unit === 'us' ? styles.toggleButtonActive : {}),
+              }}
+              onClick={() => setUnit('us')}
+            >
+              US Units
+            </button>
+            <button
+              style={{
+                ...styles.toggleButton,
+                ...(unit === 'metric' ? styles.toggleButtonActive : {}),
+              }}
+              onClick={() => setUnit('metric')}
+            >
+              Metric Units
+            </button>
+          </div>
 
-        <FormGroup label="Weight">
-          <Input
-            value={formData.weight}
-            onChange={(e) => handleInputChange('weight', parseFloat(e.target.value))}
-            min="1"
-            unit={unit === 'us' ? 'lb' : 'kg'}
-          />
-        </FormGroup>
-
-        <FormGroup label="Neck Circumference">
-          <Input
-            value={formData.neck}
-            onChange={(e) => handleInputChange('neck', parseFloat(e.target.value))}
-            min="1"
-            unit={unit === 'us' ? 'in' : 'cm'}
-          />
-        </FormGroup>
-
-        <FormGroup label="Waist Circumference">
-          <Input
-            value={formData.waist}
-            onChange={(e) => handleInputChange('waist', parseFloat(e.target.value))}
-            min="1"
-            unit={unit === 'us' ? 'in' : 'cm'}
-          />
-        </FormGroup>
-
-        {formData.gender === 'female' && (
-          <FormGroup label="Hip Circumference">
-            <Input
-              value={formData.hip}
-              onChange={(e) => handleInputChange('hip', parseFloat(e.target.value))}
-              min="1"
-              unit={unit === 'us' ? 'in' : 'cm'}
-            />
-          </FormGroup>
-        )}
-      </CalculatorForm>
-
-      {error && (
-        <div style={{ 
-          background: '#fee2e2', 
-          color: '#991b1b', 
-          padding: '1rem', 
-          borderRadius: '6px', 
-          marginBottom: '1rem' 
-        }}>
-          {error}
-        </div>
-      )}
-
-      {results && (
-        <>
-          <ResultsContainer title="Your Body Composition" downloadable>
-            {/* Main Body Fat Result */}
-            <div style={{
-              background: `linear-gradient(135deg, ${getColorForBodyFat(results.bodyFatPercentage, formData.gender)} 0%, ${getColorForBodyFat(results.bodyFatPercentage, formData.gender)}dd 100%)`,
-              borderRadius: '12px',
-              padding: '2rem',
-              marginBottom: '2rem',
-              textAlign: 'center',
-              color: 'white'
-            }}>
-              <h2 style={{ fontSize: '1rem', fontWeight: '500', marginBottom: '0.5rem', opacity: 0.9 }}>
-                Your Body Fat Percentage
-              </h2>
-              <div style={{ fontSize: '4rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {results.bodyFatPercentage ? results.bodyFatPercentage.toFixed(1) : 'N/A'}%
-              </div>
-              <p style={{ fontSize: '1.25rem', fontWeight: '600', opacity: 0.95 }}>
-                {results.category || 'N/A'}
-              </p>
-              <p style={{ 
-                fontSize: '0.875rem', 
-                marginTop: '1rem', 
-                padding: '0.75rem', 
-                background: 'rgba(255,255,255,0.2)', 
-                borderRadius: '6px' 
-              }}>
-                💡 Calculated using the U.S. Navy Method
-              </p>
-            </div>
-
-            {/* Body Composition Breakdown */}
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-              Body Composition Breakdown
-            </h3>
-            
-            <ResultsGrid columns={3}>
-              <ResultCard
-                title="Fat Mass"
-                value={results.fatMass ? `${results.fatMass.toFixed(1)} ${unit === 'us' ? 'lb' : 'kg'}` : 'N/A'}
-                percentage={results.bodyFatPercentage ? `${results.bodyFatPercentage.toFixed(1)}%` : 'N/A'}
-                subtitle="Body fat weight"
-                color="#ef4444"
-              />
-              <ResultCard
-                title="Lean Mass"
-                value={results.leanMass ? `${results.leanMass.toFixed(1)} ${unit === 'us' ? 'lb' : 'kg'}` : 'N/A'}
-                percentage={results.leanMassPercentage ? `${results.leanMassPercentage.toFixed(1)}%` : 'N/A'}
-                subtitle="Muscle, bone, organs"
-                color="#10b981"
-              />
-              <ResultCard
-                title="Total Weight"
-                value={formData.weight ? `${formData.weight} ${unit === 'us' ? 'lb' : 'kg'}` : 'N/A'}
-                percentage="100%"
-                subtitle="Current weight"
-                color="#3b82f6"
-              />
-            </ResultsGrid>
-
-            {/* Body Fat Chart */}
-            {results.bodyFatPercentage && (
-              <div style={{ marginTop: '2rem' }}>
-                <BodyFatChart
-                  bodyFatPercentage={results.bodyFatPercentage}
-                  gender={formData.gender}
+          {/* Gender */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Gender</label>
+            <div style={styles.radioGroup}>
+              <label style={styles.radioLabel}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === 'male'}
+                  onChange={handleInputChange}
                 />
-              </div>
-            )}
-
-            {/* Category Descriptions */}
-            <div style={{ marginTop: '2rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-                Body Fat Categories for {formData.gender === 'male' ? 'Men' : 'Women'}
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {formData.gender === 'male' ? (
-                  <>
-                    <div style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '6px', border: '1px solid #fecaca' }}>
-                      <strong>Essential Fat (2-5%):</strong> Minimum for basic physiological functions
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#dbeafe', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                      <strong>Athletes (6-13%):</strong> Typical for elite athletes
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#d1fae5', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
-                      <strong>Fitness (14-17%):</strong> Fit, defined appearance
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '6px', border: '1px solid #fde68a' }}>
-                      <strong>Average (18-24%):</strong> Acceptable fitness level
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '6px', border: '1px solid #fecaca' }}>
-                      <strong>Obese (25%+):</strong> Increased health risks
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '6px', border: '1px solid #fecaca' }}>
-                      <strong>Essential Fat (10-13%):</strong> Minimum for basic physiological functions
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#dbeafe', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                      <strong>Athletes (14-20%):</strong> Typical for elite athletes
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#d1fae5', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
-                      <strong>Fitness (21-24%):</strong> Fit, toned appearance
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '6px', border: '1px solid #fde68a' }}>
-                      <strong>Average (25-31%):</strong> Acceptable fitness level
-                    </div>
-                    <div style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '6px', border: '1px solid #fecaca' }}>
-                      <strong>Obese (32%+):</strong> Increased health risks
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </ResultsContainer>
-
-          {/* Info section */}
-          <div style={{
-            background: '#eff6ff',
-            border: '1px solid #dbeafe',
-            borderRadius: '8px',
-            padding: '1.25rem',
-            marginTop: '2rem'
-          }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1e40af', marginBottom: '0.75rem' }}>
-              📏 Measurement Tips
-            </h4>
-            <div style={{ fontSize: '0.875rem', color: '#1e40af', lineHeight: '1.6' }}>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Neck:</strong> Measure just below the larynx (Adam's apple), perpendicular to the long axis of the neck
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Waist (Men):</strong> Measure horizontally at the level of the navel
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Waist (Women):</strong> Measure at the narrowest point of the torso
-              </p>
-              <p style={{ margin: 0 }}>
-                <strong>Hip (Women only):</strong> Measure at the widest point of the buttocks
-              </p>
+                Male
+              </label>
+              <label style={styles.radioLabel}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === 'female'}
+                  onChange={handleInputChange}
+                />
+                Female
+              </label>
             </div>
           </div>
-        </>
-      )}
-    </CalculatorLayout>
+
+          {/* Age */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Age</label>
+            <input
+              type="number"
+              name="age"
+              value={formData.age}
+              onChange={handleInputChange}
+              style={styles.input}
+            />
+          </div>
+
+          {/* Weight */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Weight</label>
+            <div style={styles.inputWithUnit}>
+              <input
+                type="number"
+                name="weight"
+                value={formData.weight}
+                onChange={handleInputChange}
+                style={styles.input}
+              />
+              <span style={styles.unit}>{unit === 'us' ? 'lb' : 'kg'}</span>
+            </div>
+          </div>
+
+          {/* Height */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Height</label>
+            {unit === 'us' ? (
+              <div style={styles.inputGroup}>
+                <div style={styles.inputWithUnit}>
+                  <input
+                    type="number"
+                    name="heightFeet"
+                    value={formData.heightFeet}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                  />
+                  <span style={styles.unit}>ft</span>
+                </div>
+                <div style={styles.inputWithUnit}>
+                  <input
+                    type="number"
+                    name="heightInches"
+                    value={formData.heightInches}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                  />
+                  <span style={styles.unit}>in</span>
+                </div>
+              </div>
+            ) : (
+              <div style={styles.inputWithUnit}>
+                <input
+                  type="number"
+                  name="heightCm"
+                  value={formData.heightCm}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+                <span style={styles.unit}>cm</span>
+              </div>
+            )}
+          </div>
+
+          {/* Neck */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Neck</label>
+            <div style={styles.inputGroup}>
+              <div style={styles.inputWithUnit}>
+                <input
+                  type="number"
+                  name="neckFeet"
+                  value={formData.neckFeet}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+                <span style={styles.unit}>{unit === 'us' ? 'ft' : 'cm'}</span>
+              </div>
+              <div style={styles.inputWithUnit}>
+                <input
+                  type="number"
+                  name="neckInches"
+                  value={formData.neckInches}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+                <span style={styles.unit}>{unit === 'us' ? 'in' : 'cm'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Waist */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Waist</label>
+            <div style={styles.inputGroup}>
+              <div style={styles.inputWithUnit}>
+                <input
+                  type="number"
+                  name="waistFeet"
+                  value={formData.waistFeet}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+                <span style={styles.unit}>{unit === 'us' ? 'ft' : 'cm'}</span>
+              </div>
+              <div style={styles.inputWithUnit}>
+                <input
+                  type="number"
+                  name="waistInches"
+                  value={formData.waistInches}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+                <span style={styles.unit}>{unit === 'us' ? 'in' : 'cm'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <button
+            style={{ ...styles.button, ...styles.calculateButton }}
+            onClick={calculateBodyFat}
+          >
+            Start Calculating
+          </button>
+          <button
+            style={{ ...styles.button, ...styles.clearButton }}
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
+
+        {/* Results Section */}
+        {result && (
+          <div style={styles.resultsContainer}>
+            <div style={styles.resultsHeader}>
+              <span>Your Results</span>
+              <span style={{ cursor: 'pointer' }}>📄</span>
+            </div>
+            <div style={styles.resultsBody}>
+              {/* Main Result */}
+              <div style={styles.mainResult}>
+                <div style={styles.mainResultLabel}>Body Fat: {result.bodyFat}%</div>
+                <div style={styles.mainResultValue}>{result.bodyFat}%</div>
+                <div style={styles.arrow}>↓</div>
+              </div>
+
+              {/* Body Fat Range Bar */}
+              <div style={styles.barContainer}>
+                <div style={{ ...styles.pointer, left: `${getBarPosition()}%` }}>▼</div>
+                <div style={styles.bar}>
+                  <div style={{ ...styles.barSegment, background: '#991b1b', flex: 1 }}>
+                    Essential
+                  </div>
+                  <div style={{ ...styles.barSegment, background: '#10b981', flex: 2 }}>
+                    Athletes
+                  </div>
+                  <div style={{ ...styles.barSegment, background: '#10b981', flex: 1 }}>
+                    Fitness
+                  </div>
+                  <div style={{ ...styles.barSegment, background: '#fbbf24', flex: 2 }}>
+                    Average
+                  </div>
+                  <div style={{ ...styles.barSegment, background: '#dc2626', flex: 2 }}>
+                    Obese
+                  </div>
+                </div>
+              </div>
+              <div style={styles.barLabels}>
+                <span>Essential</span>
+                <span>Athletes</span>
+                <span>Fitness</span>
+                <span>Average</span>
+                <span>Obese</span>
+              </div>
+
+              {/* Result Cards */}
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Body Fat (U.S. Navy Method)</span>
+                <span style={styles.resultCardValue}>{result.bodyFat}%</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Body Fat Category</span>
+                <span style={styles.resultCardValue}>{result.category}</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Body Fat Mass</span>
+                <span style={styles.resultCardValue}>{result.fatMass} {unit === 'us' ? 'lb' : 'kg'}</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Lean Body Mass</span>
+                <span style={styles.resultCardValue}>{result.leanMass} {unit === 'us' ? 'lb' : 'kg'}</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Ideal Body Fat for Given Age</span>
+                <span style={styles.resultCardValue}>{result.idealBodyFat}%</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Body Fat to Lose to Reach Ideal</span>
+                <span style={styles.resultCardValue}>{result.bodyFatToLose}%</span>
+              </div>
+
+              <div style={styles.resultCard}>
+                <span style={styles.resultCardLabel}>Body Fat (BMI method)</span>
+                <span style={styles.resultCardValue}>{result.bmiFat}%</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

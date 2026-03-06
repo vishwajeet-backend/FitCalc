@@ -35,8 +35,7 @@ function MacroCalculatorPage() {
         ? {
             age: formData.age,
             gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             weight: formData.weight,
             activityLevel: formData.activityLevel,
             goal: formData.goal,
@@ -66,8 +65,7 @@ function MacroCalculatorPage() {
     { value: 'light', label: 'Light (exercise 1-3 times/week)' },
     { value: 'moderate', label: 'Moderate (exercise 4-5 times/week)' },
     { value: 'active', label: 'Active (daily exercise or intense 3-4 times/week)' },
-    { value: 'very_active', label: 'Very Active (intense exercise 6-7 times/week)' },
-    { value: 'extra_active', label: 'Extra Active (very intense daily exercise)' },
+    { value: 'veryActive', label: 'Very Active (intense exercise 6-7 times/week)' },
   ];
 
   const goalOptions = [

@@ -1,21 +1,21 @@
 /* All Calculators Page Styles */
 .all-calculators-page {
-  background-color: #fcfcfe;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 
 .all-calculators-content {
   max-width: 1376px;
   margin: 0 auto;
-  padding: 32px;
+  padding: 32px 40px;
 }
 
 .breadcrumb {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 16px;
+  font-weight: 400;
+  font-size: 14px;
   color: #5b6b86;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 }
 
 .breadcrumb a {
@@ -34,135 +34,57 @@
 .page-title {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 600;
-  font-size: 32px;
-  color: #000;
+  font-size: 28px;
+  color: #000000;
   margin: 0;
 }
 
 .calculators-grid-section {
-  padding: 24px 0;
+  padding: 0;
 }
 
 .calculators-categories {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 112px;
-  max-width: 1280px;
+  gap: 80px;
+  max-width: 100%;
 }
 
 .calculator-category {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.category-title {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 32px;
-  color: #000;
-  margin: 0;
-}
-
-.main-title {
-  margin-bottom: 20px;
+  gap: 0;
 }
 
 .category-subtitle {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 20px;
-  color: #000;
-  margin: 0 0 16px 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: #000000;
+  margin: 0 0 20px 0;
+  padding-bottom: 8px;
 }
 
 .calculator-links {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 2px;
 }
 
 .calculator-link {
-  font-family: 'Source Sans 3', sans-serif;
-  font-weight: 500;
-  font-size: 19px;
-  line-height: 50px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 32px;
   color: #5b77b9;
   text-decoration: none;
   transition: color 0.2s;
+  padding: 4px 0;
 }
 
 .calculator-link:hover {
   color: #3d568f;
   text-decoration: underline;
-}
-
-/* Footer Styles for All Calculators Page */
-.all-calculators-footer {
-  background-color: #e1e6f2;
-  border-top: 1.295px solid #e5e7eb;
-  margin-top: 100px;
-  padding: 49px 65px;
-}
-
-.all-calculators-footer .footer-content {
-  max-width: 1376px;
-  margin: 0 auto;
-}
-
-.all-calculators-footer .footer-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
-  margin-bottom: 32px;
-}
-
-.all-calculators-footer .footer-section h3 {
-  font-family: 'Arimo', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: #1a1a1a;
-  margin-bottom: 16px;
-}
-
-.all-calculators-footer .footer-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.all-calculators-footer .footer-section li {
-  margin: 0;
-}
-
-.all-calculators-footer .footer-section a {
-  font-family: 'Arimo', sans-serif;
-  font-size: 16px;
-  color: #6b6b6b;
-  text-decoration: none;
-  line-height: 24px;
-  transition: color 0.2s;
-}
-
-.all-calculators-footer .footer-section a:hover {
-  color: #1a1a1a;
-}
-
-.all-calculators-footer .footer-bottom {
-  border-top: 1.295px solid #d1d5dc;
-  padding-top: 33px;
-  text-align: center;
-}
-
-.all-calculators-footer .footer-bottom p {
-  font-family: 'Arimo', sans-serif;
-  font-size: 14px;
-  color: #6b6b6b;
-  margin: 0;
-  line-height: 20px;
 }
 
 @media (max-width: 1024px) {
@@ -181,23 +103,10 @@
     grid-template-columns: 1fr;
     gap: 40px;
   }
-
-  .all-calculators-footer .footer-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-  }
 }
 
 @media (max-width: 480px) {
-  .all-calculators-footer .footer-grid {
-    grid-template-columns: 1fr;
-  }
-
   .page-title {
-    font-size: 24px;
-  }
-
-  .category-title {
     font-size: 24px;
   }
 

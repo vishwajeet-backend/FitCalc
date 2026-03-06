@@ -7,53 +7,19 @@ ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, LineElement
 
 // Results container with green header
 const ResultsContainer = ({ title = "Your Results", children, downloadable = false }) => {
-  const styles = {
-    container: {
-      background: 'white',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      marginBottom: '2rem',
-    },
-    header: {
-      background: '#10b981',
-      color: 'white',
-      padding: '1rem 1.5rem',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    title: {
-      fontSize: '1.25rem',
-      fontWeight: '600',
-      margin: 0,
-    },
-    downloadButton: {
-      background: 'transparent',
-      border: '1px solid white',
-      color: 'white',
-      padding: '0.5rem 1rem',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-    },
-    content: {
-      padding: '1.5rem',
-    },
-  };
-
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h2 style={styles.title}>{title}</h2>
+    <div className="calculator-results-container">
+      <div className="calculator-results-header">
+        <h2 className="calculator-results-title">{title}</h2>
         {downloadable && (
-          <button style={styles.downloadButton}>
-            📄 Download
+          <button className="calculator-download-button">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <path d="M18 24L12 18L13.4 16.6L17 20.2V12H19V20.2L22.6 16.6L24 18L18 24ZM14 28C13.45 28 12.979 27.804 12.587 27.412C12.195 27.02 11.9993 26.5493 12 26V23H14V26H22V23H24V26C24 26.55 23.804 27.021 23.412 27.413C23.02 27.805 22.5493 28.0007 22 28H14Z" fill="white"/>
+            </svg>
           </button>
         )}
       </div>
-      <div style={styles.content}>
+      <div className="calculator-results-content">
         {children}
       </div>
     </div>
@@ -61,93 +27,53 @@ const ResultsContainer = ({ title = "Your Results", children, downloadable = fal
 };
 
 // Result card component
-export const ResultCard = ({ title, value, subtitle, color = '#3b82f6', percentage }) => {
-  const styles = {
-    card: {
-      background: color,
-      color: 'white',
-      padding: '1.5rem',
-      borderRadius: '8px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.5rem',
-    },
-    title: {
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      opacity: 0.95,
-    },
-    value: {
-      fontSize: '2rem',
-      fontWeight: '700',
-    },
-    subtitle: {
-      fontSize: '0.8125rem',
-      opacity: 0.9,
-    },
-    percentage: {
-      fontSize: '1.5rem',
-      fontWeight: '600',
-    },
-  };
-
+export const ResultCard = ({ title, value, subtitle, unit, variant, color, percentage }) => {
+  // For backward compatibility with color prop
+  const cardVariant = variant || (color === '#10b981' || color === '#3b82f6' || color === '#f59e0b' || color === '#ef4444' ? 'light-blue' : 'dark-blue');
+  
+  // Use inline style if custom color provided
+  const style = (!variant && color) ? { backgroundColor: color, color: 'white' } : undefined;
+  
   return (
-    <div style={styles.card}>
-      <div style={styles.title}>{title}</div>
-      {percentage !== undefined ? (
-        <div>
-          <div style={styles.percentage}>{percentage}</div>
-          <div style={styles.subtitle}>{subtitle}</div>
-        </div>
-      ) : (
-        <>
-          <div style={styles.value}>{value}</div>
-          {subtitle && <div style={styles.subtitle}>{subtitle}</div>}
-        </>
-      )}
+    <div className={`calculator-result-card ${cardVariant}`} style={style}>
+      <div className="calculator-result-card-left">
+        <h3 className="calculator-result-card-title">{title}</h3>
+        {subtitle && <p className="calculator-result-card-subtitle">{subtitle}</p>}
+      </div>
+      <div className="calculator-result-card-right">
+        {percentage !== undefined ? (
+          <>
+            <div className="calculator-result-card-value">{percentage}</div>
+          </>
+        ) : (
+          <>
+            <div className="calculator-result-card-value">{value}</div>
+            {unit && <div className="calculator-result-card-unit">{unit}</div>}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 // Grid layout for result cards
 export const ResultsGrid = ({ children, columns = 2 }) => {
-  const styles = {
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: `repeat(auto-fit, minmax(${columns === 4 ? '200px' : '250px'}, 1fr))`,
-      gap: '1rem',
-    },
-  };
-
-  return <div style={styles.grid}>{children}</div>;
+  return (
+    <div 
+      className="calculator-results-grid" 
+      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(${columns === 4 ? '200px' : '250px'}, 1fr))` }}
+    >
+      {children}
+    </div>
+  );
 };
 
 // Info row for displaying key-value pairs
 export const InfoRow = ({ label, value, highlight = false }) => {
-  const styles = {
-    row: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '0.875rem 0',
-      borderBottom: '1px solid #f3f4f6',
-    },
-    label: {
-      fontSize: '0.9375rem',
-      color: '#6b7280',
-      fontWeight: '500',
-    },
-    value: {
-      fontSize: '0.9375rem',
-      color: highlight ? '#3b82f6' : '#1f2937',
-      fontWeight: highlight ? '600' : '500',
-    },
-  };
-
   return (
-    <div style={styles.row}>
-      <span style={styles.label}>{label}</span>
-      <span style={styles.value}>{value}</span>
+    <div className="calculator-info-row">
+      <span className="calculator-info-label">{label}</span>
+      <span className={`calculator-info-value ${highlight ? 'highlight' : ''}`}>{value}</span>
     </div>
   );
 };

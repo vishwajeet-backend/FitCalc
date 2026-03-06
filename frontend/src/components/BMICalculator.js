@@ -12,27 +12,34 @@ const BMICalculator = ({ onCalculate }) => {
   });
 
   const handleInputChange = (field, value) => {
+    // Handle NaN values by converting to empty string or keeping the raw value
+    const parsedValue = typeof value === 'string' ? value : value;
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: parsedValue
     }));
   };
 
   const calculateBMI = () => {
     const { heightFeet, heightInches, weight, unit } = formData;
     
+    // Parse values for calculation
+    const parsedHeightFeet = parseFloat(heightFeet) || 0;
+    const parsedHeightInches = parseFloat(heightInches) || 0;
+    const parsedWeight = parseFloat(weight) || 0;
+    
     let heightInMeters, weightInKg;
     
     if (unit === 'us') {
       // Convert feet/inches to meters
-      const totalInches = (heightFeet * 12) + heightInches;
+      const totalInches = (parsedHeightFeet * 12) + parsedHeightInches;
       heightInMeters = totalInches * 0.0254;
       // Convert pounds to kg
-      weightInKg = weight * 0.453592;
+      weightInKg = parsedWeight * 0.453592;
     } else {
       // Metric units - assuming height is in cm and weight in kg
-      heightInMeters = heightFeet / 100; // Convert cm to meters
-      weightInKg = weight;
+      heightInMeters = parsedHeightFeet / 100; // Convert cm to meters
+      weightInKg = parsedWeight;
     }
     
     const bmi = weightInKg / (heightInMeters * heightInMeters);
@@ -103,7 +110,7 @@ const BMICalculator = ({ onCalculate }) => {
           <input
             type="number"
             value={formData.age}
-            onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
+            onChange={(e) => handleInputChange('age', e.target.value)}
             className="form-input-v2"
             min="1"
             max="120"
@@ -134,7 +141,7 @@ const BMICalculator = ({ onCalculate }) => {
             <input
               type="number"
               value={formData.heightFeet}
-              onChange={(e) => handleInputChange('heightFeet', parseInt(e.target.value))}
+              onChange={(e) => handleInputChange('heightFeet', e.target.value)}
               className="form-input-v2 height-input-v2"
               min="1"
               max={formData.unit === 'us' ? '8' : '250'}
@@ -145,7 +152,7 @@ const BMICalculator = ({ onCalculate }) => {
                 <input
                   type="number"
                   value={formData.heightInches}
-                  onChange={(e) => handleInputChange('heightInches', parseInt(e.target.value))}
+                  onChange={(e) => handleInputChange('heightInches', e.target.value)}
                   className="form-input-v2 height-input-v2"
                   min="0"
                   max="11"
@@ -162,7 +169,7 @@ const BMICalculator = ({ onCalculate }) => {
             <input
               type="number"
               value={formData.weight}
-              onChange={(e) => handleInputChange('weight', parseInt(e.target.value))}
+              onChange={(e) => handleInputChange('weight', e.target.value)}
               className="form-input-v2 weight-input-v2"
               min="1"
               max="1000"
@@ -176,7 +183,7 @@ const BMICalculator = ({ onCalculate }) => {
           <input
             type="number"
             value={formData.activity}
-            onChange={(e) => handleInputChange('activity', parseInt(e.target.value))}
+            onChange={(e) => handleInputChange('activity', e.target.value)}
             className="form-input-v2 activity-input-v2"
             min="1"
             max="100"

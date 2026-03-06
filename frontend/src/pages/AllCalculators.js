@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Banner from '../components/Banner';
+import Footer from '../components/Footer';
 
 const AllCalculators = () => {
   const fitnessCalculators = [
@@ -19,12 +20,11 @@ const AllCalculators = () => {
   ];
 
   const pregnancyCalculators = [
-    { name: 'Pregnancy Calculator', path: '/calculator/pregnancy' },
+    { name: 'Due Date Calculator', path: '/calculator/pregnancy-due-date' },
+    { name: 'Pregnancy Week Calculator', path: '/calculator/pregnancy-week' },
     { name: 'Pregnancy Weight Gain Calculator', path: '/calculator/pregnancy-weight-gain' },
-    { name: 'Pregnancy Conception Calculator', path: '/calculator/pregnancy-conception' },
-    { name: 'Due Date Calculator', path: '/calculator/due-date' },
-    { name: 'Ovulation Calculator', path: '/calculator/ovulation' },
     { name: 'Conception Calculator', path: '/calculator/conception' },
+    { name: 'Ovulation Calculator', path: '/calculator/ovulation' },
     { name: 'Period Calculator', path: '/calculator/period' }
   ];
 
@@ -59,7 +59,6 @@ const AllCalculators = () => {
         <div className="calculators-grid-section">
           <div className="calculators-categories">
             <div className="calculator-category">
-              <h2 className="category-title main-title">Fitness Calculators</h2>
               <h3 className="category-subtitle">Fitness Calculators</h3>
               <div className="calculator-links">
                 {fitnessCalculators.map((calc, index) => (
@@ -95,51 +94,7 @@ const AllCalculators = () => {
         </div>
       </main>
 
-      <footer className="all-calculators-footer">
-        <div className="footer-content">
-          <div className="footer-grid">
-            <div className="footer-section">
-              <h3>Fitness</h3>
-              <ul>
-                <li><Link to="/calculators/bmi">BMI Calculator</Link></li>
-                <li><Link to="/calculators/calorie">Calorie Calculator</Link></li>
-                <li><Link to="/calculators/body-fat">Body Fat Calculator</Link></li>
-                <li><Link to="/calculators/bmr">BMR Calculator</Link></li>
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h3>Pregnancy</h3>
-              <ul>
-                <li><Link to="/calculators/due-date">Due Date Calculator</Link></li>
-                <li><Link to="/calculators/pregnancy">Pregnancy Week</Link></li>
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h3>Nutrition</h3>
-              <ul>
-                <li><Link to="/calculators/protein">Protein Calculator</Link></li>
-                <li><Link to="/calculators/macro">Macro Calculator</Link></li>
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h3>Company</h3>
-              <ul>
-                <li><Link to="/about">About</Link></li>
-                <li><Link to="/privacy">Privacy Policy</Link></li>
-                <li><Link to="/terms">Terms & Disclaimer</Link></li>
-                <li><Link to="/contact">Contact</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="footer-bottom">
-            <p>© 2026 FitCalc. All rights reserved. Not medical advice. Consult a professional for health decisions.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

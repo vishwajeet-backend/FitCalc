@@ -31,8 +31,7 @@ function BodySurfaceAreaCalculatorPage() {
     try {
       const data = unit === 'us' 
         ? {
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             weight: formData.weight,
             formula: formData.formula,
             unit: 'us',

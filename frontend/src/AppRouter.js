@@ -30,7 +30,10 @@ import GFRCalculatorPage from './pages/GFRCalculatorPage';
 import NavyBodyFatCalculatorPage from './pages/NavyBodyFatCalculatorPage';
 import CarbohydrateCalculatorPage from './pages/CarbohydrateCalculatorPage';
 import FatIntakeCalculatorPage from './pages/FatIntakeCalculatorPage';
-import GenericCalculatorPage from './pages/GenericCalculatorPage';
+import BlogPage from './pages/BlogPage';
+import BlogArticlePage from './pages/BlogArticlePage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import './pages/AllCalculators.css';
 
 function App() {
@@ -68,7 +71,6 @@ function App() {
           <Route path="/calculator/target-heart-rate" element={<TargetHeartRateCalculatorPage />} />
           
           {/* Pregnancy Calculators */}
-          <Route path="/calculator/pregnancy" element={<GenericCalculatorPage />} />
           <Route path="/calculator/pregnancy-weight-gain" element={<PregnancyWeightGainCalculatorPage />} />
           <Route path="/calculator/pregnancy-due-date" element={<DueDateCalculatorPage />} />
           <Route path="/calculator/ovulation" element={<OvulationCalculatorPage />} />
@@ -76,19 +78,17 @@ function App() {
           <Route path="/calculator/period" element={<PeriodCalculatorPage />} />
           <Route path="/calculator/pregnancy-week" element={<PregnancyWeekCalculatorPage />} />
           
-          {/* Generic route for any other calculator */}
-          <Route path="/calculator/:type" element={<GenericCalculatorPage />} />
-          
           {/* Category Pages */}
           <Route path="/fitness" element={<AllCalculators />} />
           <Route path="/pregnancy" element={<AllCalculators />} />
           <Route path="/metabolism" element={<AllCalculators />} />
           
           {/* Other Pages */}
-          <Route path="/blog" element={<HomePage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/about" element={<HomePage />} />
-          <Route path="/privacy" element={<HomePage />} />
-          <Route path="/terms" element={<HomePage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/contact" element={<HomePage />} />
         </Routes>
       </div>

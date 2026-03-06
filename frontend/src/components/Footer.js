@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -8,36 +9,36 @@ const Footer = () => {
           <div className="footer-section">
             <h3>Fitness</h3>
             <ul>
-              <li>BMI Calculator</li>
-              <li>Calorie Calculator</li>
-              <li>Body Fat Calculator</li>
-              <li>TDEE Calculator</li>
+              <li><Link to="/calculator/bmi">BMI Calculator</Link></li>
+              <li><Link to="/calculator/calorie">Calorie Calculator</Link></li>
+              <li><Link to="/calculator/body-fat">Body Fat Calculator</Link></li>
+              <li><Link to="/calculator/tdee">TDEE Calculator</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Pregnancy</h3>
             <ul>
-              <li>Due Date Calculator</li>
-              <li>Pregnancy Week</li>
+              <li><Link to="/calculator/due-date">Due Date Calculator</Link></li>
+              <li><Link to="/calculator/pregnancy-week">Pregnancy Week</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Nutrition</h3>
             <ul>
-              <li>Protein Calculator</li>
-              <li>Macro Calculator</li>
+              <li><Link to="/calculator/protein">Protein Calculator</Link></li>
+              <li><Link to="/calculator/macro">Macro Calculator</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Company</h3>
             <ul>
-              <li>About</li>
-              <li>Privacy Policy</li>
-              <li>Terms & Disclaimer</li>
-              <li>Contact</li>
+              <li><Link to="/blog">Blog</Link></li>
+              <li><Link to="/privacy">Privacy Policy</Link></li>
+              <li><Link to="/terms">Terms & Disclaimer</Link></li>
+              <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>
         </div>

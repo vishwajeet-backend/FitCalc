@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import CalculatorLayout from '../components/CalculatorLayout';
 import CalculatorForm, { FormGroup, Input, RadioGroup } from '../components/CalculatorForm';
 import ResultsContainer, { ResultCard, ResultsGrid, InfoRow, BMIChart } from '../components/ResultsContainer';
-import { calculateBMI } from '../utils/apiService';
 
 function BMICalculatorPage() {
   const [unit, setUnit] = useState('us');
@@ -29,24 +28,54 @@ function BMICalculatorPage() {
     setError(null);
 
     try {
-      const data = unit === 'us' 
-        ? {
-            age: formData.age,
-            gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
-            weight: formData.weight,
-            unit: 'us',
-          }
-        : {
-            age: formData.age,
-            gender: formData.gender,
-            height: formData.heightCm,
-            weight: formData.weight,
-            unit: 'metric',
-          };
+      // Local BMI calculation
+      let heightInMeters, weightInKg;
+      
+      if (unit === 'us') {
+        const totalInches = (parseFloat(formData.heightFeet) || 0) * 12 + (parseFloat(formData.heightInches) || 0);
+        heightInMeters = totalInches * 0.0254;
+        weightInKg = (parseFloat(formData.weight) || 0) * 0.453592;
+      } else {
+        heightInMeters = (parseFloat(formData.heightCm) || 0) / 100;
+        weightInKg = parseFloat(formData.weight) || 0;
+      }
 
-      const result = await calculateBMI(data);
+      if (heightInMeters === 0 || weightInKg === 0) {
+        setError('Please enter valid height and weight values.');
+        setIsCalculating(false);
+        return;
+      }
+
+      const bmi = weightInKg / (heightInMeters * heightInMeters);
+      
+      let category = '';
+      if (bmi < 18.5) {
+        category = 'Underweight';
+      } else if (bmi < 25) {
+        category = 'Normal weight';
+      } else if (bmi < 30) {
+        category = 'Overweight';
+      } else {
+        category = 'Obese';
+      }
+
+      const healthyWeightRange = {
+        min: 18.5 * (heightInMeters * heightInMeters),
+        max: 24.9 * (heightInMeters * heightInMeters)
+      };
+
+      const bmiPrime = bmi / 25;
+
+      const result = {
+        bmi: parseFloat(bmi.toFixed(1)),
+        category,
+        healthyBMIRange: '18.5 - 24.9',
+        bmiPrime: parseFloat(bmiPrime.toFixed(2)),
+        healthyWeightRange: unit === 'us' 
+          ? `${Math.round(healthyWeightRange.min * 2.20462)} - ${Math.round(healthyWeightRange.max * 2.20462)} lbs`
+          : `${Math.round(healthyWeightRange.min)} - ${Math.round(healthyWeightRange.max)} kg`
+      };
+
       setResults(result);
     } catch (err) {
       setError(err.message || 'Failed to calculate. Please try again.');

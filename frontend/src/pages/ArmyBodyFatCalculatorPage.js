@@ -40,8 +40,7 @@ function ArmyBodyFatCalculatorPage() {
         ? {
             age: formData.age,
             gender: formData.gender,
-            heightFeet: formData.heightFeet,
-            heightInches: formData.heightInches,
+            height: (formData.heightFeet * 12) + formData.heightInches,
             weight: formData.weight,
             neck: formData.neck,
             waist: formData.waist,

@@ -29,7 +29,7 @@ function OneRepMaxCalculatorPage() {
       const data = {
         weight: unit === 'us' ? formData.weight : formData.weightKg,
         reps: formData.reps,
-        unit,
+        unit: unit === 'us' ? 'lbs' : 'kg',
       };
 
       const result = await calculateOneRepMax(data);

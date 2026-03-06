@@ -1,313 +1,481 @@
 import React, { useState } from 'react';
-import CalculatorLayout from '../components/CalculatorLayout';
-import CalculatorForm, { FormGroup, Input } from '../components/CalculatorForm';
-import ResultsContainer, { ResultCard, ResultsGrid } from '../components/ResultsContainer';
-import { calculatePregnancyDueDate } from '../utils/apiService';
+import { Link } from 'react-router-dom';
+import Footer from '../components/Footer';
 
 function DueDateCalculatorPage() {
-  const [unit, setUnit] = useState('us');
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState(null);
-  
   const [formData, setFormData] = useState({
-    lastPeriod: '',
-    cycleLength: 28,
+    calculationType: 'dueDate',
+    month: 'Jun',
+    day: '16',
+    year: '2026',
   });
+  const [result, setResult] = useState(null);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const calculationTypes = [
+    { value: 'dueDate', label: 'Due date' },
+    { value: 'lastPeriod', label: 'Last period' },
+    { value: 'ultrasound', label: 'Ultrasound date' },
+    { value: 'conception', label: 'Conception date' },
+  ];
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsCalculating(true);
-    setError(null);
-
-    try {
-      const data = {
-        lastPeriod: formData.lastPeriod,
-        cycleLength: formData.cycleLength,
-      };
-
-      const result = await calculatePregnancyDueDate(data);
-      setResults(result);
-    } catch (err) {
-      setError(err.message || 'Failed to calculate. Please try again.');
-    } finally {
-      setIsCalculating(false);
+  const calculatePregnancy = () => {
+    // Parse the input date
+    const monthIndex = months.indexOf(formData.month);
+    const inputDate = new Date(formData.year, monthIndex, formData.day);
+    
+    let dueDate, conceptionDate, currentWeek, currentDay;
+    
+    if (formData.calculationType === 'dueDate') {
+      dueDate = inputDate;
+      // Calculate conception date (subtract 266 days)
+      conceptionDate = new Date(dueDate);
+      conceptionDate.setDate(conceptionDate.getDate() - 266);
+    } else if (formData.calculationType === 'lastPeriod') {
+      // Due date is 280 days (40 weeks) after last period
+      dueDate = new Date(inputDate);
+      dueDate.setDate(dueDate.getDate() + 280);
+      // Conception is typically 14 days after last period
+      conceptionDate = new Date(inputDate);
+      conceptionDate.setDate(conceptionDate.getDate() + 14);
+    } else if (formData.calculationType === 'conception') {
+      conceptionDate = inputDate;
+      // Due date is 266 days after conception
+      dueDate = new Date(conceptionDate);
+      dueDate.setDate(dueDate.getDate() + 266);
+    } else if (formData.calculationType === 'ultrasound') {
+      // Simplified calculation
+      dueDate = new Date(inputDate);
+      dueDate.setDate(dueDate.getDate() + 266);
+      conceptionDate = inputDate;
     }
+    
+    // Calculate current week
+    const today = new Date();
+    const daysSinceConception = Math.floor((today - conceptionDate) / (1000 * 60 * 60 * 24));
+    currentWeek = Math.floor(daysSinceConception / 7);
+    currentDay = daysSinceConception % 7;
+    
+    // Calculate trimester
+    let trimester;
+    if (currentWeek < 13) trimester = 'first';
+    else if (currentWeek < 27) trimester = 'second';
+    else trimester = 'third';
+    
+    // Baby stats (approximate based on week)
+    const babyStats = getBabyStats(currentWeek);
+    
+    setResult({
+      currentWeek,
+      currentDay,
+      monthsCount: Math.floor(currentWeek / 4),
+      daysCount: currentWeek * 7 + currentDay,
+      trimester,
+      babyLength: babyStats.length,
+      babyWeight: babyStats.weight,
+      conceptionDate: conceptionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      dueDate: dueDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    });
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const getBabyStats = (week) => {
+    const stats = {
+      8: { length: 0.63, weight: 0.04 },
+      12: { length: 2.13, weight: 0.49 },
+      16: { length: 4.57, weight: 3.53 },
+      20: { length: 6.46, weight: 10.58 },
+      23: { length: 11.38, weight: 501 },
+      24: { length: 11.81, weight: 600 },
+      28: { length: 14.80, weight: 1000 },
+      32: { length: 16.69, weight: 1702 },
+      36: { length: 18.66, weight: 2622 },
+      40: { length: 20.16, weight: 3462 },
+    };
+    
+    // Find closest week
+    const weeks = Object.keys(stats).map(Number);
+    const closest = weeks.reduce((prev, curr) => 
+      Math.abs(curr - week) < Math.abs(prev - week) ? curr : prev
+    );
+    
+    return stats[closest];
+  };
+
+  const handleClear = () => {
+    setFormData({
+      calculationType: 'dueDate',
+      month: 'Jun',
+      day: '16',
+      year: '2026',
+    });
+    setResult(null);
+  };
+
+  const styles = {
+    container: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '2rem 1rem',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "IBM Plex Sans", Roboto, sans-serif',
+    },
+    breadcrumb: {
+      fontSize: '0.875rem',
+      marginBottom: '1.25rem',
+      color: '#5b6b86',
+    },
+    breadcrumbLink: {
+      color: '#5b6b86',
+      textDecoration: 'underline',
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '2rem',
+      marginTop: '1.25rem',
+    },
+    formContainer: {
+      background: 'white',
+      border: '1px solid #dadada',
+      borderRadius: '10px',
+      padding: '24px',
+      height: 'fit-content',
+    },
+    title: {
+      fontSize: '28px',
+      fontWeight: '600',
+      marginBottom: '16px',
+      color: '#2e2e2e',
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+    description: {
+      fontSize: '20px',
+      fontWeight: '300',
+      color: '#2e2e2e',
+      marginBottom: '32px',
+      lineHeight: '1.5',
+      fontFamily: '"Source Sans 3", sans-serif',
+    },
+    formGroup: {
+      marginBottom: '20px',
+    },
+    label: {
+      display: 'block',
+      fontSize: '16px',
+      fontWeight: '500',
+      marginBottom: '16px',
+      color: '#1e2939',
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+    select: {
+      width: '142px',
+      padding: '8px 12px',
+      border: '1.295px solid #99a1af',
+      borderRadius: '10px',
+      fontSize: '16px',
+      fontFamily: 'Arimo, sans-serif',
+      background: 'white',
+      cursor: 'pointer',
+      outline: 'none',
+      appearance: 'none',
+      backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 12px center',
+      backgroundSize: '20px',
+      paddingRight: '40px',
+    },
+    dateInputContainer: {
+      display: 'flex',
+      gap: '8px',
+      flexWrap: 'wrap',
+    },
+    dateInput: {
+      padding: '8px 12px',
+      border: '1.295px solid #99a1af',
+      borderRadius: '10px',
+      fontSize: '16px',
+      fontFamily: 'Arimo, sans-serif',
+      outline: 'none',
+      appearance: 'none',
+    },
+    monthInput: {
+      width: '99px',
+      backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 12px center',
+      backgroundSize: '20px',
+      paddingRight: '40px',
+      cursor: 'pointer',
+    },
+    dayInput: {
+      width: '90px',
+    },
+    yearInput: {
+      width: '90px',
+    },
+    button: {
+      width: '100%',
+      padding: '14px 22px',
+      border: 'none',
+      borderRadius: '10px',
+      fontSize: '16px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.2s',
+      fontFamily: '"IBM Plex Sans", sans-serif',
+      textTransform: 'capitalize',
+      letterSpacing: '0.32px',
+    },
+    calculateButton: {
+      background: '#3d568f',
+      color: 'white',
+      marginBottom: '8px',
+    },
+    clearButton: {
+      background: 'white',
+      color: '#1d2433',
+      border: '1px solid #e1e6ef',
+    },
+    resultsContainer: {
+      border: '1px solid #dadada',
+      borderRadius: '10px',
+      overflow: 'hidden',
+      background: 'linear-gradient(90deg, #ffffff 0%, #fdfdf5 100%)',
+      height: 'fit-content',
+    },
+    resultsHeader: {
+      background: '#14ae5c',
+      color: 'white',
+      padding: '30px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: '80px',
+    },
+    resultsTitle: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      fontFamily: 'Arimo, sans-serif',
+    },
+    saveIcon: {
+      fontSize: '24px',
+      cursor: 'pointer',
+    },
+    resultsBody: {
+      padding: '24px',
+    },
+    resultCard: {
+      background: '#fdfdf6',
+      border: '1.295px solid rgba(0,0,0,0.1)',
+      borderRadius: '10px',
+      padding: '24px',
+      marginTop: '24px',
+    },
+    mainText: {
+      fontSize: '24px',
+      fontWeight: '500',
+      color: '#14ae5c',
+      marginBottom: '24px',
+      lineHeight: '1.4',
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+    bodyText: {
+      fontSize: '20px',
+      fontWeight: '500',
+      color: 'black',
+      lineHeight: '1.6',
+      fontFamily: '"Source Sans 3", sans-serif',
+      whiteSpace: 'pre-line',
+    },
   };
 
   return (
-    <CalculatorLayout
-      title="Due Date Calculator"
-      description="Calculate your pregnancy due date using your last menstrual period (LMP). Track your pregnancy week by week and see important milestone dates."
-      breadcrumbPath="due date calculator"
-    >
-      <CalculatorForm
-        unit={unit}
-        onUnitChange={setUnit}
-        onSubmit={handleSubmit}
-        isCalculating={isCalculating}
-        showUnitToggle={false}
-      >
-        <FormGroup label="Last Menstrual Period (LMP)">
-          <Input
-            type="date"
-            value={formData.lastPeriod}
-            onChange={(e) => handleInputChange('lastPeriod', e.target.value)}
-            style={{ width: '100%' }}
-          />
-        </FormGroup>
-
-        <FormGroup label="Cycle Length">
-          <Input
-            value={formData.cycleLength}
-            onChange={(e) => handleInputChange('cycleLength', parseInt(e.target.value))}
-            min="21"
-            max="35"
-            unit="days"
-          />
-        </FormGroup>
-      </CalculatorForm>
-
-      {error && (
-        <div style={{ 
-          background: '#fee2e2', 
-          color: '#991b1b', 
-          padding: '1rem', 
-          borderRadius: '6px', 
-          marginBottom: '1rem' 
+    <div>
+      {/* Header Banner */}
+      <header style={{
+        backgroundColor: '#FFFFFF',
+        backdropFilter: 'blur(5px)',
+        height: '80px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 42px',
+      }}>
+        <div style={{
+          maxWidth: '1800px',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}>
-          {error}
-        </div>
-      )}
-
-      {results && (
-        <>
-          <ResultsContainer title="Your Due Date" downloadable>
-            {/* Main Due Date Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
-              borderRadius: '12px',
-              padding: '2rem',
-              marginBottom: '2rem',
-              textAlign: 'center',
-              color: 'white'
-            }}>
-              <h2 style={{ fontSize: '1rem', fontWeight: '500', marginBottom: '0.5rem', opacity: 0.9 }}>
-                Estimated Due Date
-              </h2>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {results.dueDate ? formatDate(results.dueDate) : 'N/A'}
-              </div>
-              {results.currentWeek && (
-                <div style={{ fontSize: '1.25rem', marginBottom: '1rem', opacity: 0.95 }}>
-                  You are {results.currentWeek.weeks} weeks and {results.currentWeek.days} days pregnant
-                </div>
-              )}
-              <div style={{
-                display: 'inline-block',
-                background: 'rgba(255,255,255,0.2)',
-                padding: '0.5rem 1rem',
-                borderRadius: '20px',
-                fontSize: '0.875rem',
-                fontWeight: '600'
-              }}>
-                {results.daysRemaining} days remaining
-              </div>
-            </div>
-
-            {/* Current Trimester */}
-            {results.trimester && (
-              <div style={{
-                background: '#fce7f3',
-                border: '2px solid #f9a8d4',
-                borderRadius: '8px',
-                padding: '1.5rem',
-                marginBottom: '2rem',
-                textAlign: 'center'
-              }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#be185d', marginBottom: '0.5rem' }}>
-                  Current Trimester: {results.trimester}
-                </h3>
-                <p style={{ fontSize: '0.875rem', color: '#831843', margin: 0 }}>
-                  {results.trimester === 'First' && 'Weeks 1-13: Your baby\'s organs are forming'}
-                  {results.trimester === 'Second' && 'Weeks 14-27: Your baby is growing and moving'}
-                  {results.trimester === 'Third' && 'Weeks 28-40: Final preparations for birth'}
-                </p>
-              </div>
-            )}
-
-            {/* Key Dates */}
-            {results.conceptionDate && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-                  Important Dates
-                </h3>
-                <ResultsGrid columns={2}>
-                  <ResultCard
-                    color="#ec4899"
-                    title="Estimated Conception"
-                    value={formatDate(results.conceptionDate)}
-                    subtitle="Approximate date of conception"
-                  />
-                  <ResultCard
-                    color="#8b5cf6"
-                    title="Due Date"
-                    value={formatDate(results.dueDate)}
-                    subtitle="Estimated delivery date (40 weeks)"
-                  />
-                  {results.firstTrimesterEnd && (
-                    <ResultCard
-                      color="#a78bfa"
-                      title="First Trimester Ends"
-                      value={formatDate(results.firstTrimesterEnd)}
-                      subtitle="Week 13 - end of first trimester"
-                    />
-                  )}
-                  {results.secondTrimesterEnd && (
-                    <ResultCard
-                      color="#f472b6"
-                      title="Second Trimester Ends"
-                      value={formatDate(results.secondTrimesterEnd)}
-                      subtitle="Week 27 - entering third trimester"
-                    />
-                  )}
-                </ResultsGrid>
-              </div>
-            )}
-
-            {/* Pregnancy Timeline */}
-            <div style={{ marginTop: '2rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-                Pregnancy Timeline
-              </h3>
-              <div style={{
-                background: 'white',
-                border: '2px solid #e5e7eb',
-                borderRadius: '8px',
-                overflow: 'hidden'
-              }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: '#f3f4f6' }}>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid #e5e7eb' }}>
-                        Trimester
-                      </th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid #e5e7eb' }}>
-                        Weeks
-                      </th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid #e5e7eb' }}>
-                        Key Developments
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-                        <span style={{ display: 'inline-block', width: '12px', height: '12px', borderRadius: '2px', background: '#ec4899', marginRight: '0.5rem' }}></span>
-                        <strong>First</strong>
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
-                        1-13
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
-                        Organs form, heart beats, limbs develop. Morning sickness common.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-                        <span style={{ display: 'inline-block', width: '12px', height: '12px', borderRadius: '2px', background: '#8b5cf6', marginRight: '0.5rem' }}></span>
-                        <strong>Second</strong>
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
-                        14-27
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
-                        Baby moves, gender visible, hearing develops. Energy returns.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '1rem' }}>
-                        <span style={{ display: 'inline-block', width: '12px', height: '12px', borderRadius: '2px', background: '#a78bfa', marginRight: '0.5rem' }}></span>
-                        <strong>Third</strong>
-                      </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                        28-40
-                      </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                        Rapid weight gain, lungs mature, baby positions for birth.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Prenatal Checkup Schedule */}
-            <div style={{
-              background: '#f0fdf4',
-              border: '2px solid #bbf7d0',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              marginTop: '2rem'
-            }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#16a34a', marginBottom: '0.75rem' }}>
-                📅 Typical Prenatal Visit Schedule
-              </h4>
-              <ul style={{ 
-                fontSize: '0.875rem', 
-                color: '#15803d', 
-                lineHeight: '1.6',
-                margin: 0,
-                paddingLeft: '1.25rem'
-              }}>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  <strong>Weeks 4-28:</strong> Every 4 weeks
-                </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  <strong>Weeks 28-36:</strong> Every 2-3 weeks
-                </li>
-                <li>
-                  <strong>Weeks 36-40:</strong> Weekly until delivery
-                </li>
-              </ul>
-            </div>
-          </ResultsContainer>
-
-          {/* Info section */}
-          <div style={{
-            background: '#fef3c7',
-            border: '2px solid #fde047',
-            borderRadius: '8px',
-            padding: '1.25rem',
-            marginTop: '2rem'
+          <Link to="/" style={{
+            fontFamily: 'IBM Plex Sans, sans-serif',
+            fontWeight: 500,
+            fontSize: '36px',
+            color: '#161E24',
+            textDecoration: 'none',
+          }}>FitCalc</Link>
+          
+          <nav style={{
+            display: 'flex',
+            gap: '24px',
+            alignItems: 'center',
           }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#92400e', marginBottom: '0.75rem' }}>
-              ℹ️ About Due Date Calculation
-            </h4>
-            <div style={{ fontSize: '0.875rem', color: '#92400e', lineHeight: '1.6' }}>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Naegele's Rule:</strong> This calculator uses the standard method of adding 280 days (40 weeks) to your last menstrual period.
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Accuracy:</strong> Only about 5% of babies arrive exactly on their due date. Most are born within 2 weeks before or after.
-              </p>
-              <p style={{ margin: 0 }}>
-                <strong>Ultrasound Dating:</strong> Your healthcare provider may adjust your due date based on early ultrasound measurements, which can be more accurate.
-              </p>
+            <Link to="/calculators" style={{
+              fontFamily: 'IBM Plex Sans, sans-serif',
+              fontSize: '14px',
+              color: '#000000',
+              textDecoration: 'none',
+              padding: '15px 10px',
+              lineHeight: '22.4px',
+            }}>Fitness</Link>
+            <Link to="/pregnancy" style={{
+              fontFamily: 'IBM Plex Sans, sans-serif',
+              fontSize: '14px',
+              color: '#000000',
+              textDecoration: 'none',
+              padding: '15px 10px',
+              lineHeight: '22.4px',
+            }}>Pregnancy</Link>
+            <Link to="/metabolism" style={{
+              fontFamily: 'IBM Plex Sans, sans-serif',
+              fontSize: '14px',
+              color: '#000000',
+              textDecoration: 'none',
+              padding: '15px 10px',
+              lineHeight: '22.4px',
+            }}>Metabolism</Link>
+            <Link to="/blog" style={{
+              fontFamily: 'IBM Plex Sans, sans-serif',
+              fontSize: '14px',
+              color: '#000000',
+              textDecoration: 'none',
+              padding: '15px 10px',
+              lineHeight: '22.4px',
+            }}>Blog</Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div style={styles.container}>
+      {/* Breadcrumb */}
+      <div style={styles.breadcrumb}>
+        <Link to="/" style={styles.breadcrumbLink}>home</Link>
+        {' / '}
+        <Link to="/pregnancy" style={styles.breadcrumbLink}>fitness & health</Link>
+        {' / '}
+        <span style={styles.breadcrumbLink}>target heart rate calculator</span>
+      </div>
+
+      {/* Main Grid */}
+      <div style={styles.grid}>
+        {/* Form Section */}
+        <div style={styles.formContainer}>
+          <h1 style={styles.title}>Pregnancy Calculator</h1>
+          <p style={styles.description}>
+            The Pregnancy Calculator can estimate a pregnancy schedule based on the provided due date, last period date, ultrasound date, conception date, or IVF transfer date.
+          </p>
+
+          {/* Calculate Based On */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Calculate Based On:</label>
+            <select
+              name="calculationType"
+              value={formData.calculationType}
+              onChange={handleInputChange}
+              style={styles.select}
+            >
+              {calculationTypes.map(type => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Your Due Date */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Your Due Date</label>
+            <div style={styles.dateInputContainer}>
+              <select
+                name="month"
+                value={formData.month}
+                onChange={handleInputChange}
+                style={{ ...styles.dateInput, ...styles.monthInput }}
+              >
+                {months.map(month => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
+              </select>
+              <input
+                type="number"
+                name="day"
+                value={formData.day}
+                onChange={handleInputChange}
+                min="1"
+                max="31"
+                style={{ ...styles.dateInput, ...styles.dayInput }}
+              />
+              <input
+                type="number"
+                name="year"
+                value={formData.year}
+                onChange={handleInputChange}
+                min="2020"
+                max="2030"
+                style={{ ...styles.dateInput, ...styles.yearInput }}
+              />
             </div>
           </div>
-        </>
-      )}
-    </CalculatorLayout>
+
+          {/* Buttons */}
+          <button
+            style={{ ...styles.button, ...styles.calculateButton }}
+            onClick={calculatePregnancy}
+          >
+            Start Calculating
+          </button>
+          <button
+            style={{ ...styles.button, ...styles.clearButton }}
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
+
+        {/* Results Section */}
+        {result && (
+          <div style={styles.resultsContainer}>
+            <div style={styles.resultsHeader}>
+              <span style={styles.resultsTitle}>Your Results</span>
+              <span style={styles.saveIcon}>📄</span>
+            </div>
+            <div style={styles.resultsBody}>
+              <div style={styles.resultCard}>
+                <p style={styles.mainText}>
+                  You are currently at week #{result.currentWeek} ({result.currentWeek} weeks {result.currentDay} days or {result.monthsCount} months {result.daysCount - (result.monthsCount * 30)} days) of pregnancy.
+                </p>
+                <div style={styles.bodyText}>
+                  You are in the {result.trimester} trimester.
+                  {'\n\n'}
+                  On average, your baby is around {result.babyLength} inches ({(result.babyLength * 2.54).toFixed(1)} cm) long and weighs around {result.babyWeight < 100 ? `${result.babyWeight.toFixed(1)} ounces` : `${(result.babyWeight / 453.592).toFixed(1)} pounds (${result.babyWeight} grams)`}.
+                  {'\n\n'}
+                  Your baby was likely conceived on {result.conceptionDate}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 }
 
