@@ -2,7 +2,6 @@ import React from 'react';
 
 const PowerfulFeatures = () => {
   const featureImage = "https://www.figma.com/api/mcp/asset/15eacb49-d8f0-4e6e-9546-0453c42539e4";
-  const timelineImage = "https://www.figma.com/api/mcp/asset/5eecea23-2caa-4bd3-bb94-8c9312c91f88";
 
   return (
     <section className="powerful-features">
@@ -18,16 +17,19 @@ const PowerfulFeatures = () => {
         {/* Right Column - Timeline with Features */}
         <div className="powerful-features-right">
           <div className="features-timeline">
-            <img src={timelineImage} alt="" className="timeline-line" />
+            <div className="timeline-line"></div>
           </div>
 
           <div className="features-list">
             {/* Feature 1 */}
             <div className="feature-item">
-              <h3 className="feature-item-title">Instant Fitness Calculations</h3>
-              <div className="feature-item-description">
-                <p>Fast results in seconds without loading delays or complicated steps</p>
-                <p>FitCalc is built for speed and simplicity, so users can calculate fitness metrics instantly without waiting or dealing with confusing interfaces. Whether you're checking BMI, calorie needs, body fat percentage, or ideal weight, the platform delivers results in real-time. We focus on creating a smooth experience where users can quickly input their data and get meaningful outputs. This makes FitCalc perfect for people who want fast answers while planning workouts, diet routines, or tracking their fitness progress. Every calculator is optimized to feel lightweight and responsive, even on mobile devices.</p>
+              <div className="feature-ellipse"></div>
+              <div className="feature-content">
+                <h3 className="feature-item-title">Instant Fitness Calculations</h3>
+                <div className="feature-item-description">
+                  <p>Fast results in seconds without loading delays or complicated steps</p>
+                  <p>FitCalc is built for speed and simplicity, so users can calculate fitness metrics instantly without waiting or dealing with confusing interfaces. Whether you're checking BMI, calorie needs, body fat percentage, or ideal weight, the platform delivers results in real-time. We focus on creating a smooth experience where users can quickly input their data and get meaningful outputs. This makes FitCalc perfect for people who want fast answers while planning workouts, diet routines, or tracking their fitness progress. Every calculator is optimized to feel lightweight and responsive, even on mobile devices.</p>
+                </div>
               </div>
             </div>
 
@@ -38,34 +40,46 @@ const PowerfulFeatures = () => {
 
             {/* Feature 2 */}
             <div className="feature-item">
-              <h3 className="feature-item-title">Fitness-Focused Accuracy</h3>
-              <p className="feature-item-description">
-                Our calculators are built using industry-standard financial formulas to provide dependable and consistent results. Each tool is carefully designed to help users estimate payments, returns, and savings with clarity. Regular updates ensure calculations follow current financial practices. Results are generated instantly for quick decision making. Whether planning loans or investments, accuracy remains our priority. Helping users make confident financial decisions is our core goal.
-              </p>
+              <div className="feature-ellipse"></div>
+              <div className="feature-content">
+                <h3 className="feature-item-title">Fitness-Focused Accuracy</h3>
+                <p className="feature-item-description">
+                  Our calculators are built using industry-standard financial formulas to provide dependable and consistent results. Each tool is carefully designed to help users estimate payments, returns, and savings with clarity. Regular updates ensure calculations follow current financial practices. Results are generated instantly for quick decision making. Whether planning loans or investments, accuracy remains our priority. Helping users make confident financial decisions is our core goal.
+                </p>
+              </div>
             </div>
 
             {/* Feature 3 */}
             <div className="feature-item">
-              <h3 className="feature-item-title">Mobile-First Experience</h3>
-              <p className="feature-item-description">
-                Our platform focuses on simplicity so users can calculate results without confusion or technical knowledge. Interfaces are designed to guide users step by step through inputs and results. Calculations are processed instantly for smooth user experience. Clear result displays help users understand outcomes quickly. Minimal input steps reduce effort while improving accuracy. Anyone can use the platform easily, regardless of financial expertise.
-              </p>
+              <div className="feature-ellipse"></div>
+              <div className="feature-content">
+                <h3 className="feature-item-title">Mobile-First Experience</h3>
+                <p className="feature-item-description">
+                  Our platform focuses on simplicity so users can calculate results without confusion or technical knowledge. Interfaces are designed to guide users step by step through inputs and results. Calculations are processed instantly for smooth user experience. Clear result displays help users understand outcomes quickly. Minimal input steps reduce effort while improving accuracy. Anyone can use the platform easily, regardless of financial expertise.
+                </p>
+              </div>
             </div>
 
             {/* Feature 4 */}
             <div className="feature-item">
-              <h3 className="feature-item-title">No Sign-Up Required</h3>
-              <p className="feature-item-description">
-                Users can start calculating instantly without creating accounts or sharing personal information. This makes the platform accessible and convenient for quick financial planning needs. No login barriers mean faster access to tools when needed. We prioritize privacy and simplicity over unnecessary registration processes. Users remain in full control of their data and calculations. Immediate access helps users solve financial questions faster.
-              </p>
+              <div className="feature-ellipse"></div>
+              <div className="feature-content">
+                <h3 className="feature-item-title">No Sign-Up Required</h3>
+                <p className="feature-item-description">
+                  Users can start calculating instantly without creating accounts or sharing personal information. This makes the platform accessible and convenient for quick financial planning needs. No login barriers mean faster access to tools when needed. We prioritize privacy and simplicity over unnecessary registration processes. Users remain in full control of their data and calculations. Immediate access helps users solve financial questions faster.
+                </p>
+              </div>
             </div>
 
             {/* Feature 5 */}
             <div className="feature-item">
-              <h3 className="feature-item-title">Ad-Supported Free Platform</h3>
-              <p className="feature-item-description">
-                Our calculators work smoothly across desktops, tablets, and mobile devices. Responsive layouts ensure accurate calculations regardless of screen size. Users can plan finances anytime and anywhere conveniently. Interfaces automatically adapt for smaller screens without losing functionality. Fast performance ensures tools run smoothly on mobile networks as well. Financial planning remains accessible on every device.
-              </p>
+              <div className="feature-ellipse"></div>
+              <div className="feature-content">
+                <h3 className="feature-item-title">Ad-Supported Free Platform</h3>
+                <p className="feature-item-description">
+                  Our calculators work smoothly across desktops, tablets, and mobile devices. Responsive layouts ensure accurate calculations regardless of screen size. Users can plan finances anytime and anywhere conveniently. Interfaces automatically adapt for smaller screens without losing functionality. Fast performance ensures tools run smoothly on mobile networks as well. Financial planning remains accessible on every device.
+                </p>
+              </div>
             </div>
           </div>
         </div>

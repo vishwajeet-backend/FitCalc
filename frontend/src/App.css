@@ -893,8 +893,28 @@ body {
 
 .feature-item {
   display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.feature-ellipse {
+  position: absolute;
+  left: -28px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border: 3px solid #3d568f;
+  border-radius: 50%;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.feature-content {
+  display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
 }
 
 .feature-item-title {
@@ -1406,7 +1426,7 @@ body {
   line-height: normal;
   color: #0f1524;
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .comparison-subtitle {
@@ -1416,7 +1436,7 @@ body {
   line-height: normal;
   color: #4b5563;
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .comparison-table {
@@ -1468,16 +1488,16 @@ body {
 
 .comparison-cell {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .comparison-cell:first-child {
-  width: auto;
+  width: 280px;
 }
 
 .comparison-cell:nth-child(2) {
-  width: 274px;
+  width: 280px;
 }
 
 .comparison-cell:nth-child(3) {
@@ -1487,7 +1507,7 @@ body {
 .cell-content {
   display: flex;
   gap: 10px;
-  align-items: center;
+  align-items: flex-start;
   padding: 0 12px;
   border-radius: 12px;
 }
@@ -1497,6 +1517,7 @@ body {
   height: 24px;
   position: relative;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .check-icon-svg {
@@ -1519,21 +1540,22 @@ body {
   font-family: 'Source Sans 3', sans-serif;
   font-weight: 400;
   font-size: 16px;
-  line-height: normal;
+  line-height: 1.5;
   color: #4b5563;
   margin: 0;
-}
-
-.comparison-cell:first-child .cell-content p {
-  width: 240px;
-}
-
-.comparison-cell:nth-child(2) .cell-content p {
   flex: 1;
 }
 
+.comparison-cell:first-child .cell-content p {
+  max-width: none;
+}
+
+.comparison-cell:nth-child(2) .cell-content p {
+  max-width: none;
+}
+
 .comparison-cell:nth-child(3) .cell-content p {
-  width: 361px;
+  max-width: none;
 }
 
 /* Responsive Design for Comparison Section */
@@ -1991,7 +2013,7 @@ body {
 }
 
 .comparison-table {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   max-width: 1200px;
