@@ -13,21 +13,11 @@ const ComparisonTable = () => {
         </div>
         
         <div className="comparison-table">
-          {/* Header Row */}
-          <div className="comparison-table-header">
+          {/* Column 1: FitCalc */}
+          <div className="comparison-column">
             <div className="header-cell header-fitcalc">
               <h3>FitCalc</h3>
             </div>
-            <div className="header-cell header-competitor">
-              <h3>Other Competitors</h3>
-            </div>
-            <div className="header-cell header-competitor">
-              <h3>Other Competitors</h3>
-            </div>
-          </div>
-
-          {/* Row 1 */}
-          <div className="comparison-row">
             <div className="comparison-cell">
               <div className="cell-content">
                 <div className="icon-container">
@@ -43,7 +33,7 @@ const ComparisonTable = () => {
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Most tools are limited and advanced calculators require payment.</p>
+                <p>Clean and modern interface designed for fast and smooth usage.</p>
               </div>
             </div>
             <div className="comparison-cell">
@@ -52,20 +42,32 @@ const ComparisonTable = () => {
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Basic features available for free; advanced tools require purchase.Some calculators are free but they push subscriptions and upgrades heavily.</p>
+                <p>Mobile-first design optimized for gym use and quick daily checks.</p>
+              </div>
+            </div>
+            <div className="comparison-cell">
+              <div className="cell-content">
+                <div className="icon-container">
+                  <img src={iconCheck} alt="" className="check-icon-svg" />
+                  <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
+                </div>
+                <p>Results are shown with clear ranges, categories, and simple explanations</p>
               </div>
             </div>
           </div>
 
-          {/* Row 2 */}
-          <div className="comparison-row">
+          {/* Column 2: Other Competitors */}
+          <div className="comparison-column">
+            <div className="header-cell header-competitor">
+              <h3>Other Competitors</h3>
+            </div>
             <div className="comparison-cell">
               <div className="cell-content">
                 <div className="icon-container">
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Clean and modern interface designed for fast and smooth usage.</p>
+                <p>Most tools are limited and advanced calculators require payment.</p>
               </div>
             </div>
             <div className="comparison-cell">
@@ -83,28 +85,6 @@ const ComparisonTable = () => {
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Too many popups, banners, and distractions that ruin user experience.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Row 3 */}
-          <div className="comparison-row">
-            <div className="comparison-cell">
-              <div className="cell-content">
-                <div className="icon-container">
-                  <img src={iconCheck} alt="" className="check-icon-svg" />
-                  <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
-                </div>
-                <p>Mobile-first design optimized for gym use and quick daily checks.</p>
-              </div>
-            </div>
-            <div className="comparison-cell">
-              <div className="cell-content">
-                <div className="icon-container">
-                  <img src={iconCheck} alt="" className="check-icon-svg" />
-                  <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
-                </div>
                 <p>Mobile experience is not smooth and requires extra scrolling.</p>
               </div>
             </div>
@@ -114,20 +94,23 @@ const ComparisonTable = () => {
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Not responsive enough, with broken spacing and poor readability.</p>
+                <p>Shows numbers only with minimal explanation or guidance.</p>
               </div>
             </div>
           </div>
 
-          {/* Row 4 */}
-          <div className="comparison-row">
+          {/* Column 3: Other Competitors */}
+          <div className="comparison-column">
+            <div className="header-cell header-competitor">
+              <h3>Other Competitors</h3>
+            </div>
             <div className="comparison-cell">
               <div className="cell-content">
                 <div className="icon-container">
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Results are shown with clear ranges, categories, and simple explanations</p>
+                <p>Basic features available for free; advanced tools require purchase.Some calculators are free but they push subscriptions and upgrades heavily.</p>
               </div>
             </div>
             <div className="comparison-cell">
@@ -136,7 +119,16 @@ const ComparisonTable = () => {
                   <img src={iconCheck} alt="" className="check-icon-svg" />
                   <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
                 </div>
-                <p>Shows numbers only with minimal explanation or guidance.</p>
+                <p>Too many popups, banners, and distractions that ruin user experience.</p>
+              </div>
+            </div>
+            <div className="comparison-cell">
+              <div className="cell-content">
+                <div className="icon-container">
+                  <img src={iconCheck} alt="" className="check-icon-svg" />
+                  <img src={iconCheckmark} alt="" className="checkmark-icon-svg" />
+                </div>
+                <p>Not responsive enough, with broken spacing and poor readability.</p>
               </div>
             </div>
             <div className="comparison-cell">

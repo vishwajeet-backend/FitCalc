@@ -6,14 +6,9 @@ const FitnessCalculatorsGrid = () => {
     <section className="fitness-calculators-grid">
       <h2 className="calculator-grid-main-title">Fitness Calculators</h2>
       
-      <div className="calculators-header-row">
-        <p className="header-subtitle">Fitness Calculators</p>
-        <p className="header-subtitle">Pregnancy</p>
-        <p className="header-subtitle">Other</p>
-      </div>
-
-      <div className="calculators-content-row">
+      <div className="calculators-columns-container">
         <div className="calculators-column">
+          <p className="header-subtitle">Fitness Calculators</p>
           <Link to="/calculator/bmi" className="calculator-link">BMI Calculator</Link>
           <Link to="/calculator/calorie" className="calculator-link">Calorie Calculator</Link>
           <Link to="/calculator/body-fat" className="calculator-link">Body Fat Calculator</Link>
@@ -22,6 +17,7 @@ const FitnessCalculatorsGrid = () => {
         </div>
 
         <div className="calculators-column">
+          <p className="header-subtitle">Pregnancy</p>
           <Link to="/calculator/pregnancy-due-date" className="calculator-link">Pregnancy Calculator</Link>
           <Link to="/calculator/pregnancy-weight-gain" className="calculator-link">Pregnancy Weight Gain Calculator</Link>
           <Link to="/calculator/conception" className="calculator-link">Pregnancy Conception Calculator</Link>
@@ -30,6 +26,7 @@ const FitnessCalculatorsGrid = () => {
         </div>
 
         <div className="calculators-column">
+          <p className="header-subtitle">Other</p>
           <Link to="/calculator/macro" className="calculator-link">Macro Calculator</Link>
           <Link to="/calculator/carbohydrate" className="calculator-link">Carbohydrate Calculator</Link>
           <Link to="/calculator/tdee" className="calculator-link">TDEE Calculator</Link>
