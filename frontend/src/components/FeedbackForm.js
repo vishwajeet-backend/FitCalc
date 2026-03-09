@@ -1,191 +1,458 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const FeedbackForm = () => {
+  // Form state
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
     rating: 0,
-    feedback: '',
+    feedback: "",
     acceptPrivacy: false
   });
 
+  // UI state
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
+  // Debug logging on mount
+  useEffect(() => {
+    console.log("🔵 [FeedbackForm] Component mounted");
+    console.log("🔵 [FeedbackForm] API URL:", process.env.REACT_APP_API_URL || "http://localhost:5000/api");
+    return () => {
+      console.log("🔵 [FeedbackForm] Component unmounting");
+    };
+  }, []);
+
+  // Log form data changes
+  useEffect(() => {
+    console.log("📝 [FeedbackForm] Form data updated:", formData);
+  }, [formData]);
+
+  // Handle input changes with logging
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    console.log(`✏️ [FeedbackForm] Input change - ${field}:`, value);
+    
+    setFormData((prev) => ({
       ...prev,
       [field]: value
     }));
+
+    // Clear validation error for this field
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
+
+    // Clear submit status when user starts editing
+    if (submitStatus.message) {
+      setSubmitStatus({ type: "", message: "" });
+    }
   };
 
+  // Handle star rating with logging
   const handleStarRating = (rating) => {
-    setFormData(prev => ({
+    console.log(`⭐ [FeedbackForm] Star rating selected:`, rating);
+    
+    setFormData((prev) => ({
       ...prev,
       rating
     }));
+
+    // Clear rating validation error
+    if (validationErrors.rating) {
+      setValidationErrors((prev) => {
+        const updated = { ...prev };
+        delete updated.rating;
+        return updated;
+      });
+    }
   };
 
-  const getStarIcon = (index) => {
-    const filled = hoveredStar > 0 ? index <= hoveredStar : index <= formData.rating;
-    return filled ? '★' : '☆';
+  // Validate email format
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const handleSubmit = (e) => {
+  // Comprehensive form validation
+  const validateForm = () => {
+    console.log("🔍 [FeedbackForm] Starting form validation...");
+    const errors = {};
+
+    // Name validation
+    if (!formData.name || formData.name.trim() === "") {
+      errors.name = "Name is required";
+      console.log("❌ [FeedbackForm] Validation failed: Name is empty");
+    }
+
+    // Email validation
+    if (!formData.email || formData.email.trim() === "") {
+      errors.email = "Email is required";
+      console.log("❌ [FeedbackForm] Validation failed: Email is empty");
+    } else if (!isValidEmail(formData.email)) {
+      errors.email = "Please enter a valid email address";
+      console.log("❌ [FeedbackForm] Validation failed: Invalid email format");
+    }
+
+    // Rating validation
+    if (!formData.rating || formData.rating === 0) {
+      errors.rating = "Please select a star rating";
+      console.log("❌ [FeedbackForm] Validation failed: No rating selected");
+    }
+
+    // Privacy policy validation
+    if (!formData.acceptPrivacy) {
+      errors.acceptPrivacy = "You must accept the privacy policy";
+      console.log("❌ [FeedbackForm] Validation failed: Privacy policy not accepted");
+    }
+
+    setValidationErrors(errors);
+
+    const isValid = Object.keys(errors).length === 0;
+    console.log(isValid ? "✅ [FeedbackForm] Validation passed" : "❌ [FeedbackForm] Validation failed with errors:", errors);
+    
+    return isValid;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Feedback submitted:', formData);
-    // Handle form submission here
+    console.log("🚀 [FeedbackForm] Form submission initiated");
+    console.log("📋 [FeedbackForm] Current form data:", formData);
+
+    // Clear previous status
+    setSubmitStatus({ type: "", message: "" });
+
+    // Validate form
+    if (!validateForm()) {
+      console.log("⛔ [FeedbackForm] Submission aborted due to validation errors");
+      setSubmitStatus({
+        type: "error",
+        message: "Please fix the errors in the form"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    console.log("⏳ [FeedbackForm] Submitting to backend...");
+
+    try {
+      // Determine API URL
+      const apiBaseUrl = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const apiUrl = `${apiBaseUrl}/feedback`;
+      
+      console.log("🌐 [FeedbackForm] API URL:", apiUrl);
+
+      // Prepare payload
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim() || undefined,
+        company: formData.company.trim() || undefined,
+        rating: Number(formData.rating),
+        feedback: formData.feedback.trim() || undefined,
+        acceptPrivacy: formData.acceptPrivacy
+      };
+
+      console.log("📦 [FeedbackForm] Request payload:", payload);
+
+      // Make API request
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      console.log("📡 [FeedbackForm] Response status:", response.status, response.statusText);
+
+      // Parse response
+      let result;
+      try {
+        result = await response.json();
+        console.log("📥 [FeedbackForm] Response data:", result);
+      } catch (parseError) {
+        console.error("❌ [FeedbackForm] Failed to parse response JSON:", parseError);
+        throw new Error("Invalid response from server");
+      }
+
+      // Handle success
+      if (response.ok && result.success) {
+        console.log("✅ [FeedbackForm] Feedback submitted successfully!");
+        console.log("🆔 [FeedbackForm] Feedback ID:", result.feedbackId);
+        
+        setShowSuccessPopup(true);
+        setSubmitStatus({
+          type: "success",
+          message: result.message || "Thank you for your feedback!"
+        });
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          company: "",
+          rating: 0,
+          feedback: "",
+          acceptPrivacy: false
+        });
+        setHoveredStar(0);
+        setValidationErrors({});
+
+        console.log("🔄 [FeedbackForm] Form reset complete");
+
+        // Auto-close popup after 5 seconds
+        setTimeout(() => {
+          console.log("⏱️ [FeedbackForm] Auto-closing success popup");
+          setShowSuccessPopup(false);
+        }, 5000);
+      } 
+      // Handle error response
+      else {
+        console.error("❌ [FeedbackForm] Backend returned error:", result);
+        setSubmitStatus({
+          type: "error",
+          message: result.message || "Failed to send feedback. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error("💥 [FeedbackForm] Network or system error:", error);
+      console.error("💥 [FeedbackForm] Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+
+      setSubmitStatus({
+        type: "error",
+        message: "Network error. Please check your connection and try again."
+      });
+    } finally {
+      setIsSubmitting(false);
+      console.log("🏁 [FeedbackForm] Submission process completed");
+    }
   };
 
   return (
-    <section className="feedback-section">
-      <div className="feedback-container">
-        <div className="feedback-header">
-          <h2 className="feedback-title">Help Us Improve FitCalc</h2>
-          <p className="feedback-description">
-            Your feedback helps us improve calculator accuracy, user experience, and add more health & fitness tools. Share your suggestions anytime — it only takes a few seconds.
-          </p>
-        </div>
-        
-        <form className="feedback-form" onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <div className="input-wrapper">
+    <>
+      <section className="feedback-section">
+        <div className="feedback-container">
+
+          <div className="feedback-header">
+            <h2 className="feedback-title">Help Us Improve FitCalc</h2>
+            <p className="feedback-description">
+              Your feedback helps us improve calculator accuracy, user experience, and add more health & fitness tools.
+              Share your suggestions anytime — users help us build.
+            </p>
+          </div>
+
+          <form className="feedback-form" onSubmit={handleSubmit}>
+
+            {/* Name + Email */}
+            <div className="form-row">
+              <div className="form-group">
+                <label>Name *</label>
                 <input
                   type="text"
-                  id="name"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="John Carter"
-                  className="form-input"
+                  className={`form-input ${validationErrors.name ? "error" : ""}`}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  disabled={isSubmitting}
                 />
-                <span className="input-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 10C12.0711 10 13.75 8.32107 13.75 6.25C13.75 4.17893 12.0711 2.5 10 2.5C7.92893 2.5 6.25 4.17893 6.25 6.25C6.25 8.32107 7.92893 10 10 10Z" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M17.0834 17.5C17.0834 14.2783 13.9051 11.6666 10.0001 11.6666C6.09506 11.6666 2.91675 14.2783 2.91675 17.5" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
+                {validationErrors.name && (
+                  <span className="error-message">{validationErrors.name}</span>
+                )}
               </div>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <div className="input-wrapper">
+
+              <div className="form-group">
+                <label>Email *</label>
                 <input
                   type="email"
-                  id="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="Email address"
-                  className="form-input"
+                  className={`form-input ${validationErrors.email ? "error" : ""}`}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  disabled={isSubmitting}
                 />
-                <span className="input-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.1667 17.0833H5.83341C3.33341 17.0833 1.66675 15.8333 1.66675 12.9167V7.08329C1.66675 4.16663 3.33341 2.91663 5.83341 2.91663H14.1667C16.6667 2.91663 18.3334 4.16663 18.3334 7.08329V12.9167C18.3334 15.8333 16.6667 17.0833 14.1667 17.0833Z" stroke="#6F6C8F" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M14.1667 7.5L11.5584 9.58333C10.7001 10.2667 9.29175 10.2667 8.43341 9.58333L5.83341 7.5" stroke="#6F6C8F" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
+                {validationErrors.email && (
+                  <span className="error-message">{validationErrors.email}</span>
+                )}
               </div>
             </div>
-          </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="phone">Phone number</label>
-              <div className="input-wrapper">
+
+            {/* Phone + Company */}
+            <div className="form-row">
+              <div className="form-group">
+                <label>Phone number</label>
                 <input
                   type="tel"
-                  id="phone"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="(123) 456-7890"
+                  placeholder="(555) 456-7890"
                   className="form-input"
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  disabled={isSubmitting}
                 />
-                <span className="input-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13.1916 2.5H6.80825C4.87492 2.5 3.74158 3.63333 3.74158 5.56667V14.4333C3.74158 16.3667 4.87492 17.5 6.80825 17.5H13.1916C15.1249 17.5 16.2583 16.3667 16.2583 14.4333V5.56667C16.2583 3.63333 15.1249 2.5 13.1916 2.5Z" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M11.6667 4.58337H8.33341" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M10 15.2084C10.5753 15.2084 11.0417 14.742 11.0417 14.1667C11.0417 13.5914 10.5753 13.125 10 13.125C9.42469 13.125 8.95833 13.5914 8.95833 14.1667C8.95833 14.742 9.42469 15.2084 10 15.2084Z" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
               </div>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="company">Company</label>
-              <div className="input-wrapper">
+
+              <div className="form-group">
+                <label>Company</label>
                 <input
                   type="text"
-                  id="company"
                   value={formData.company}
-                  onChange={(e) => handleInputChange('company', e.target.value)}
                   placeholder="Your company name"
                   className="form-input"
+                  onChange={(e) => handleInputChange("company", e.target.value)}
+                  disabled={isSubmitting}
                 />
-                <span className="input-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.50825 17.0833V13.75C7.50825 12.8833 8.20825 12.1833 9.07492 12.1833H10.9249C11.7916 12.1833 12.4916 12.8833 12.4916 13.75V17.0833" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2.33325 7.70004L9.17492 2.86671C9.64159 2.54171 10.3583 2.54171 10.8249 2.86671L17.6666 7.70004" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M3.33325 6.66663V14.1666C3.33325 15.9416 4.77492 17.3833 6.54992 17.3833H13.4499C15.2249 17.3833 16.6666 15.9416 16.6666 14.1666V6.66663" stroke="#6F6C8F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
               </div>
             </div>
-          </div>
-          
-          <div className="form-group rating-group">
-            <label>Your service rating</label>
-            <div className="star-rating">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  className={`star ${(hoveredStar > 0 ? star <= hoveredStar : star <= formData.rating) ? 'filled' : ''}`}
-                  onClick={() => handleStarRating(star)}
-                  onMouseEnter={() => setHoveredStar(star)}
-                  onMouseLeave={() => setHoveredStar(0)}
-                >
-                  {getStarIcon(star)}
-                </button>
-              ))}
+
+            {/* Star Rating */}
+            <div className="form-group rating-group">
+              <label>Your service rating *</label>
+
+              <div
+                className="star-rating"
+                onMouseLeave={() => !isSubmitting && setHoveredStar(0)}
+              >
+                {[1, 2, 3, 4, 5].map((starValue) => {
+                  const displayRating = hoveredStar || formData.rating;
+                  const isFilled = starValue <= displayRating;
+
+                  return (
+                    <button
+                      type="button"
+                      key={starValue}
+                      className={`star ${isFilled ? "filled" : ""}`}
+                      onClick={() => !isSubmitting && handleStarRating(starValue)}
+                      onMouseEnter={() => !isSubmitting && setHoveredStar(starValue)}
+                      disabled={isSubmitting}
+                      aria-label={`Rate ${starValue} out of 5 stars`}
+                    >
+                      ★
+                    </button>
+                  );
+                })}
+
+                {formData.rating > 0 && (
+                  <span className="rating-text">
+                    {formData.rating} out of 5
+                  </span>
+                )}
+              </div>
+              
+              {validationErrors.rating && (
+                <span className="error-message">{validationErrors.rating}</span>
+              )}
             </div>
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="feedback">Additional feedback</label>
-            <textarea
-              id="feedback"
-              value={formData.feedback}
-              onChange={(e) => handleInputChange('feedback', e.target.value)}
-              placeholder="If you have more to add, please type it here..."
-              className="form-textarea"
-              rows="4"
-            />
-          </div>
-          
-          <div className="form-group checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={formData.acceptPrivacy}
-                onChange={(e) => handleInputChange('acceptPrivacy', e.target.checked)}
-                className="form-checkbox"
+
+            {/* Additional Feedback */}
+            <div className="form-group">
+              <label>Additional feedback</label>
+              <textarea
+                value={formData.feedback}
+                placeholder="If you have more to add, please leave it here..."
+                className="form-textarea"
+                rows="5"
+                onChange={(e) => handleInputChange("feedback", e.target.value)}
+                disabled={isSubmitting}
               />
-              <span>
-                I have read and accept the <Link to="/privacy" className="checkbox-link">Privacy Policy</Link>.
-              </span>
-            </label>
+            </div>
+
+            {/* Privacy Policy Checkbox */}
+            <div className="checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={formData.acceptPrivacy}
+                  onChange={(e) => handleInputChange("acceptPrivacy", e.target.checked)}
+                  disabled={isSubmitting}
+                  className={validationErrors.acceptPrivacy ? "error" : ""}
+                />
+                <span>
+                  I have read and accept the{" "}
+                  <Link to="/privacy" className="checkbox-link">
+                    Privacy Policy
+                  </Link>
+                </span>
+              </label>
+              {validationErrors.acceptPrivacy && (
+                <span className="error-message">{validationErrors.acceptPrivacy}</span>
+              )}
+            </div>
+
+            {/* Status Message */}
+            {submitStatus.message && (
+              <div className={`feedback-status ${submitStatus.type}`}>
+                {submitStatus.type === "error" && "⚠️ "}
+                {submitStatus.type === "success" && "✅ "}
+                {submitStatus.message}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="feedback-submit-btn"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="spinner"></span> Sending...
+                </>
+              ) : (
+                "Send Feedback"
+              )}
+            </button>
+
+          </form>
+        </div>
+      </section>
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div
+          className="success-popup-overlay"
+          onClick={() => setShowSuccessPopup(false)}
+          role="dialog"
+          aria-labelledby="success-title"
+        >
+          <div
+            className="success-popup"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="success-icon">✓</div>
+            <h3 id="success-title">Message Sent Successfully!</h3>
+            <p>
+              Thank you for your feedback. We appreciate your input and
+              will use it to improve FitCalc.
+            </p>
+
+            <button
+              className="popup-close-btn"
+              onClick={() => setShowSuccessPopup(false)}
+              aria-label="Close success message"
+            >
+              Close
+            </button>
           </div>
-          
-          <button type="submit" className="feedback-submit-btn">
-            Send Feedback
-          </button>
-        </form>
-      </div>
-    </section>
+        </div>
+      )}
+    </>
   );
 };
 

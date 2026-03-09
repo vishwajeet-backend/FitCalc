@@ -197,7 +197,7 @@ exports.calculateTDEE = async (req, res) => {
       heightInCm = parseFloat(height);
     }
     
-    // Mifflin-St Jeor Equation
+    // Mifflin-St Jeor Equation (most accurate for modern populations)
     let bmr;
     if (gender === 'male') {
       bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * parseFloat(age)) + 5;
@@ -205,17 +205,24 @@ exports.calculateTDEE = async (req, res) => {
       bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * parseFloat(age)) - 161;
     }
     
-    // Activity multipliers
+    // Activity multipliers (based on research)
     const activityMultipliers = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      active: 1.725,
-      veryActive: 1.9
+      sedentary: 1.2, // Little or no exercise
+      light: 1.375, // Light exercise 1-3 days/week
+      moderate: 1.55, // Moderate exercise 3-5 days/week
+      active: 1.725, // Hard exercise 6-7 days/week
+      veryActive: 1.9 // Very hard exercise, physical job
     };
     
     const multiplier = activityMultipliers[activityLevel] || 1.2;
     const tdee = bmr * multiplier;
+    
+    // Calculate calorie targets for different goals
+    const mildWeightLoss = tdee - 250; // 0.5 lb/week
+    const weightLoss = tdee - 500; // 1 lb/week
+    const extremeWeightLoss = tdee - 1000; // 2 lb/week (not recommended without supervision)
+    const mildWeightGain = tdee + 250; // 0.5 lb/week
+    const weightGain = tdee + 500; // 1 lb/week
     
     const result = {
       bmr: Math.round(bmr),
@@ -228,6 +235,29 @@ exports.calculateTDEE = async (req, res) => {
         moderate: Math.round(bmr * 1.55),
         active: Math.round(bmr * 1.725),
         veryActive: Math.round(bmr * 1.9)
+      },
+      goalCalories: {
+        extremeLoss: Math.max(1200, Math.round(extremeWeightLoss)), // Minimum 1200 cal
+        weightLoss: Math.max(1200, Math.round(weightLoss)),
+        mildLoss: Math.round(mildWeightLoss),
+        maintain: Math.round(tdee),
+        mildGain: Math.round(mildWeightGain),
+        weightGain: Math.round(weightGain)
+      },
+      macroSuggestions: {
+        // Balanced macro split
+        protein: {
+          grams: Math.round((tdee * 0.30) / 4),
+          percentage: 30
+        },
+        carbs: {
+          grams: Math.round((tdee * 0.40) / 4),
+          percentage: 40
+        },
+        fat: {
+          grams: Math.round((tdee * 0.30) / 9),
+          percentage: 30
+        }
       }
     };
     
@@ -235,7 +265,8 @@ exports.calculateTDEE = async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('TDEE calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate TDEE' });
   }
 };
 
@@ -546,7 +577,7 @@ exports.calculateHealthyWeight = async (req, res) => {
 // Macro Calculator
 exports.calculateMacro = async (req, res) => {
   try {
-    const { age, gender, weight, height, activityLevel, goal, unit } = req.body;
+    const { age, gender, weight, height, activityLevel, goal, dietType, unit } = req.body;
     
     let weightInKg, heightInCm;
     
@@ -558,7 +589,7 @@ exports.calculateMacro = async (req, res) => {
       heightInCm = parseFloat(height);
     }
     
-    // Calculate BMR
+    // Calculate BMR using Mifflin-St Jeor Equation (most accurate)
     let bmr;
     if (gender === 'male') {
       bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * parseFloat(age)) + 5;
@@ -578,36 +609,86 @@ exports.calculateMacro = async (req, res) => {
     
     // Adjust for goal
     let targetCalories = tdee;
-    if (goal === 'lose') targetCalories = tdee - 500;
-    else if (goal === 'gain') targetCalories = tdee + 500;
+    if (goal === 'lose') targetCalories = tdee - 500; // 500 cal deficit for ~1 lb/week loss
+    else if (goal === 'gain') targetCalories = tdee + 500; // 500 cal surplus for ~1 lb/week gain
     
-    // Macro split (can be customized)
-    const proteinPercentage = 0.30;
-    const carbPercentage = 0.40;
-    const fatPercentage = 0.30;
+    // Macro split based on diet type and goal
+    let proteinPercentage, carbPercentage, fatPercentage;
+    
+    // Higher protein for weight loss to preserve muscle
+    if (goal === 'lose') {
+      proteinPercentage = 0.35; // 35%
+      carbPercentage = 0.35; // 35%
+      fatPercentage = 0.30; // 30%
+    } else if (goal === 'gain') {
+      proteinPercentage = 0.30; // 30%
+      carbPercentage = 0.40; // 40%
+      fatPercentage = 0.30; // 30%
+    } else {
+      proteinPercentage = 0.30; // 30%
+      carbPercentage = 0.40; // 40%
+      fatPercentage = 0.30; // 30%
+    }
+    
+    // Adjust for diet type if provided
+    if (dietType === 'keto') {
+      proteinPercentage = 0.25;
+      carbPercentage = 0.05;
+      fatPercentage = 0.70;
+    } else if (dietType === 'lowcarb') {
+      proteinPercentage = 0.30;
+      carbPercentage = 0.20;
+      fatPercentage = 0.50;
+    } else if (dietType === 'highcarb') {
+      proteinPercentage = 0.20;
+      carbPercentage = 0.60;
+      fatPercentage = 0.20;
+    }
+    
+    const proteinGrams = Math.round((targetCalories * proteinPercentage) / 4); // 4 cal/g
+    const carbGrams = Math.round((targetCalories * carbPercentage) / 4); // 4 cal/g
+    const fatGrams = Math.round((targetCalories * fatPercentage) / 9); // 9 cal/g
     
     const result = {
       calories: Math.round(targetCalories),
-      protein: Math.round((targetCalories * proteinPercentage) / 4), // 4 cal per gram
-      carbs: Math.round((targetCalories * carbPercentage) / 4), // 4 cal per gram
-      fat: Math.round((targetCalories * fatPercentage) / 9), // 9 cal per gram
-      proteinPercentage: proteinPercentage * 100,
-      carbPercentage: carbPercentage * 100,
-      fatPercentage: fatPercentage * 100
+      bmr: Math.round(bmr),
+      tdee: Math.round(tdee),
+      protein: proteinGrams,
+      carbs: carbGrams,
+      fat: fatGrams,
+      proteinPercentage: Math.round(proteinPercentage * 100),
+      carbPercentage: Math.round(carbPercentage * 100),
+      fatPercentage: Math.round(fatPercentage * 100),
+      proteinCalories: proteinGrams * 4,
+      carbCalories: carbGrams * 4,
+      fatCalories: fatGrams * 9,
+      mealsBreakdown: {
+        perMeal3: {
+          protein: Math.round(proteinGrams / 3),
+          carbs: Math.round(carbGrams / 3),
+          fat: Math.round(fatGrams / 3)
+        },
+        perMeal4: {
+          protein: Math.round(proteinGrams / 4),
+          carbs: Math.round(carbGrams / 4),
+          fat: Math.round(fatGrams / 4)
+        }
+      }
     };
     
     await saveCalculation('macro', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Macro calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate macros' });
   }
 };
 
 // Protein Calculator
 exports.calculateProtein = async (req, res) => {
   try {
-    const { weight, activityLevel, goal, unit } = req.body;
+    const { age, gender, height, weight, activityLevel, goal, unit } = req.body;
     
     let weightInKg;
     
@@ -617,44 +698,82 @@ exports.calculateProtein = async (req, res) => {
       weightInKg = parseFloat(weight);
     }
     
-    // Protein requirements in grams per kg body weight
-    let proteinMultiplier = 0.8; // RDA baseline
+    // Protein requirements in grams per kg body weight (based on research)
+    let proteinMultiplier = 0.8; // RDA baseline for sedentary adults
     
-    if (activityLevel === 'sedentary') proteinMultiplier = 0.8;
-    else if (activityLevel === 'light') proteinMultiplier = 1.0;
-    else if (activityLevel === 'moderate') proteinMultiplier = 1.2;
-    else if (activityLevel === 'active') proteinMultiplier = 1.4;
-    else if (activityLevel === 'veryActive') proteinMultiplier = 1.6;
+    // Adjust based on activity level
+    if (activityLevel === 'sedentary') {
+      proteinMultiplier = 0.8; // RDA minimum
+    } else if (activityLevel === 'light') {
+      proteinMultiplier = 1.0; // Light activity
+    } else if (activityLevel === 'moderate') {
+      proteinMultiplier = 1.3; // Regular exercise
+    } else if (activityLevel === 'active') {
+      proteinMultiplier = 1.6; // Heavy training
+    } else if (activityLevel === 'veryActive') {
+      proteinMultiplier = 1.8; // Athlete level
+    }
     
     // Adjust for goal
-    if (goal === 'lose') proteinMultiplier *= 1.2; // Higher protein for weight loss
-    else if (goal === 'gain') proteinMultiplier *= 1.3; // Higher protein for muscle gain
+    if (goal === 'lose') {
+      proteinMultiplier = Math.max(proteinMultiplier, 1.6); // Higher protein prevents muscle loss
+    } else if (goal === 'gain') {
+      proteinMultiplier = Math.max(proteinMultiplier, 1.6); // Higher protein supports muscle growth
+    }
     
     const proteinGrams = weightInKg * proteinMultiplier;
+    const minProtein = weightInKg * 0.8; // RDA minimum
+    const maxProtein = weightInKg * 2.2; // Upper safe limit for active individuals
+    
+    // Calculate protein distribution
+    const protein3Meals = Math.round(proteinGrams / 3);
+    const protein4Meals = Math.round(proteinGrams / 4);
+    const protein5Meals = Math.round(proteinGrams / 5);
     
     const result = {
-      proteinGrams: Math.round(proteinGrams),
+      dailyProtein: Math.round(proteinGrams),
       proteinCalories: Math.round(proteinGrams * 4),
-      perMeal: Math.round(proteinGrams / 3), // Assuming 3 meals
+      proteinPerKg: proteinMultiplier.toFixed(1),
+      minProtein: Math.round(minProtein),
+      maxProtein: Math.round(maxProtein),
+      mealDistribution: {
+        threeMeals: protein3Meals,
+        fourMeals: protein4Meals,
+        fiveMeals: protein5Meals,
+        perSnack: Math.round(proteinGrams * 0.15) // 15% for snacks
+      },
       recommendations: {
         minimum: Math.round(weightInKg * 0.8),
         moderate: Math.round(weightInKg * 1.2),
-        high: Math.round(weightInKg * 1.6)
-      }
+        high: Math.round(weightInKg * 1.6),
+        athlete: Math.round(weightInKg * 2.0)
+      },
+      timing: {
+        postWorkout: Math.round(weightInKg * 0.25), // 0.25g/kg within 2 hours
+        preBed: Math.round(weightInKg * 0.25), // Casein before bed for muscle preservation
+        breakfast: protein3Meals // Important for muscle protein synthesis
+      },
+      sources: [
+        `Chicken breast: ${Math.round(proteinGrams / 0.31)}g (31g protein/100g)`,
+        `Greek yogurt: ${Math.round(proteinGrams / 0.10)}g (10g protein/100g)`,
+        `Eggs: ${Math.round(proteinGrams / 6)} eggs (6g protein/egg)`,
+        `Whey protein: ${Math.round(proteinGrams / 25)} scoops (25g protein/scoop)`
+      ]
     };
     
     await saveCalculation('protein', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Protein calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate protein' });
   }
 };
 
 // Carbohydrate Calculator
 exports.calculateCarbohydrate = async (req, res) => {
   try {
-    const { weight, activityLevel, goal, unit } = req.body;
+    const { weight, activityLevel, goal, dietType, unit } = req.body;
     
     let weightInKg;
     
@@ -664,77 +783,216 @@ exports.calculateCarbohydrate = async (req, res) => {
       weightInKg = parseFloat(weight);
     }
     
-    // Carb requirements in grams per kg body weight
-    let carbMultiplier = 3; // Baseline
+    // Base carb requirements in grams per kg body weight
+    let carbMultiplier = 3; // Baseline for sedentary
     
-    if (activityLevel === 'sedentary') carbMultiplier = 3;
-    else if (activityLevel === 'light') carbMultiplier = 4;
-    else if (activityLevel === 'moderate') carbMultiplier = 5;
-    else if (activityLevel === 'active') carbMultiplier = 6;
-    else if (activityLevel === 'veryActive') carbMultiplier = 7;
+    // Adjust based on activity level (primary factor)
+    if (activityLevel === 'sedentary') {
+      carbMultiplier = 3; // Low activity
+    } else if (activityLevel === 'light') {
+      carbMultiplier = 4; // Light exercise
+    } else if (activityLevel === 'moderate') {
+      carbMultiplier = 5; // Moderate exercise
+    } else if (activityLevel === 'active') {
+      carbMultiplier = 6; // Active training
+    } else if (activityLevel === 'veryactive' || activityLevel === 'veryActive') {
+      carbMultiplier = 7; // Heavy training
+    } else if (activityLevel === 'athlete') {
+      carbMultiplier = 8; // Athlete level
+    }
     
     // Adjust for goal
-    if (goal === 'lose') carbMultiplier *= 0.8;
-    else if (goal === 'gain') carbMultiplier *= 1.2;
+    if (goal === 'weightloss' || goal === 'lose') {
+      carbMultiplier *= 0.7; // Reduce carbs for fat loss
+    } else if (goal === 'musclegain' || goal === 'gain') {
+      carbMultiplier *= 1.2; // Increase carbs for muscle gain
+    }
+    
+    // Adjust for diet type (overrides previous adjustments)
+    if (dietType === 'keto') {
+      carbMultiplier = 0.5; // Very low carb: 20-50g total
+    } else if (dietType === 'lowcarb') {
+      carbMultiplier = 1.5; // Low carb: 50-150g
+    } else if (dietType === 'highcarb') {
+      carbMultiplier = Math.max(carbMultiplier * 1.4, 6); // High carb for athletes
+    } else if (dietType === 'balanced') {
+      // Use calculated value based on activity/goal
+    }
     
     const carbGrams = weightInKg * carbMultiplier;
     
+    // Calculate carb distribution
+    const preworkoutCarbs = Math.round(carbGrams * 0.25); // 25% pre-workout
+    const postworkoutCarbs = Math.round(carbGrams * 0.35); // 35% post-workout
+    const otherMealsCarbs = Math.round(carbGrams * 0.40); // 40% other meals
+    
+    let dietTypeDescription = 'Balanced';
+    let percentOfCalories = '45-65%';
+    
+    if (dietType === 'keto') {
+      dietTypeDescription = 'Ketogenic (Very Low Carb)';
+      percentOfCalories = '5-10%';
+    } else if (dietType === 'lowcarb') {
+      dietTypeDescription = 'Low Carb';
+      percentOfCalories = '10-25%';
+    } else if (dietType === 'highcarb') {
+      dietTypeDescription = 'High Carb';
+      percentOfCalories = '55-70%';
+    }
+    
     const result = {
-      carbGrams: Math.round(carbGrams),
+      dailyCarbs: Math.round(carbGrams),
       carbCalories: Math.round(carbGrams * 4),
-      perMeal: Math.round(carbGrams / 3),
+      carbsPerKg: carbMultiplier.toFixed(1),
+      dietType: dietTypeDescription,
+      percentOfCalories,
+      mealDistribution: {
+        perMeal3: Math.round(carbGrams / 3),
+        perMeal4: Math.round(carbGrams / 4),
+        preworkout: preworkoutCarbs,
+        postworkout: postworkoutCarbs,
+        otherMeals: otherMealsCarbs
+      },
       recommendations: {
-        low: Math.round(weightInKg * 2),
-        moderate: Math.round(weightInKg * 4),
-        high: Math.round(weightInKg * 6)
-      }
+        veryLow: Math.round(weightInKg * 0.5), // Keto
+        low: Math.round(weightInKg * 2), // Low carb
+        moderate: Math.round(weightInKg * 4), // Moderate
+        high: Math.round(weightInKg * 6), // Active
+        veryHigh: Math.round(weightInKg * 8) // Athlete
+      },
+      timing: {
+        preWorkout: `${preworkoutCarbs}g 1-2 hours before exercise`,
+        postWorkout: `${postworkoutCarbs}g within 30-60 minutes after exercise`,
+        beforeBed: 'Avoid high-carb meals to optimize fat burning during sleep'
+      },
+      sources: [
+        `White rice: ${Math.round(carbGrams / 0.28)}g (28g carbs/100g)`,
+        `Sweet potato: ${Math.round(carbGrams / 0.20)}g (20g carbs/100g)`,
+        `Oats: ${Math.round(carbGrams / 0.66)}g (66g carbs/100g)`,
+        `Banana: ${Math.round(carbGrams / 23)} bananas (23g carbs each)`
+      ]
     };
     
     await saveCalculation('carbohydrate', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Carbohydrate calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate carbohydrates' });
   }
 };
 
 // Fat Intake Calculator
 exports.calculateFatIntake = async (req, res) => {
   try {
-    const { weight, goal, unit } = req.body;
+    const { calories, dietType, goal, cholesterol, unit } = req.body;
     
-    let weightInKg;
+    console.log('Fat Intake Calculator - Request body:', req.body);
     
-    if (unit === 'us') {
-      weightInKg = parseFloat(weight) * 0.453592;
-    } else {
-      weightInKg = parseFloat(weight);
+    // Validate required fields
+    if (!calories || isNaN(parseFloat(calories))) {
+      throw new Error('Valid calories value is required');
     }
     
-    // Fat requirements in grams per kg body weight
-    let fatMultiplier = 1.0; // Baseline
+    const dailyCalories = parseFloat(calories);
     
-    if (goal === 'lose') fatMultiplier = 0.8;
-    else if (goal === 'gain') fatMultiplier = 1.2;
+    // Fat percentage based on diet type (evidence-based ranges)
+    let fatPercentage = 0.30; // Default 30%
     
-    const fatGrams = weightInKg * fatMultiplier;
+    if (dietType === 'keto') {
+      fatPercentage = 0.70; // 70-75% for ketosis
+    } else if (dietType === 'lowfat') {
+      fatPercentage = 0.20; // 20% low-fat diet
+    } else if (dietType === 'mediterranean') {
+      fatPercentage = 0.35; // 35% Mediterranean diet
+    } else if (dietType === 'balanced') {
+      fatPercentage = 0.30; // 25-35% balanced
+    }
+    
+    // Adjust for goal
+    if (goal === 'weightloss' || goal === 'lose') {
+      fatPercentage = Math.max(fatPercentage * 0.85, 0.20); // Reduce but keep minimum
+    } else if (goal === 'musclegain' || goal === 'gain') {
+      fatPercentage = Math.min(fatPercentage * 1.1, 0.40); // Increase but cap at 40%
+    }
+    
+    const fatCalories = dailyCalories * fatPercentage;
+    const fatGrams = fatCalories / 9; // 9 calories per gram of fat
+    
+    // Calculate saturated fat limit (AHA recommends <10% of calories, <7% if high cholesterol)
+    const saturatedFatLimit = cholesterol === 'high' || cholesterol === 'veryhigh'
+      ? (dailyCalories * 0.06) / 9 // 6% for high cholesterol
+      : (dailyCalories * 0.10) / 9; // 10% for normal
+    
+    // Calculate unsaturated fat (the healthy fats)
+    const unsaturatedFat = fatGrams - saturatedFatLimit;
+    
+    // Monounsaturated (should be majority of unsaturated)
+    const monounsaturated = unsaturatedFat * 0.60; // 60% of unsaturated
+    
+    // Polyunsaturated (includes omega-3 and omega-6)
+    const polyunsaturated = unsaturatedFat * 0.40; // 40% of unsaturated
+    
+    // Omega-3 recommendation (AHA: at least 500mg EPA+DHA daily = ~1.5-2g total omega-3)
+    const omega3 = 2; // grams per day minimum
+    
+    // Trans fat should be 0 (mention in recommendations)
+    
+    let dietTypeDescription = 'Balanced';
+    if (dietType === 'keto') dietTypeDescription = 'Ketogenic (Very High Fat)';
+    else if (dietType === 'lowfat') dietTypeDescription = 'Low Fat';
+    else if (dietType === 'mediterranean') dietTypeDescription = 'Mediterranean';
     
     const result = {
-      fatGrams: Math.round(fatGrams),
-      fatCalories: Math.round(fatGrams * 9),
-      perMeal: Math.round(fatGrams / 3),
+      totalFat: Math.round(fatGrams),
+      fatCalories: Math.round(fatCalories),
+      fatPercentage: Math.round(fatPercentage * 100),
+      dietType: dietTypeDescription,
+      fatTypes: {
+        saturated: Math.round(saturatedFatLimit),
+        saturatedMax: Math.round(saturatedFatLimit),
+        unsaturated: Math.round(unsaturatedFat),
+        monounsaturated: Math.round(monounsaturated),
+        polyunsaturated: Math.round(polyunsaturated),
+        omega3: omega3,
+        omega6: Math.round(polyunsaturated - omega3),
+        transFat: 0 // Should be avoided
+      },
+      mealDistribution: {
+        perMeal3: Math.round(fatGrams / 3),
+        perMeal4: Math.round(fatGrams / 4),
+        snacks: Math.round(fatGrams * 0.15) // 15% for snacks
+      },
       recommendations: {
-        minimum: Math.round(weightInKg * 0.5),
-        moderate: Math.round(weightInKg * 1.0),
-        high: Math.round(weightInKg * 1.5)
-      }
+        minimum: Math.round(dailyCalories * 0.20 / 9), // 20% minimum for hormone health
+        moderate: Math.round(dailyCalories * 0.30 / 9), // 30% balanced
+        high: Math.round(dailyCalories * 0.40 / 9), // 40% higher fat diets
+        keto: Math.round(dailyCalories * 0.70 / 9) // 70% ketogenic
+      },
+      healthyFatSources: [
+        `Avocado: ${Math.round(monounsaturated / 15)} medium (15g fat each)`,
+        `Olive oil: ${Math.round(fatGrams / 14)} tbsp (14g fat/tbsp)`,
+        `Almonds: ${Math.round(fatGrams / 14)} oz (14g fat/oz)`,
+        `Salmon: ${Math.round(omega3 / 1.5)} servings (1.5g omega-3/serving)`
+      ],
+      warnings: cholesterol === 'high' || cholesterol === 'veryhigh' ? [
+        'Limit saturated fat to <6% of calories',
+        'Avoid trans fats completely',
+        'Focus on omega-3 rich foods',
+        'Consult healthcare provider for personalized advice'
+      ] : [
+        'Avoid trans fats (partially hydrogenated oils)',
+        'Prioritize monounsaturated and polyunsaturated fats',
+        'Include omega-3 rich foods (fatty fish, walnuts, flaxseed)'
+      ]
     };
     
     await saveCalculation('fat-intake', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Fat intake calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate fat intake' });
   }
 };
 
@@ -751,18 +1009,22 @@ exports.calculateCaloriesBurned = async (req, res) => {
       weightInKg = parseFloat(weight);
     }
     
-    // MET values for common activities
+    // MET values for common activities (updated to match frontend)
     const metValues = {
       walking: 3.5,
-      running: 8.0,
-      cycling: 6.0,
-      swimming: 7.0,
+      running: 9.8, // 6 mph
+      cycling: 7.5,
+      swimming: 8.0,
       yoga: 3.0,
-      weightlifting: 5.0,
-      basketball: 6.5,
-      soccer: 7.0,
-      tennis: 7.0,
-      dancing: 4.5
+      hiit: 12.0,
+      weightlifting: 6.0,
+      dancing: 5.0,
+      basketball: 8.0,
+      soccer: 10.0,
+      tennis: 7.3,
+      hiking: 6.0,
+      rowing: 7.0,
+      jumping: 12.3
     };
     
     const met = metValues[activity] || 5.0;
@@ -773,14 +1035,21 @@ exports.calculateCaloriesBurned = async (req, res) => {
       caloriesBurned: Math.round(caloriesBurned),
       activity,
       duration: parseFloat(duration),
-      met
+      met,
+      caloriesPerMinute: Math.round((caloriesBurned / parseFloat(duration)) * 10) / 10,
+      estimatedFor: {
+        '15min': Math.round(met * weightInKg * 0.25),
+        '30min': Math.round(met * weightInKg * 0.5),
+        '60min': Math.round(met * weightInKg * 1.0)
+      }
     };
     
     await saveCalculation('calories-burned', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Calories burned calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate calories burned' });
   }
 };
 
@@ -879,33 +1148,43 @@ exports.calculateTargetHeartRate = async (req, res) => {
     const heartRateReserve = maxHeartRate - restingHR;
     
     // Calculate target zones using Karvonen Formula
-    const zones = {
-      veryLight: {
+    const zones = [
+      {
         min: Math.round(restingHR + heartRateReserve * 0.50),
         max: Math.round(restingHR + heartRateReserve * 0.60),
-        name: 'Very Light (50-60%)'
+        name: 'Zone 1: Very Light',
+        intensity: '50-60% of Maximum',
+        description: 'Warm-up and recovery. Very comfortable, able to hold a conversation easily. Good for beginners and recovery days.'
       },
-      light: {
+      {
         min: Math.round(restingHR + heartRateReserve * 0.60),
         max: Math.round(restingHR + heartRateReserve * 0.70),
-        name: 'Light (60-70%)'
+        name: 'Zone 2: Light',
+        intensity: '60-70% of Maximum',
+        description: 'Fat burning zone. Comfortable pace for longer duration. Improves basic endurance and fat metabolism.'
       },
-      moderate: {
+      {
         min: Math.round(restingHR + heartRateReserve * 0.70),
         max: Math.round(restingHR + heartRateReserve * 0.80),
-        name: 'Moderate (70-80%)'
+        name: 'Zone 3: Moderate',
+        intensity: '70-80% of Maximum',
+        description: 'Aerobic zone. Breathing becomes harder but still controlled. Improves cardiovascular efficiency.'
       },
-      hard: {
+      {
         min: Math.round(restingHR + heartRateReserve * 0.80),
         max: Math.round(restingHR + heartRateReserve * 0.90),
-        name: 'Hard (80-90%)'
+        name: 'Zone 4: Hard',
+        intensity: '80-90% of Maximum',
+        description: 'Anaerobic zone. Difficult to maintain conversation. Improves speed and power. Use for interval training.'
       },
-      maximum: {
+      {
         min: Math.round(restingHR + heartRateReserve * 0.90),
         max: maxHeartRate,
-        name: 'Maximum (90-100%)'
+        name: 'Zone 5: Maximum',
+        intensity: '90-100% of Maximum',
+        description: 'Maximum effort. Very hard to breathe. Only sustainable for short bursts. Use for high-intensity intervals.'
       }
-    };
+    ];
     
     const result = {
       maxHeartRate,
@@ -925,58 +1204,146 @@ exports.calculateTargetHeartRate = async (req, res) => {
 // Body Type Calculator
 exports.calculateBodyType = async (req, res) => {
   try {
-    const { wrist, ankle, shoulder, waist, hip, unit } = req.body;
+    const { gender, height, weight, wrist, ankle, unit } = req.body;
     
-    // Convert to cm if needed
-    let wristCm = unit === 'us' ? parseFloat(wrist) * 2.54 : parseFloat(wrist);
-    let ankleCm = unit === 'us' ? parseFloat(ankle) * 2.54 : parseFloat(ankle);
-    let shoulderCm = unit === 'us' ? parseFloat(shoulder) * 2.54 : parseFloat(shoulder);
-    let waistCm = unit === 'us' ? parseFloat(waist) * 2.54 : parseFloat(waist);
-    let hipCm = unit === 'us' ? parseFloat(hip) * 2.54 : parseFloat(hip);
+    console.log('Body Type Calculator - Request body:', req.body);
     
-    // Calculate body frame
+    // Validate required fields
+    if (!gender || !height || !weight || !wrist || !ankle) {
+      throw new Error('All measurements are required: gender, height, weight, wrist, ankle');
+    }
+    
+    // Convert to metric if needed
+    let heightCm, weightKg, wristCm, ankleCm;
+    
+    if (unit === 'us') {
+      heightCm = parseFloat(height) * 2.54;
+      weightKg = parseFloat(weight) * 0.453592;
+      wristCm = parseFloat(wrist) * 2.54;
+      ankleCm = parseFloat(ankle) * 2.54;
+    } else {
+      heightCm = parseFloat(height);
+      weightKg = parseFloat(weight);
+      wristCm = parseFloat(wrist);
+      ankleCm = parseFloat(ankle);
+    }
+    
+    // Calculate body frame based on wrist circumference and height
     let frameSize = 'Medium';
-    if (wristCm < 16) frameSize = 'Small';
-    else if (wristCm > 18) frameSize = 'Large';
+    const heightInInches = heightCm / 2.54;
+    const wristInInches = wristCm / 2.54;
     
-    // Calculate body shape (simplified)
-    const shoulderToHipRatio = shoulderCm / hipCm;
-    const waistToHipRatio = waistCm / hipCm;
+    if (gender === 'male') {
+      if (heightInInches > 65) {
+        if (wristInInches < 6.5) frameSize = 'Small';
+        else if (wristInInches > 7.5) frameSize = 'Large';
+      } else {
+        if (wristInInches < 6) frameSize = 'Small';
+        else if (wristInInches > 7) frameSize = 'Large';
+      }
+    } else {
+      if (heightInInches > 65) {
+        if (wristInInches < 6) frameSize = 'Small';
+        else if (wristInInches > 6.5) frameSize = 'Large';
+      } else {
+        if (wristInInches < 5.5) frameSize = 'Small';
+        else if (wristInInches > 6) frameSize = 'Large';
+      }
+    }
     
-    let bodyShape = 'Rectangle';
-    if (shoulderToHipRatio > 1.05) bodyShape = 'Inverted Triangle';
-    else if (waistToHipRatio < 0.75) bodyShape = 'Hourglass';
-    else if (hipCm > shoulderCm && waistCm < hipCm) bodyShape = 'Pear';
-    else if (waistCm > hipCm && waistCm > shoulderCm) bodyShape = 'Apple';
+    // Determine somatotype based on measurements
+    const bmi = weightKg / ((heightCm / 100) ** 2);
+    const ankleCmNormalized = ankleCm / (heightCm / 100); // Ankle relative to height
+    const wristCmNormalized = wristCm / (heightCm / 100);
+    
+    let somatotype = 'Balanced Mesomorph';
+    let description = '';
+    
+    // Simple classification based on frame and BMI
+    if (frameSize === 'Small' && bmi < 23) {
+      somatotype = 'Ectomorph';
+      description = 'Naturally lean with fast metabolism. Difficulty gaining weight and muscle.';
+    } else if (frameSize === 'Large' && bmi > 25) {
+      somatotype = 'Endomorph';
+      description = 'Naturally broader build with slower metabolism. Tends to gain weight easily.';
+    } else if (frameSize === 'Medium' || (bmi >= 23 && bmi <= 25)) {
+      somatotype = 'Mesomorph';
+      description = 'Athletic build with balanced metabolism. Gains muscle relatively easily.';
+    } else if (frameSize === 'Small' && bmi >= 23) {
+      somatotype = 'Ecto-Mesomorph';
+      description = 'Lean frame with some muscle mass. Moderate metabolism.';
+    } else {
+      somatotype = 'Meso-Endomorph';
+      description = 'Muscular build with tendency to store fat. Responds well to exercise.';
+    }
     
     const result = {
-      bodyShape,
+      somatotype,
       frameSize,
+      description,
+      bmi: parseFloat(bmi.toFixed(1)),
       measurements: {
-        wrist: wristCm,
-        ankle: ankleCm,
-        shoulder: shoulderCm,
-        waist: waistCm,
-        hip: hipCm
+        wrist: parseFloat(wristCm.toFixed(1)),
+        ankle: parseFloat(ankleCm.toFixed(1)),
+        height: parseFloat(heightCm.toFixed(1)),
+        weight: parseFloat(weightKg.toFixed(1))
       },
-      ratios: {
-        shoulderToHip: parseFloat(shoulderToHipRatio.toFixed(2)),
-        waistToHip: parseFloat(waistToHipRatio.toFixed(2))
-      }
+      characteristics: getSomatotypeCharacteristics(somatotype)
     };
     
     await saveCalculation('body-type', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Body type calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate body type' });
   }
 };
+
+// Helper function for somatotype characteristics
+function getSomatotypeCharacteristics(type) {
+  const characteristics = {
+    'Ectomorph': {
+      training: 'Focus on compound lifts, lower rep ranges (5-8), longer rest periods',
+      nutrition: 'High calorie surplus, 3-4g carbs/kg, calorie-dense foods',
+      cardio: 'Minimal - 1-2 sessions per week maximum'
+    },
+    'Mesomorph': {
+      training: 'Balanced approach, moderate volume, mix of compound and isolation',
+      nutrition: 'Moderate calories, balanced macros, 2-3g carbs/kg',
+      cardio: 'Moderate - 2-3 sessions per week'
+    },
+    'Endomorph': {
+      training: 'Higher volume, moderate weights, shorter rest periods',
+      nutrition: 'Controlled calories, higher protein, 1-2g carbs/kg',
+      cardio: 'Regular - 3-5 sessions per week'
+    },
+    'Ecto-Mesomorph': {
+      training: 'Moderate volume with focus on progressive overload',
+      nutrition: 'Slight calorie surplus, 2-3g carbs/kg',
+      cardio: 'Light - 2-3 sessions per week'
+    },
+    'Meso-Endomorph': {
+      training: 'Balanced volume with emphasis on compound movements',
+      nutrition: 'Maintenance to slight deficit, 1.5-2.5g carbs/kg',
+      cardio: 'Moderate - 3-4 sessions per week'
+    },
+    'Balanced Mesomorph': {
+      training: 'Flexible approach based on goals',
+      nutrition: 'Moderate calories, balanced macros',
+      cardio: 'Moderate - 2-3 sessions per week'
+    }
+  };
+  
+  return characteristics[type] || characteristics['Balanced Mesomorph'];
+}
 
 // Body Surface Area Calculator
 exports.calculateBodySurfaceArea = async (req, res) => {
   try {
-    const { weight, height, unit } = req.body;
+    const { weight, height, formula, unit } = req.body;
+    
+    console.log('Body Surface Area Calculator - Request body:', req.body);
     
     let weightInKg, heightInCm;
     
@@ -988,80 +1355,176 @@ exports.calculateBodySurfaceArea = async (req, res) => {
       heightInCm = parseFloat(height);
     }
     
-    // Du Bois Formula
+    // Du Bois Formula (most commonly used)
     const bsaDuBois = 0.007184 * Math.pow(weightInKg, 0.425) * Math.pow(heightInCm, 0.725);
     
-    // Mosteller Formula
+    // Mosteller Formula (simpler, widely accepted)
     const bsaMosteller = Math.sqrt((weightInKg * heightInCm) / 3600);
     
-    // Haycock Formula
+    // Haycock Formula (pediatric preference)
     const bsaHaycock = 0.024265 * Math.pow(weightInKg, 0.5378) * Math.pow(heightInCm, 0.3964);
     
+    // Boyd Formula (older formula)
+    const bsaBoyd = 0.0003207 * Math.pow(weightInKg * 1000, 0.7285 - 0.0188 * Math.log10(weightInKg * 1000)) * Math.pow(heightInCm, 0.3);
+    
+    // Determine which formula to use as primary
+    let primaryBsa;
+    let formulaName;
+    
+    switch (formula) {
+      case 'mosteller':
+        primaryBsa = bsaMosteller;
+        formulaName = 'Mosteller';
+        break;
+      case 'haycock':
+        primaryBsa = bsaHaycock;
+        formulaName = 'Haycock';
+        break;
+      case 'boyd':
+        primaryBsa = bsaBoyd;
+        formulaName = 'Boyd';
+        break;
+      case 'dubois':
+      default:
+        primaryBsa = bsaDuBois;
+        formulaName = 'Du Bois';
+        break;
+    }
+    
+    // BSA interpretation
+    let interpretation = '';
+    const averageBsa = 1.73; // Standard reference
+    
+    if (primaryBsa < 1.5) {
+      interpretation = 'Below average - Typical for smaller individuals or children';
+    } else if (primaryBsa < 1.9) {
+      interpretation = 'Average - Within normal adult range';
+    } else if (primaryBsa < 2.2) {
+      interpretation = 'Above average - Typical for larger individuals';
+    } else {
+      interpretation = 'Significantly above average - Typical for very tall or heavy individuals';
+    }
+    
     const result = {
-      bsa: parseFloat(bsaDuBois.toFixed(2)),
-      bsaDuBois: parseFloat(bsaDuBois.toFixed(2)),
-      bsaMosteller: parseFloat(bsaMosteller.toFixed(2)),
-      bsaHaycock: parseFloat(bsaHaycock.toFixed(2)),
-      unit: 'm²'
+      bsa: parseFloat(primaryBsa.toFixed(2)),
+      formula: formulaName,
+      interpretation,
+      unit: 'm²',
+      allFormulas: {
+        duBois: parseFloat(bsaDuBois.toFixed(2)),
+        mosteller: parseFloat(bsaMosteller.toFixed(2)),
+        haycock: parseFloat(bsaHaycock.toFixed(2)),
+        boyd: parseFloat(bsaBoyd.toFixed(2))
+      },
+      medicalUses: [
+        'Drug dosing calculations',
+        'Chemotherapy dosing',
+        'Burn assessment (Rule of Nines)',
+        'Cardiac index determination',
+        'Renal function normalization'
+      ]
     };
     
     await saveCalculation('body-surface-area', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Body Surface Area calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate body surface area' });
   }
 };
 
 // GFR Calculator (Glomerular Filtration Rate)
 exports.calculateGFR = async (req, res) => {
   try {
-    const { age, gender, creatinine, race } = req.body;
+    const { age, gender, creatinine, creatinineUnit, race, formula } = req.body;
+    
+    console.log('GFR Calculator - Request body:', req.body);
     
     const ageValue = parseInt(age);
-    const creatinineValue = parseFloat(creatinine);
+    let creatinineValue = parseFloat(creatinine);
     
-    // MDRD Formula
-    let gfr = 175 * Math.pow(creatinineValue, -1.154) * Math.pow(ageValue, -0.203);
+    // Convert creatinine to mg/dL if needed
+    if (creatinineUnit === 'umol/L') {
+      creatinineValue = creatinineValue / 88.4; // Convert μmol/L to mg/dL
+    }
     
-    if (gender === 'female') gfr *= 0.742;
-    if (race === 'african-american') gfr *= 1.212;
+    let gfr;
+    
+    // Use CKD-EPI formula (more accurate than MDRD)
+    if (formula === 'ckd-epi' || !formula) {
+      const kappa = gender === 'female' ? 0.7 : 0.9;
+      const alpha = gender === 'female' ? -0.329 : -0.411;
+      const genderMultiplier = gender === 'female' ? 1.018 : 1.0;
+      const raceMultiplier = race === 'african-american' ? 1.159 : 1.0;
+      
+      const minValue = Math.min(creatinineValue / kappa, 1);
+      const maxValue = Math.max(creatinineValue / kappa, 1);
+      
+      gfr = 141 * Math.pow(minValue, alpha) * Math.pow(maxValue, -1.209) * Math.pow(0.993, ageValue) * genderMultiplier * raceMultiplier;
+    } else {
+      // MDRD Formula (alternative)
+      gfr = 175 * Math.pow(creatinineValue, -1.154) * Math.pow(ageValue, -0.203);
+      
+      if (gender === 'female') gfr *= 0.742;
+      if (race === 'african-american') gfr *= 1.212;
+    }
     
     let stage = '';
+    let stageNumber = '';
     let description = '';
+    let recommendation = '';
     
     if (gfr >= 90) {
-      stage = 'Stage 1';
-      description = 'Normal kidney function';
+      stage = 'G1';
+      stageNumber = '1';
+      description = 'Normal or high kidney function';
+      recommendation = 'Maintain healthy lifestyle. Monitor kidney function annually.';
     } else if (gfr >= 60) {
-      stage = 'Stage 2';
-      description = 'Mild loss of kidney function';
+      stage = 'G2';
+      stageNumber = '2';
+      description = 'Mild reduction in kidney function';
+      recommendation = 'Monitor kidney function regularly. Control blood pressure and blood sugar.';
     } else if (gfr >= 45) {
-      stage = 'Stage 3a';
-      description = 'Mild to moderate loss of kidney function';
+      stage = 'G3a';
+      stageNumber = '3a';
+      description = 'Mild to moderate reduction in kidney function';
+      recommendation = 'Consult a nephrologist. Monitor every 6 months. Review medications.';
     } else if (gfr >= 30) {
-      stage = 'Stage 3b';
-      description = 'Moderate to severe loss of kidney function';
+      stage = 'G3b';
+      stageNumber = '3b';
+      description = 'Moderate to severe reduction in kidney function';
+      recommendation = 'Regular nephrology care. Monitor every 3-6 months. Diet modifications.';
     } else if (gfr >= 15) {
-      stage = 'Stage 4';
-      description = 'Severe loss of kidney function';
+      stage = 'G4';
+      stageNumber = '4';
+      description = 'Severe reduction in kidney function';
+      recommendation = 'Prepare for kidney replacement therapy. Nephrology care every 3 months.';
     } else {
-      stage = 'Stage 5';
-      description = 'Kidney failure';
+      stage = 'G5';
+      stageNumber = '5';
+      description = 'Kidney failure (end-stage renal disease)';
+      recommendation = 'Kidney replacement therapy (dialysis or transplant) needed.';
     }
     
     const result = {
       gfr: parseFloat(gfr.toFixed(1)),
       stage,
+      stageNumber,
       description,
-      unit: 'mL/min/1.73m²'
+      recommendation,
+      unit: 'mL/min/1.73m²',
+      formula: formula || 'ckd-epi',
+      creatinine: creatinineValue.toFixed(2),
+      creatinineUnit: 'mg/dL'
     };
     
     await saveCalculation('gfr', req.body, result, req);
     
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('GFR calculation error:', error);
+    res.status(400).json({ error: error.message || 'Failed to calculate GFR' });
   }
 };
 

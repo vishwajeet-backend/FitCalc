@@ -70,7 +70,7 @@ body {
 
 /* Main Content */
 .main-content {
-  padding: 160px 32px 0;
+  padding: 80px 20px 0;
   max-width: 1376px;
   margin: 0 auto;
 }
@@ -606,90 +606,80 @@ body {
   border-bottom: 1px solid #e2e8f0;
 }
 
+.calculator-grid-main-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  color: #000;
+  line-height: normal;
+  margin: 34px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1280px;
+  padding: 0 40px;
+}
+
 .calculators-header-row {
   display: flex;
-  gap: 89px;
+  gap: 120px;
   margin-bottom: 32px;
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
   padding: 0 40px;
-}
-
-.header-column {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.header-column:first-child {
-  width: 263px;
-}
-
-.header-column:nth-child(2) {
-  width: 326px;
-}
-
-.main-calculators-title {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 32px;
-  color: #000;
-  line-height: normal;
-  margin: 0;
+  align-items: center;
 }
 
 .header-subtitle {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 20px;
   color: #000;
   line-height: normal;
   margin: 0;
+  flex: 1;
+}
+
+.header-subtitle:first-child {
+  max-width: 220px;
+}
+
+.header-subtitle:nth-child(2) {
+  max-width: 280px;
+}
+
+.header-subtitle:nth-child(3) {
+  max-width: 280px;
 }
 
 .calculators-content-row {
   display: flex;
-  gap: 180px;
+  gap: 120px;
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
   padding: 0 40px;
+  align-items: flex-start;
 }
 
 .calculators-column {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 1;
+  min-width: 0;
 }
 
 .calculators-column:first-child {
-  width: 171px;
+  max-width: 220px;
 }
 
 .calculators-column:nth-child(2) {
-  width: 234px;
+  max-width: 280px;
 }
 
-.calculators-column-other {
-  display: flex;
-  flex-direction: row;
-  gap: 32px;
-  align-items: flex-end;
-  width: 345px;
-}
-
-.other-calculators-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 233px;
-}
-
-.view-more-container {
-  width: 171px;
-  display: flex;
-  align-items: flex-end;
+.calculators-column:nth-child(3) {
+  max-width: 280px;
 }
 
 .calculator-link {
@@ -715,6 +705,8 @@ body {
   text-decoration-skip-ink: none;
   line-height: normal;
   transition: opacity 0.2s;
+  margin-top: 12px;
+  display: inline-block;
 }
 
 .view-more-link:hover {
@@ -725,12 +717,14 @@ body {
 @media (max-width: 1024px) {
   .calculators-header-row {
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
+    align-items: flex-start;
   }
 
-  .header-column:first-child,
-  .header-column:nth-child(2) {
-    width: 100%;
+  .header-subtitle:first-child,
+  .header-subtitle:nth-child(2),
+  .header-subtitle:nth-child(3) {
+    max-width: 100%;
   }
 
   .calculators-content-row {
@@ -741,19 +735,9 @@ body {
   .calculators-column,
   .calculators-column:first-child,
   .calculators-column:nth-child(2),
-  .calculators-column-other {
+  .calculators-column:nth-child(3) {
     width: 100%;
-  }
-
-  .calculators-column-other {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .other-calculators-list,
-  .view-more-container {
-    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -1947,22 +1931,7 @@ body {
   resize: vertical;
 }
 
-.star-rating {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  margin-bottom: 16px;
-}
-
-.star {
-  font-size: 24px;
-  color: #e2e8f0;
-  cursor: pointer;
-}
-
-.star.filled {
-  color: #fbbf24;
-}
+/* Star rating styles moved to feedback section below */
 
 .form-checkbox {
   display: flex;
@@ -2693,6 +2662,16 @@ body {
   margin-bottom: 0;
 }
 
+.form-group label {
+  display: block;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #170f49;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
 .form-group.rating-group {
   margin-bottom: 33px;
 }
@@ -2701,13 +2680,14 @@ body {
   margin-bottom: 16px;
 }
 
-.form-group label {
+.form-group > label {
   display: block;
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 500;
   font-size: 16px;
   color: #170f49;
   line-height: 1.35;
+  margin-bottom: 8px;
 }
 
 .input-wrapper {
@@ -2737,6 +2717,30 @@ body {
 .form-input:focus {
   border-color: #5b77b9;
   box-shadow: 0px 2px 6px 0px rgba(74, 58, 255, 0.1);
+}
+
+/* Error state for inputs */
+.form-input.error,
+.form-textarea.error,
+.checkbox-label input[type="checkbox"].error {
+  border-color: #dc3545;
+}
+
+.form-input.error:focus,
+.form-textarea.error:focus {
+  border-color: #dc3545;
+  box-shadow: 0px 2px 6px 0px rgba(220, 53, 69, 0.2);
+}
+
+/* Error message styling */
+.error-message {
+  display: block;
+  color: #dc3545;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  margin-top: 6px;
+  line-height: 1.4;
 }
 
 .form-input::placeholder,
@@ -2775,40 +2779,52 @@ body {
 
 .star-rating {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
 }
 
 .star {
   background: none;
   border: none;
-  font-size: 28px;
+  font-size: 36px;
   cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
+  transition: transform 0.2s, color 0.2s;
+  padding: 4px;
   line-height: 1;
-  position: relative;
-  width: 24px;
-  height: 24px;
+  min-width: 40px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #e2e8f0;
+  position: relative;
+  z-index: 1;
 }
 
 .star.filled {
   color: #fbbf24;
-  filter: drop-shadow(0px 2px 1px rgba(159, 124, 0, 0.08));
 }
 
-.star:not(.filled) {
-  color: #e2e8f0;
-  filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.07));
+.star:hover:not(:disabled) {
+  transform: scale(1.1);
+  color: #fbbf24;
 }
 
-.star:hover {
-  transform: scale(1.15);
+.star:active:not(:disabled) {
+  transform: scale(1.05);
 }
 
+.star:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rating-text {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #6f6c8f;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
 .checkbox-group {
   margin: 16px 0 0 0;
 }
@@ -2850,6 +2866,28 @@ body {
   box-shadow: 0px 0.5px 1px 0px rgba(25, 33, 61, 0.04), 0px 1px 3px 0px rgba(31, 47, 84, 0.1);
 }
 
+.feedback-status {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.feedback-status.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.feedback-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
 .feedback-submit-btn {
   background: #3d568f;
   color: white;
@@ -2864,11 +2902,37 @@ body {
   height: 40px;
   letter-spacing: 0.32px;
   text-transform: capitalize;
-  margin-top: 48px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.feedback-submit-btn:hover {
+.feedback-submit-btn:disabled {
+  background: #9099b4;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.feedback-submit-btn:hover:not(:disabled) {
   background: #2d4578;
+}
+
+/* Spinner animation for loading state */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 900px) {
@@ -2890,6 +2954,16 @@ body {
   
   .feedback-form {
     padding: 36px;
+  }
+  
+  .star-rating {
+    flex-wrap: wrap;
+  }
+  
+  .star {
+    font-size: 32px;
+    min-width: 36px;
+    min-height: 36px;
   }
 }
 
@@ -2916,6 +2990,164 @@ body {
   
   .form-row {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .star {
+    font-size: 28px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .rating-text {
+    font-size: 14px;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+/* Success Popup Styles */
+.success-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.3s ease-in-out;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.success-popup {
+  background: white;
+  padding: 48px 40px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-in-out;
+  position: relative;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0 auto 24px;
+  animation: scaleIn 0.5s ease-in-out;
+}
+
+.success-popup h3 {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #170f49;
+  margin: 0 0 16px 0;
+  line-height: 1.3;
+}
+
+.success-popup p {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 16px;
+  color: #6f6c8f;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+}
+
+.popup-close-btn {
+  background: #3d568f;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.popup-close-btn:hover {
+  background: #2d4578;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(61, 86, 143, 0.3);
+}
+
+.popup-close-btn:active {
+  transform: translateY(0);
+}
+
+.rating-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 16px;
+  color: #6f6c8f;
+  margin-left: 12px;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .success-popup {
+    padding: 32px 24px;
+  }
+  
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 38px;
+  }
+  
+  .success-popup h3 {
+    font-size: 22px;
+  }
+  
+  .success-popup p {
+    font-size: 14px;
   }
 }
 

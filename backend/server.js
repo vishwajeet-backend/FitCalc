@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Import routes
 const calculatorRoutes = require('./routes/calculatorRoutes');
 const userRoutes = require('./routes/userRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 // API Routes
 app.get('/api/health', (req, res) => {
@@ -27,6 +28,7 @@ app.get('/api/health', (req, res) => {
 // Mount routes
 app.use('/api/calculators', calculatorRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

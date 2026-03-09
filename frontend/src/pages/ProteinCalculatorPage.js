@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CalculatorLayout from '../components/CalculatorLayout';
-import CalculatorForm, { FormGroup, Input, Select } from '../components/CalculatorForm';
+import CalculatorForm, { FormGroup, Input, Select, RadioGroup } from '../components/CalculatorForm';
 import ResultsContainer, { ResultCard, ResultsGrid, InfoRow } from '../components/ResultsContainer';
 import { calculateProtein } from '../utils/apiService';
 
@@ -31,6 +31,20 @@ function ProteinCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      if (!formData.age || formData.age <= 0 || formData.age > 120) {
+        throw new Error('Please enter a valid age between 1 and 120');
+      }
+      if (!formData.weight || formData.weight <= 0) {
+        throw new Error('Please enter a valid weight');
+      }
+      if (unit === 'us' && (!formData.heightFeet || formData.heightFeet <= 0)) {
+        throw new Error('Please enter a valid height');
+      }
+      if (unit === 'metric' && (!formData.heightCm || formData.heightCm <= 0)) {
+        throw new Error('Please enter a valid height');
+      }
+
       const data = unit === 'us' 
         ? {
             age: formData.age,
@@ -86,27 +100,25 @@ function ProteinCalculatorPage() {
         onSubmit={handleSubmit}
         isCalculating={isCalculating}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-          <FormGroup label="Age">
-            <Input
-              value={formData.age}
-              onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
-              min="1"
-              max="120"
-            />
-          </FormGroup>
+        <FormGroup label="Age">
+          <Input
+            value={formData.age}
+            onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
+            min="1"
+            max="120"
+          />
+        </FormGroup>
 
-          <FormGroup label="Gender">
-            <Select
-              value={formData.gender}
-              onChange={(e) => handleInputChange('gender', e.target.value)}
-              options={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
-              ]}
-            />
-          </FormGroup>
-        </div>
+        <FormGroup label="Gender">
+          <RadioGroup
+            value={formData.gender}
+            onChange={(val) => handleInputChange('gender', val)}
+            options={[
+              { value: 'male', label: 'Male' },
+              { value: 'female', label: 'Female' },
+            ]}
+          />
+        </FormGroup>
 
         <FormGroup label="Height">
           {unit === 'us' ? (
@@ -221,10 +233,18 @@ function ProteinCalculatorPage() {
           {results.recommendations && (
             <div style={{ marginTop: '2rem', background: '#f0fdf4', padding: '1.5rem', borderRadius: '8px', border: '1px solid #86efac' }}>
               <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#166534', marginBottom: '0.75rem' }}>
-                💡 Recommendations
+                💡 Protein Intake Recommendations
               </h3>
               <div style={{ color: '#15803d', lineHeight: '1.6' }}>
-                {results.recommendations}
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <strong>Minimum:</strong> {results.recommendations.minimum}g per day (basic needs)
+                </div>
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <strong>Moderate:</strong> {results.recommendations.moderate}g per day (active lifestyle)
+                </div>
+                <div>
+                  <strong>High:</strong> {results.recommendations.high}g per day (athletes & muscle building)
+                </div>
               </div>
             </div>
           )}

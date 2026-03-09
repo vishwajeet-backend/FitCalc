@@ -1,49 +1,41 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const FitnessCalculatorsGrid = () => {
   return (
     <section className="fitness-calculators-grid">
+      <h2 className="calculator-grid-main-title">Fitness Calculators</h2>
+      
       <div className="calculators-header-row">
-        <div className="header-column">
-          <h2 className="main-calculators-title">Fitness Calculators</h2>
-          <p className="header-subtitle">Fitness Calculators</p>
-        </div>
-        <div className="header-column">
-          <p className="header-subtitle">Pregnancy</p>
-        </div>
-        <div className="header-column">
-          <p className="header-subtitle">Other</p>
-        </div>
+        <p className="header-subtitle">Fitness Calculators</p>
+        <p className="header-subtitle">Pregnancy</p>
+        <p className="header-subtitle">Other</p>
       </div>
 
       <div className="calculators-content-row">
         <div className="calculators-column">
-          <a href="#bmi-calculator" className="calculator-link">BMI Calculator</a>
-          <a href="#calorie-calculator" className="calculator-link">Calorie Calculator</a>
-          <a href="#body-fat-calculator" className="calculator-link">Body Fat Calculator</a>
-          <a href="#bmr-calculator" className="calculator-link">BMR Calculator</a>
-          <a href="#ideal-weight-calculator" className="calculator-link">Ideal Weight Calculator</a>
+          <Link to="/calculator/bmi" className="calculator-link">BMI Calculator</Link>
+          <Link to="/calculator/calorie" className="calculator-link">Calorie Calculator</Link>
+          <Link to="/calculator/body-fat" className="calculator-link">Body Fat Calculator</Link>
+          <Link to="/calculator/bmr" className="calculator-link">BMR Calculator</Link>
+          <Link to="/calculator/ideal-weight" className="calculator-link">Ideal Weight Calculator</Link>
         </div>
 
         <div className="calculators-column">
-          <a href="#pregnancy-calculator" className="calculator-link">Pregnancy Calculator</a>
-          <a href="#pregnancy-weight-gain-calculator" className="calculator-link">Pregnancy Weight Gain Calculator</a>
-          <a href="#pregnancy-conception-calculator" className="calculator-link">Pregnancy Conception Calculator</a>
-          <a href="#due-date-calculator" className="calculator-link">Due Date Calculator</a>
-          <a href="#ovulation-calculator" className="calculator-link">Ovulation Calculator</a>
+          <Link to="/calculator/pregnancy-due-date" className="calculator-link">Pregnancy Calculator</Link>
+          <Link to="/calculator/pregnancy-weight-gain" className="calculator-link">Pregnancy Weight Gain Calculator</Link>
+          <Link to="/calculator/conception" className="calculator-link">Pregnancy Conception Calculator</Link>
+          <Link to="/calculator/pregnancy-due-date" className="calculator-link">Due Date Calculator</Link>
+          <Link to="/calculator/ovulation" className="calculator-link">Ovulation Calculator</Link>
         </div>
 
-        <div className="calculators-column calculators-column-other">
-          <div className="other-calculators-list">
-            <a href="#macro-calculator" className="calculator-link">Macro Calculator</a>
-            <a href="#carbohydrate-calculator" className="calculator-link">Carbohydrate Calculator</a>
-            <a href="#tdee-calculator" className="calculator-link">TDEE Calculator</a>
-            <a href="#gfr-calculator" className="calculator-link">GFR Calculator</a>
-            <a href="#body-surface-area-calculator" className="calculator-link">Body Surface Area Calculator</a>
-          </div>
-          <div className="view-more-container">
-            <a href="/fitness" className="view-more-link">View More</a>
-          </div>
+        <div className="calculators-column">
+          <Link to="/calculator/macro" className="calculator-link">Macro Calculator</Link>
+          <Link to="/calculator/carbohydrate" className="calculator-link">Carbohydrate Calculator</Link>
+          <Link to="/calculator/tdee" className="calculator-link">TDEE Calculator</Link>
+          <Link to="/calculator/gfr" className="calculator-link">GFR Calculator</Link>
+          <Link to="/calculator/body-surface-area" className="calculator-link">Body Surface Area Calculator</Link>
+          <Link to="/calculators" className="view-more-link">View More</Link>
         </div>
       </div>
     </section>

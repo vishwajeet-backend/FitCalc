@@ -73,14 +73,16 @@ export const Input = ({ type = 'number', value, onChange, min, max, step, placeh
   );
 };
 
-export const Select = ({ value, onChange, options = [] }) => {
+export const Select = ({ value, onChange, options = [], children, style }) => {
+  // Support both patterns: options prop or children
   return (
     <select
       value={value}
       onChange={onChange}
       className="calculator-select"
+      style={style}
     >
-      {options.map((opt) => (
+      {children || options.map((opt) => (
         <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>

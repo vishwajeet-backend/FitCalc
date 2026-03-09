@@ -29,6 +29,14 @@ function GFRCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      if (!formData.age || formData.age < 18 || formData.age > 120) {
+        throw new Error('Please enter a valid age (18-120)');
+      }
+      if (!formData.creatinine || formData.creatinine <= 0) {
+        throw new Error('Please enter a valid creatinine level');
+      }
+
       const data = {
         age: formData.age,
         gender: formData.gender,

@@ -28,8 +28,14 @@ function CarbohydrateCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      const weight = unit === 'us' ? formData.weight : formData.weightKg;
+      if (!weight || weight <= 0) {
+        throw new Error('Please enter a valid weight');
+      }
+
       const data = {
-        weight: unit === 'us' ? formData.weight : formData.weightKg,
+        weight: weight,
         activityLevel: formData.activityLevel,
         goal: formData.goal,
         dietType: formData.dietType,

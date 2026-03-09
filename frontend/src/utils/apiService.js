@@ -26,13 +26,25 @@ export const calculateAPI = async (calculatorType, data) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Calculation failed');
+      let errorMessage = 'Calculation failed';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch (e) {
+        // If error response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error(`Error calculating ${calculatorType}:`, error);
+    // Rethrow with a user-friendly message
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Unable to connect to the server. Please check your connection and try again.');
+    }
     throw error;
   }
 };

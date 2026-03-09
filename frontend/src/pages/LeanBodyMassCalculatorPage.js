@@ -14,7 +14,8 @@ function LeanBodyMassCalculatorPage() {
     gender: 'male',
     weight: 180,
     weightKg: 82,
-    bodyFat: 15,
+    height: 70,
+    heightCm: 178,
   });
 
   const handleInputChange = (field, value) => {
@@ -30,12 +31,27 @@ function LeanBodyMassCalculatorPage() {
       const data = {
         gender: formData.gender,
         weight: unit === 'us' ? formData.weight : formData.weightKg,
-        bodyFat: formData.bodyFat,
+        height: unit === 'us' ? formData.height : formData.heightCm,
         unit,
       };
 
       const result = await calculateLeanBodyMass(data);
-      setResults(result);
+      
+      // Calculate additional metrics
+      const weight = unit === 'us' ? formData.weight : formData.weightKg;
+      const lbmInDisplayUnit = unit === 'us' ? result.leanBodyMass * 2.20462 : result.leanBodyMass;
+      const fatMassInDisplayUnit = unit === 'us' ? result.fatMass * 2.20462 : result.fatMass;
+      const lbmPercentage = (lbmInDisplayUnit / weight) * 100;
+      const fatPercentage = (fatMassInDisplayUnit / weight) * 100;
+      
+      setResults({
+        ...result,
+        lbmPercentage: parseFloat(lbmPercentage.toFixed(1)),
+        fatPercentage: parseFloat(fatPercentage.toFixed(1)),
+        displayWeight: weight,
+        displayLBM: parseFloat(lbmInDisplayUnit.toFixed(1)),
+        displayFatMass: parseFloat(fatMassInDisplayUnit.toFixed(1))
+      });
     } catch (err) {
       setError(err.message || 'Failed to calculate. Please try again.');
     } finally {
@@ -120,15 +136,26 @@ function LeanBodyMassCalculatorPage() {
           )}
         </FormGroup>
 
-        <FormGroup label="Body Fat Percentage">
-          <Input
-            value={formData.bodyFat}
-            onChange={(e) => handleInputChange('bodyFat', parseFloat(e.target.value))}
-            min="3"
-            max="50"
-            step="0.1"
-            unit="%"
-          />
+        <FormGroup label="Height">
+          {unit === 'us' ? (
+            <Input
+              value={formData.height}
+              onChange={(e) => handleInputChange('height', parseFloat(e.target.value))}
+              min="48"
+              max="96"
+              step="0.1"
+              unit="inches"
+            />
+          ) : (
+            <Input
+              value={formData.heightCm}
+              onChange={(e) => handleInputChange('heightCm', parseFloat(e.target.value))}
+              min="120"
+              max="250"
+              step="0.1"
+              unit="cm"
+            />
+          )}
         </FormGroup>
       </CalculatorForm>
 
@@ -160,7 +187,7 @@ function LeanBodyMassCalculatorPage() {
                 Lean Body Mass
               </h2>
               <div style={{ fontSize: '3.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {results.leanBodyMass ? Math.round(results.leanBodyMass * 10) / 10 : 'N/A'}
+                {results.displayLBM || results.leanBodyMass}
               </div>
               <p style={{ fontSize: '1.25rem', opacity: 0.9, marginBottom: '1rem' }}>
                 {unit === 'us' ? 'pounds' : 'kilograms'}
@@ -173,7 +200,7 @@ function LeanBodyMassCalculatorPage() {
                 fontSize: '0.875rem',
                 fontWeight: '600'
               }}>
-                {getCategoryText(results.lbmPercentage, formData.gender)} ({results.lbmPercentage ? Math.round(results.lbmPercentage * 10) / 10 : 0}% of total weight)
+                {getCategoryText(results.lbmPercentage, formData.gender)} ({results.lbmPercentage}% of total weight)
               </div>
             </div>
 
@@ -181,21 +208,21 @@ function LeanBodyMassCalculatorPage() {
             <ResultsGrid columns={3}>
               <ResultCard
                 title="Lean Body Mass"
-                value={`${results.leanBodyMass ? Math.round(results.leanBodyMass * 10) / 10 : 0} ${unit === 'us' ? 'lbs' : 'kg'}`}
-                percentage={`${results.lbmPercentage ? Math.round(results.lbmPercentage * 10) / 10 : 0}%`}
+                value={`${results.displayLBM || results.leanBodyMass} ${unit === 'us' ? 'lbs' : 'kg'}`}
+                percentage={`${results.lbmPercentage}%`}
                 subtitle="Muscle, organs, bone, water"
                 color="#8b5cf6"
               />
               <ResultCard
                 title="Fat Mass"
-                value={`${results.fatMass ? Math.round(results.fatMass * 10) / 10 : 0} ${unit === 'us' ? 'lbs' : 'kg'}`}
-                percentage={`${formData.bodyFat}%`}
+                value={`${results.displayFatMass || results.fatMass} ${unit === 'us' ? 'lbs' : 'kg'}`}
+                percentage={`${results.fatPercentage}%`}
                 subtitle="Body fat"
                 color="#f59e0b"
               />
               <ResultCard
                 title="Total Weight"
-                value={`${unit === 'us' ? formData.weight : formData.weightKg} ${unit === 'us' ? 'lbs' : 'kg'}`}
+                value={`${results.displayWeight || (unit === 'us' ? formData.weight : formData.weightKg)} ${unit === 'us' ? 'lbs' : 'kg'}`}
                 percentage="100%"
                 subtitle="Complete body weight"
                 color="#3b82f6"

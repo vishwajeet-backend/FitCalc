@@ -209,7 +209,7 @@ function BodyTypeCalculatorPage() {
           <ResultsContainer title="Your Body Type" downloadable>
             {/* Main Body Type Card */}
             <div style={{
-              background: `linear-gradient(135deg, ${getSomatotypeColor(results.bodyType)} 0%, ${getSomatotypeColor(results.bodyType)}dd 100%)`,
+              background: `linear-gradient(135deg, ${getSomatotypeColor(results.somatotype)} 0%, ${getSomatotypeColor(results.somatotype)}dd 100%)`,
               borderRadius: '12px',
               padding: '2rem',
               marginBottom: '2rem',
@@ -220,7 +220,7 @@ function BodyTypeCalculatorPage() {
                 Your Body Type (Somatotype)
               </h2>
               <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {results.bodyType || 'N/A'}
+                {results.somatotype || 'N/A'}
               </div>
               <p style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '1rem' }}>
                 {results.description || ''}
@@ -238,7 +238,7 @@ function BodyTypeCalculatorPage() {
             </div>
 
             {/* Characteristics */}
-            {results.characteristics && results.characteristics.length > 0 && (
+            {results.characteristics && (
               <div style={{
                 background: 'white',
                 border: '2px solid #e5e7eb',
@@ -247,19 +247,28 @@ function BodyTypeCalculatorPage() {
                 marginBottom: '2rem'
               }}>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-                  Key Characteristics
+                  Personalized Recommendations
                 </h3>
-                <ul style={{ 
-                  fontSize: '0.875rem', 
-                  color: '#4b5563', 
-                  lineHeight: '1.8',
-                  margin: 0,
-                  paddingLeft: '1.25rem'
-                }}>
-                  {results.characteristics.map((char, idx) => (
-                    <li key={idx} style={{ marginBottom: '0.5rem' }}>{char}</li>
-                  ))}
-                </ul>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  <div>
+                    <strong style={{ color: '#1f2937' }}>🏋️ Training:</strong>
+                    <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem', marginBottom: 0 }}>
+                      {results.characteristics.training}
+                    </p>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#1f2937' }}>🍽️ Nutrition:</strong>
+                    <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem', marginBottom: 0 }}>
+                      {results.characteristics.nutrition}
+                    </p>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#1f2937' }}>🏃 Cardio:</strong>
+                    <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem', marginBottom: 0 }}>
+                      {results.characteristics.cardio}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -271,8 +280,8 @@ function BodyTypeCalculatorPage() {
               
               <ResultsGrid columns={3}>
                 <div style={{
-                  background: results.bodyType?.toLowerCase() === 'ectomorph' ? '#eff6ff' : 'white',
-                  border: results.bodyType?.toLowerCase() === 'ectomorph' ? '2px solid #3b82f6' : '2px solid #e5e7eb',
+                  background: results.somatotype?.toLowerCase().includes('ectomorph') ? '#eff6ff' : 'white',
+                  border: results.somatotype?.toLowerCase().includes('ectomorph') ? '2px solid #3b82f6' : '2px solid #e5e7eb',
                   borderRadius: '8px',
                   padding: '1.5rem'
                 }}>
@@ -293,8 +302,8 @@ function BodyTypeCalculatorPage() {
                 </div>
 
                 <div style={{
-                  background: results.bodyType?.toLowerCase() === 'mesomorph' ? '#f0fdf4' : 'white',
-                  border: results.bodyType?.toLowerCase() === 'mesomorph' ? '2px solid #10b981' : '2px solid #e5e7eb',
+                  background: results.somatotype?.toLowerCase().includes('mesomorph') ? '#f0fdf4' : 'white',
+                  border: results.somatotype?.toLowerCase().includes('mesomorph') ? '2px solid #10b981' : '2px solid #e5e7eb',
                   borderRadius: '8px',
                   padding: '1.5rem'
                 }}>
@@ -315,8 +324,8 @@ function BodyTypeCalculatorPage() {
                 </div>
 
                 <div style={{
-                  background: results.bodyType?.toLowerCase() === 'endomorph' ? '#fff7ed' : 'white',
-                  border: results.bodyType?.toLowerCase() === 'endomorph' ? '2px solid #f59e0b' : '2px solid #e5e7eb',
+                  background: results.somatotype?.toLowerCase().includes('endomorph') ? '#fff7ed' : 'white',
+                  border: results.somatotype?.toLowerCase().includes('endomorph') ? '2px solid #f59e0b' : '2px solid #e5e7eb',
                   borderRadius: '8px',
                   padding: '1.5rem'
                 }}>
@@ -337,32 +346,6 @@ function BodyTypeCalculatorPage() {
                 </div>
               </ResultsGrid>
             </div>
-
-            {/* Recommendations */}
-            {results.recommendations && results.recommendations.length > 0 && (
-              <div style={{
-                background: '#f0fdf4',
-                border: '2px solid #bbf7d0',
-                borderRadius: '8px',
-                padding: '1.5rem',
-                marginTop: '2rem'
-              }}>
-                <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#16a34a', marginBottom: '0.75rem' }}>
-                  💪 Personalized Recommendations
-                </h4>
-                <ul style={{ 
-                  fontSize: '0.875rem', 
-                  color: '#15803d', 
-                  lineHeight: '1.6',
-                  margin: 0,
-                  paddingLeft: '1.25rem'
-                }}>
-                  {results.recommendations.map((rec, idx) => (
-                    <li key={idx} style={{ marginBottom: '0.5rem' }}>{rec}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             {/* Training & Nutrition by Type */}
             <div style={{ marginTop: '2rem' }}>

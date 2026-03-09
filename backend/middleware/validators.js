@@ -120,27 +120,32 @@ exports.validateMacro = [
 
 // Protein Calculator validation
 exports.validateProtein = [
+  body('age').optional().isInt({ min: 1, max: 120 }).withMessage('Age must be between 1 and 120'),
+  body('gender').optional().isIn(['male', 'female']).withMessage('Gender must be male or female'),
+  body('height').optional().isFloat({ min: 1 }).withMessage('Height must be a positive number'),
   body('weight').isFloat({ min: 1 }).withMessage('Weight must be a positive number'),
   body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'veryActive'])
-    .withMessage('Activity level must be sedentary, light, moderate, active, or veryActive'),
-  body('goal').isIn(['lose', 'maintain', 'gain']).withMessage('Goal must be lose, maintain, or gain'),
+    .withMessage('Activity level must be valid'),
+  body('goal').optional().isIn(['lose', 'maintain', 'gain']).withMessage('Goal must be lose, maintain, or gain'),
   body('unit').isIn(['us', 'metric']).withMessage('Unit must be us or metric')
 ];
 
 // Carbohydrate Calculator validation
 exports.validateCarbohydrate = [
   body('weight').isFloat({ min: 1 }).withMessage('Weight must be a positive number'),
-  body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'veryActive'])
-    .withMessage('Activity level must be sedentary, light, moderate, active, or veryActive'),
-  body('goal').isIn(['lose', 'maintain', 'gain']).withMessage('Goal must be lose, maintain, or gain'),
+  body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'veryActive', 'veryactive', 'athlete'])
+    .withMessage('Activity level must be valid'),
+  body('goal').optional().isIn(['lose', 'maintain', 'gain', 'weightloss', 'musclegain']).withMessage('Goal must be valid'),
+  body('dietType').optional().isIn(['balanced', 'keto', 'lowcarb', 'highcarb']).withMessage('Diet type must be valid'),
   body('unit').isIn(['us', 'metric']).withMessage('Unit must be us or metric')
 ];
 
 // Fat Intake Calculator validation
 exports.validateFatIntake = [
-  body('weight').isFloat({ min: 1 }).withMessage('Weight must be a positive number'),
-  body('goal').isIn(['lose', 'maintain', 'gain']).withMessage('Goal must be lose, maintain, or gain'),
-  body('unit').isIn(['us', 'metric']).withMessage('Unit must be us or metric')
+  body('calories').isFloat({ min: 1000, max: 10000 }).withMessage('Calories must be between 1000 and 10000'),
+  body('dietType').optional().isIn(['balanced', 'keto', 'lowfat', 'mediterranean']).withMessage('Diet type must be balanced, keto, lowfat, or mediterranean'),
+  body('goal').optional().isIn(['lose', 'maintain', 'gain', 'weightloss', 'musclegain']).withMessage('Goal must be lose, maintain, gain, weightloss, or musclegain'),
+  body('cholesterol').optional().isIn(['normal', 'high', 'veryhigh']).withMessage('Cholesterol must be normal, high, or veryhigh')
 ];
 
 // Calories Burned Calculator validation
@@ -175,11 +180,11 @@ exports.validateTargetHeartRate = [
 
 // Body Type Calculator validation
 exports.validateBodyType = [
+  body('gender').isIn(['male', 'female']).withMessage('Gender must be male or female'),
+  body('height').isFloat({ min: 1 }).withMessage('Height must be a positive number'),
+  body('weight').isFloat({ min: 1 }).withMessage('Weight must be a positive number'),
   body('wrist').isFloat({ min: 1 }).withMessage('Wrist measurement must be a positive number'),
   body('ankle').isFloat({ min: 1 }).withMessage('Ankle measurement must be a positive number'),
-  body('shoulder').isFloat({ min: 1 }).withMessage('Shoulder measurement must be a positive number'),
-  body('waist').isFloat({ min: 1 }).withMessage('Waist measurement must be a positive number'),
-  body('hip').isFloat({ min: 1 }).withMessage('Hip measurement must be a positive number'),
   body('unit').isIn(['us', 'metric']).withMessage('Unit must be us or metric')
 ];
 

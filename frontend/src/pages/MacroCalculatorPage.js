@@ -31,6 +31,20 @@ function MacroCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      if (!formData.age || formData.age <= 0 || formData.age > 120) {
+        throw new Error('Please enter a valid age between 1 and 120');
+      }
+      if (!formData.weight || formData.weight <= 0) {
+        throw new Error('Please enter a valid weight');
+      }
+      if (unit === 'us' && (!formData.heightFeet || formData.heightFeet <= 0)) {
+        throw new Error('Please enter a valid height');
+      }
+      if (unit === 'metric' && (!formData.heightCm || formData.heightCm <= 0)) {
+        throw new Error('Please enter a valid height');
+      }
+
       const data = unit === 'us' 
         ? {
             age: formData.age,

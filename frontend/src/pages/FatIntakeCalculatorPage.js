@@ -27,6 +27,11 @@ function FatIntakeCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      if (!formData.calories || formData.calories < 1000 || formData.calories > 5000) {
+        throw new Error('Please enter a valid daily calorie amount (1000-5000)');
+      }
+
       const data = {
         calories: formData.calories,
         dietType: formData.dietType,
@@ -69,6 +74,7 @@ function FatIntakeCalculatorPage() {
         onUnitChange={setUnit}
         onSubmit={handleSubmit}
         isCalculating={isCalculating}
+        showUnitToggle={false}
       >
         <FormGroup label="Daily Calories">
           <Input

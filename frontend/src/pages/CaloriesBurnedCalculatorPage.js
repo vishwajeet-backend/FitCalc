@@ -27,8 +27,17 @@ function CaloriesBurnedCalculatorPage() {
     setError(null);
 
     try {
+      // Validate inputs
+      const weight = unit === 'us' ? formData.weight : formData.weightKg;
+      if (!weight || weight <= 0) {
+        throw new Error('Please enter a valid weight');
+      }
+      if (!formData.duration || formData.duration <= 0) {
+        throw new Error('Please enter a valid duration');
+      }
+
       const data = {
-        weight: unit === 'us' ? formData.weight : formData.weightKg,
+        weight: weight,
         activity: formData.activity,
         duration: formData.duration,
         unit,

@@ -13,6 +13,7 @@ import WhatToExpect from '../components/WhatToExpect';
 import FAQ from '../components/FAQ';
 import FinalCTA from '../components/FinalCTA';
 import Footer from '../components/Footer';
+import FeedbackForm from '../components/FeedbackForm';
 
 const HomePage = () => {
   const [bmiData, setBmiData] = useState(null);
@@ -49,6 +50,7 @@ const HomePage = () => {
         <WhatToExpect />
         <FAQ />
         <FinalCTA />
+        <FeedbackForm />
       </main>
 
       <Footer />

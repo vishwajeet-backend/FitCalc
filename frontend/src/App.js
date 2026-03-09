@@ -55,9 +55,10 @@ function App() {
         <PrivacyTrust />
         <WhatToExpect />
         <FAQ />
-        <FeedbackForm />
+        
         <FinalCTA />
       </main>
+
 
       <Footer />
     </div>
