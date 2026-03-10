@@ -34,6 +34,7 @@ import BlogPage from './pages/BlogPage';
 import BlogArticlePage from './pages/BlogArticlePage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import DisableAdblockPage from './pages/help/DisableAdblockPage';
 import './pages/AllCalculators.css';
 
 function App() {
@@ -90,6 +91,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/contact" element={<HomePage />} />
+          <Route path="/help/disable-adblock" element={<DisableAdblockPage />} />
         </Routes>
       </div>
     </Router>

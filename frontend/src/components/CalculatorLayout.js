@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from './Footer';
+import useAdblockDetector from '../hooks/useAdblockDetector';
+import AdblockModal from './AdblockModal';
 
 const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
+  const { detected, loading, retry } = useAdblockDetector({
+    location: breadcrumbPath || title || 'calculator',
+  });
   // Separate form content from results
   const childArray = React.Children.toArray(children);
   const formContent = [];
@@ -28,6 +33,8 @@ const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
 
   return (
     <div className="calculator-page-container">
+      {detected && <AdblockModal onRetry={retry} loading={loading} />}
+
       {/* Header Banner */}
       <header className="calculator-header-banner">
         <div className="calculator-header-content">
