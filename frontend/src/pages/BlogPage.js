@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 function BlogPage() {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    // Prevent body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   const styles = {
     container: {
       backgroundColor: '#FFFFFF',
@@ -14,17 +28,22 @@ function BlogPage() {
       position: 'relative',
       height: '445px',
       width: '100%',
-      marginTop: '60px',
+      maxWidth: '1376px',
+      margin: '60px auto 0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      padding: '0 32px',
+      boxSizing: 'border-box',
     },
     heroImage: {
       position: 'absolute',
-      inset: 0,
-      width: '100%',
-      maxWidth: '1376px',
-      margin: '0 auto',
+      top: 0,
+      left: 32,
+      right: 32,
+      bottom: 0,
+      width: 'calc(100% - 64px)',
+      height: '100%',
       borderRadius: '12px',
       overflow: 'hidden',
     },
@@ -39,6 +58,7 @@ function BlogPage() {
       inset: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.3)',
       borderRadius: '12px',
+      pointerEvents: 'none',
     },
     heroText: {
       position: 'relative',
@@ -203,7 +223,7 @@ function BlogPage() {
       padding: '0 42px',
       position: 'sticky',
       top: 0,
-      zIndex: 100,
+      zIndex: 1001,
     },
     headerContent: {
       maxWidth: '1800px',
@@ -307,22 +327,49 @@ function BlogPage() {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="blog-page-container">
       {/* Header */}
-      <header style={styles.header}>
-        <div style={styles.headerContent}>
-          <Link to="/" style={styles.logo}>FitCalc</Link>
-          <nav style={styles.nav}>
-            <Link to="/calculators" style={styles.navItem}>Fitness</Link>
-            <Link to="/pregnancy" style={styles.navItem}>Pregnancy</Link>
-            <Link to="/metabolism" style={styles.navItem}>Metabolism</Link>
-            <Link to="/blog" style={styles.navItem}>Blog</Link>
+      <header style={styles.header} className="blog-page-header">
+        <div style={styles.headerContent} className="blog-header-content">
+          <Link to="/" style={styles.logo} className="blog-logo">FitCalc</Link>
+          
+          {/* Hamburger Menu Button */}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={{
+              display: 'none',
+              fontSize: '24px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              color: '#161E24'
+            }}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <nav style={styles.nav} className={`blog-nav ${isMenuOpen ? 'active' : ''}`}>
+            <Link to="/calculators" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Fitness</Link>
+            <Link to="/pregnancy" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Pregnancy</Link>
+            <Link to="/metabolism" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Metabolism</Link>
+            <Link to="/blog" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link>
           </nav>
         </div>
       </header>
 
+      {/* Overlay */}
+      {isMenuOpen && (
+        <div 
+          className="mobile-menu-overlay"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
       {/* Hero Section */}
-      <div style={styles.heroSection}>
+      <div style={styles.heroSection} className="blog-hero-section">
         <div style={styles.heroImage}>
           <img
             src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400&q=80"
@@ -331,18 +378,18 @@ function BlogPage() {
           />
           <div style={styles.heroOverlay} />
         </div>
-        <div style={styles.heroText}>
+        <div style={styles.heroText} className="blog-hero-text">
           Insights about my personal and work life, and the in-betweens
         </div>
       </div>
 
       {/* Content Container */}
-      <div style={styles.contentContainer}>
+      <div style={styles.contentContainer} className="blog-content-container">
         {/* Fitness Section */}
-        <section style={styles.section}>
+        <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Fitness</h2>
           {blogPosts.fitness.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}}>
+            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>
@@ -359,10 +406,10 @@ function BlogPage() {
         </section>
 
         {/* Pregnancy Section */}
-        <section style={styles.section}>
+        <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Pregnancy</h2>
           {blogPosts.pregnancy.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}}>
+            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>
@@ -379,10 +426,10 @@ function BlogPage() {
         </section>
 
         {/* Others Section */}
-        <section style={styles.section}>
+        <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Others</h2>
           {blogPosts.others.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}}>
+            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>
@@ -399,8 +446,8 @@ function BlogPage() {
         </section>
       </div>
 
-      {/* CTA Section */}
-      <section style={styles.ctaSection}>
+      {/* CTA Section 
+      <section style={styles.ctaSection} className="blog-cta-section">
         <div style={styles.ctaContainer}>
           <h2 style={styles.ctaHeading}>Start Calculating Your Fitness Goals Today</h2>
           <p style={styles.ctaSubtext}>
@@ -410,11 +457,12 @@ function BlogPage() {
             Use calculators →
           </Link>
         </div>
-      </section>
+      </section> */}
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer 
+      <Footer />*/}
     </div>
+    
   );
 }
 

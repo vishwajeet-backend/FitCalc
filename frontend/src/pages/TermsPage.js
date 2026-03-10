@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 
 const TermsPage = () => {
   const [activeSection, setActiveSection] = useState('introduction');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +35,18 @@ const TermsPage = () => {
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Prevent body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
@@ -139,7 +152,6 @@ const TermsPage = () => {
 
   const heroImageStyle = {
     width: '100%',
-    height: '700px',
     borderRadius: '24px',
     objectFit: 'cover',
     backgroundColor: '#E1E6F2'
@@ -291,38 +303,74 @@ const TermsPage = () => {
   };
 
   return (
-    <div style={pageContainerStyle}>
+    <div style={pageContainerStyle} className="legal-page-container">
       {/* Header */}
-      <header style={headerStyle}>
-        <div style={containerStyle}>
-          <Link to="/" style={logoStyle}>FitCalc</Link>
-          <nav style={navStyle}>
-            <Link to="/" style={navLinkStyle}>Fitness</Link>
-            <Link to="/" style={navLinkStyle}>Pregnancy</Link>
-            <Link to="/" style={navLinkStyle}>Metabolism</Link>
-            <Link to="/blog" style={navLinkStyle}>Blog</Link>
+      <header style={headerStyle} className="legal-page-header">
+        <div style={containerStyle} className="legal-header-content">
+          <Link to="/" style={logoStyle} className="legal-logo">FitCalc</Link>
+          
+          {/* Hamburger Menu Button */}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={{
+              display: 'none',
+              fontSize: '24px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              color: '#161E24'
+            }}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <nav style={navStyle} className={`legal-nav ${isMenuOpen ? 'active' : ''}`}>
+            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Fitness</Link>
+            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Pregnancy</Link>
+            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Metabolism</Link>
+            <Link to="/blog" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link>
           </nav>
         </div>
       </header>
 
+      {/* Overlay */}
+      {isMenuOpen && (
+        <div 
+          className="mobile-menu-overlay"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }}
+        />
+      )}
+
       {/* Hero Section */}
-      <section style={heroSectionStyle}>
+      <section style={heroSectionStyle} className="legal-hero-section">
         <p style={lastUpdatedStyle}>Last updated: December 17, 2024</p>
-        <h1 style={pageTitleStyle}>Terms & Conditions</h1>
-        <p style={pageSubtitleStyle}>Please read these terms carefully before using our services</p>
-        <div style={heroImageStyle}>
+        <h1 style={pageTitleStyle} className="legal-page-title">Terms & Conditions</h1>
+        <p style={pageSubtitleStyle} className="legal-page-subtitle">Please read these terms carefully before using our services</p>
+        <div style={heroImageStyle} className="legal-hero-image">
           <img 
             src="https://www.figma.com/api/mcp/asset/addf172e-f2ad-40fd-a50c-1bbfb8cf5060" 
             alt="Terms and Conditions Illustration" 
-            style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px'}}
+            style={{width: '100%', objectFit: 'cover', borderRadius: '24px'}}
           />
         </div>
       </section>
 
       {/* Content Area */}
-      <div style={contentWrapperStyle}>
+      <div style={contentWrapperStyle} className="legal-content-wrapper">
         {/* Main Content */}
-        <main style={mainContentStyle}>
+        <main style={mainContentStyle} className="legal-main-content">
           {/* Introduction */}
           <section id="introduction" style={sectionStyle}>
             <h2 style={sectionTitleStyle}>Introduction</h2>
@@ -452,7 +500,7 @@ const TermsPage = () => {
         </main>
 
         {/* Table of Contents Sidebar */}
-        <aside style={sidebarStyle}>
+        <aside style={sidebarStyle} className="legal-sidebar">
           <h3 style={sidebarTitleStyle}>Contents</h3>
           <ul style={tocListStyle}>
             <li 

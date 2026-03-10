@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 
 const PrivacyPage = () => {
   const [activeSection, setActiveSection] = useState('introduction');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +35,18 @@ const PrivacyPage = () => {
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Prevent body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
@@ -140,7 +153,6 @@ const PrivacyPage = () => {
 
   const heroImageStyle = {
     width: '100%',
-    height: '700px',
     borderRadius: '24px',
     objectFit: 'cover',
     backgroundColor: '#E1E6F2'
@@ -292,12 +304,31 @@ const PrivacyPage = () => {
   };
 
   return (
-    <div style={pageContainerStyle}>
+    <div style={pageContainerStyle} className="legal-page-container">
       {/* Header */}
-      <header style={headerStyle}>
-        <div style={containerStyle}>
-          <Link to="/" style={logoStyle}>FitCalc</Link>
-          <nav style={navStyle}>
+      <header style={headerStyle} className="legal-page-header">
+        <div style={containerStyle} className="legal-header-content">
+          <Link to="/" style={logoStyle} className="legal-logo">FitCalc</Link>
+          
+          {/* Hamburger Menu Button */}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={{
+              display: 'none',
+              fontSize: '24px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              color: '#161E24'
+            }}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <nav style={navStyle} className={`legal-nav ${isMenuOpen ? 'active' : ''}`}>
             <Link to="/" style={navLinkStyle}>Fitness</Link>
             <Link to="/" style={navLinkStyle}>Pregnancy</Link>
             <Link to="/" style={navLinkStyle}>Metabolism</Link>
@@ -315,7 +346,7 @@ const PrivacyPage = () => {
           <img 
             src="https://www.figma.com/api/mcp/asset/d9a985fd-6c4f-4761-89df-d1c3d6211427" 
             alt="Privacy Policy Illustration" 
-            style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px'}}
+            style={{width: '100%',  objectFit: 'cover', borderRadius: '24px'}}
           />
         </div>
       </section>
@@ -445,7 +476,7 @@ const PrivacyPage = () => {
             <div style={contactBoxStyle}>
               <p style={contactTitleStyle}>FitCalc</p>
               <p style={contactTextStyle}>Email: privacy@fitcalc.io</p>
-              <button style={contactLinkStyle} onClick={() => window.location.href = '/contact'}>
+              <button style={contactLinkStyle} onClick={() => window.location.href = '/#contact'}>
                 Contact Form
               </button>
             </div>

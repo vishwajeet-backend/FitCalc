@@ -4,6 +4,19 @@ import Footer from '../components/Footer';
 
 const BlogArticlePage = () => {
   const { slug } = useParams();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    // Prevent body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   // Sample article data (in production, this would be fetched based on slug)
   const article = {
@@ -80,7 +93,7 @@ const BlogArticlePage = () => {
       justifyContent: 'center',
       position: 'sticky',
       top: 0,
-      zIndex: 100
+      zIndex: 1001
     },
     headerContainer: {
       display: 'flex',
@@ -275,33 +288,60 @@ const BlogArticlePage = () => {
   };
 
   return (
-    <div style={styles.pageContainer}>
+    <div style={styles.pageContainer} className="blog-article-page">
       {/* Header Banner */}
-      <header style={styles.headerBanner}>
-        <div style={styles.headerContainer}>
-          <Link to="/" style={styles.logo}>
+      <header style={styles.headerBanner} className="blog-article-header">
+        <div style={styles.headerContainer} className="blog-article-header-content">
+          <Link to="/" style={styles.logo} className="blog-article-logo">
             FitCalc
           </Link>
-          <nav style={styles.nav}>
-            <Link to="/fitness" style={styles.navLink}>Fitness</Link>
-            <Link to="/pregnancy" style={styles.navLink}>Pregnancy</Link>
-            <Link to="/metabolism" style={styles.navLink}>Metabolism</Link>
-            <Link to="/blog" style={styles.navLink}>Blog</Link>
+          
+          {/* Hamburger Menu Button */}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={{
+              display: 'none',
+              fontSize: '24px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              color: '#161E24'
+            }}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <nav style={styles.nav} className={`blog-article-nav ${isMenuOpen ? 'active' : ''}`}>
+            <Link to="/fitness" style={styles.navLink} className="blog-article-nav-link" onClick={() => setIsMenuOpen(false)}>Fitness</Link>
+            <Link to="/pregnancy" style={styles.navLink} className="blog-article-nav-link" onClick={() => setIsMenuOpen(false)}>Pregnancy</Link>
+            <Link to="/metabolism" style={styles.navLink} className="blog-article-nav-link" onClick={() => setIsMenuOpen(false)}>Metabolism</Link>
+            <Link to="/blog" style={styles.navLink} className="blog-article-nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link>
           </nav>
         </div>
       </header>
 
+      {/* Overlay */}
+      {isMenuOpen && (
+        <div 
+          className="mobile-menu-overlay"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
       {/* Hero Section */}
-      <div style={styles.heroSection}>
+      <div style={styles.heroSection} className="article-hero-section">
         <img src={article.heroImage} alt={article.title} style={styles.heroImage} />
         <div style={styles.heroOverlay}>
-          <h1 style={styles.heroTitle}>{article.title}</h1>
+          <h1 style={styles.heroTitle} className="article-hero-title">{article.title}</h1>
         </div>
       </div>
 
       {/* Article Content */}
-      <div style={styles.contentWrapper}>
-        <article style={styles.articleContainer}>
+      <div style={styles.contentWrapper} className="article-content-wrapper">
+        <article style={styles.articleContainer} className="article-container">
           {article.content.map((block, index) => {
             if (block.type === 'paragraph') {
               return (
@@ -316,11 +356,12 @@ const BlogArticlePage = () => {
                   src={block.src} 
                   alt="Article content" 
                   style={styles.contentImage}
+                  className="article-content-image"
                 />
               );
             } else if (block.type === 'blockquote') {
               return (
-                <div key={index} style={styles.blockquote}>
+                <div key={index} style={styles.blockquote} className="article-blockquote">
                   <p style={styles.blockquoteText}>{block.text}</p>
                 </div>
               );
@@ -330,11 +371,11 @@ const BlogArticlePage = () => {
         </article>
 
         {/* Related Posts */}
-        <div style={styles.relatedSection}>
+        <div style={styles.relatedSection} className="article-related-section">
           <h2 style={styles.relatedHeading}>Fitness</h2>
           <div style={styles.relatedPostsContainer}>
             {relatedPosts.map((post) => (
-              <Link key={post.id} to={`/blog/${post.id}`} style={styles.postCard}>
+              <Link key={post.id} to={`/blog/${post.id}`} style={styles.postCard} className="article-post-card">
                 <div style={styles.postLeft}>
                   <div style={styles.postTop}>
                     <div style={styles.tagContainer}>
