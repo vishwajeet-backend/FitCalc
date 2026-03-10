@@ -54,7 +54,9 @@ body {
   width: 100%;
   height: 80px;
   border: none;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 }
 
 .banner-container {
@@ -954,14 +956,18 @@ body {
 .features-timeline {
   flex: 0 0 16px;
   position: relative;
+  align-self: stretch;
 }
 
 .timeline-line {
   width: 16px;
-  height: 750px;
   display: block;
   background-color: #3d568f;
   border-radius: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .features-list {
@@ -1066,8 +1072,9 @@ body {
   }
 
   .timeline-line {
-    height: auto;
-    min-height: 2000px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
   }
 }
 
@@ -2202,12 +2209,12 @@ body {
   background: #fefef8;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 16px;
-  width: 362px;
-  height: 240px;
+  padding: 24px;
+  flex: 1;
+  min-width: 0;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .privacy-card-title {
@@ -2259,8 +2266,7 @@ body {
   
   .privacy-trust-card {
     width: 100%;
-    height: auto;
-    min-height: 280px;
+    min-height: auto;
   }
   
   .privacy-card-title {
@@ -3458,7 +3464,7 @@ body {
     top: 70px;
     right: 0;
     width: 280px;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 350px);
     background: white;
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
     flex-direction: column;
@@ -3466,7 +3472,7 @@ body {
     padding: 32px 0;
     transform: translateX(100%);
     transition: transform 0.3s ease;
-    z-index: 1000;
+    z-index: 9999;
     overflow-y: auto;
   }
 
@@ -3494,7 +3500,7 @@ body {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 9998;
     animation: fadeIn 0.3s ease;
   }
 
@@ -4812,17 +4818,11 @@ body {
   }
 }
 
-/* Hide mobile menu toggle on desktop */
-.mobile-menu-toggle {
-  display: none;
-}
-
 /* Mobile Menu Styles for Blog and Legal Pages */
 @media (max-width: 768px) {
   .mobile-menu-toggle {
     display: block !important;
-    z-index: 1300 !important;
-    position: relative !important;
+    z-index: 1002 !important;
   }
 
   .mobile-menu-overlay {
@@ -4832,7 +4832,7 @@ body {
     right: 0 !important;
     bottom: 0 !important;
     background-color: rgba(0, 0, 0, 0.5) !important;
-    z-index: 1100 !important;
+    z-index: 1000 !important;
   }
 
   .blog-page-container {
@@ -4840,7 +4840,7 @@ body {
     display: block !important;
   }
 
-  .blog-page-container > * {
+  .blog-page-container > *:not(.banner) {
     float: none !important;
     position: relative !important;
   }
@@ -4849,20 +4849,20 @@ body {
   .blog-nav,
   .blog-article-nav {
     position: fixed !important;
-    top: 80px !important;
+    top: 70px !important;
     right: 0 !important;
     width: 280px !important;
-    height: calc(100vh - 80px) !important;
+    height: calc(100vh - 70px) !important;
     background: white !important;
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1) !important;
-    display: flex !important;
     flex-direction: column !important;
     gap: 0 !important;
     padding: 32px 0 !important;
     transform: translateX(100%) !important;
     transition: transform 0.3s ease !important;
-    z-index: 1200 !important;
+    z-index: 1001 !important;
     overflow-y: auto !important;
+    display: flex !important;
   }
 
   .legal-nav.active,
@@ -4878,12 +4878,31 @@ body {
     padding: 18px 32px !important;
     border-bottom: 1px solid #f0f0f0 !important;
     text-align: left !important;
+    color: #000 !important;
+    display: block !important;
+    text-decoration: none !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
   }
 
   .legal-nav-link:hover,
   .blog-nav-link:hover,
   .blog-article-nav-link:hover {
     background-color: #f8f9fa !important;
+  }
+
+  /* Legal page hero image - remove max-height on mobile */
+  .legal-hero-image {
+    max-height: none !important;
+  }
+
+  .legal-hero-section {
+    padding: 40px 20px !important;
+  }
+
+  .legal-page-title {
+    font-size: 32px !important;
+    line-height: 40px !important;
   }
 
   /* Blog page specific responsive styles */
@@ -4910,7 +4929,7 @@ body {
   }
 
   .blog-hero-text {
-    font-size: 24px !important;
+    font-size: 16px !important;
     padding: 0 20px !important;
     line-height: 1.3 !important;
     max-width: 100% !important;

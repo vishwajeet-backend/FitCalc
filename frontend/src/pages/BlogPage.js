@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+import Banner from '../components/Banner';
 
 function BlogPage() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -66,7 +67,7 @@ function BlogPage() {
       maxWidth: '970px',
       padding: '0 32px',
       fontFamily: 'IBM Plex Sans, sans-serif',
-      fontSize: '48px',
+      fontSize: '36px',
       fontWeight: 600,
       lineHeight: '1',
       color: '#FFFFFF',
@@ -328,46 +329,7 @@ function BlogPage() {
 
   return (
     <div style={styles.container} className="blog-page-container">
-      {/* Header */}
-      <header style={styles.header} className="blog-page-header">
-        <div style={styles.headerContent} className="blog-header-content">
-          <Link to="/" style={styles.logo} className="blog-logo">FitCalc</Link>
-          
-          {/* Hamburger Menu Button */}
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{
-              display: 'none',
-              fontSize: '24px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              color: '#161E24'
-            }}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? '✕' : '☰'}
-          </button>
-
-          <nav style={styles.nav} className={`blog-nav ${isMenuOpen ? 'active' : ''}`}>
-            <Link to="/calculators" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Fitness</Link>
-            <Link to="/pregnancy" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Pregnancy</Link>
-            <Link to="/metabolism" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Metabolism</Link>
-            <Link to="/blog" style={styles.navItem} className="blog-nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Overlay */}
-      {isMenuOpen && (
-        <div 
-          className="mobile-menu-overlay"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
-
+      <Banner />
       {/* Hero Section */}
       <div style={styles.heroSection} className="blog-hero-section">
         <div style={styles.heroImage}>
@@ -446,18 +408,7 @@ function BlogPage() {
         </section>
       </div>
 
-      {/* CTA Section 
-      <section style={styles.ctaSection} className="blog-cta-section">
-        <div style={styles.ctaContainer}>
-          <h2 style={styles.ctaHeading}>Start Calculating Your Fitness Goals Today</h2>
-          <p style={styles.ctaSubtext}>
-            FitCalc helps you track your health, fitness, pregnancy, and nutrition calculations in seconds.
-          </p>
-          <Link to="/calculators" style={styles.ctaButton}>
-            Use calculators →
-          </Link>
-        </div>
-      </section> */}
+      
 
       {/* Footer 
       <Footer />*/}

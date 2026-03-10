@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Banner from '../components/Banner';
 import Footer from '../components/Footer';
 
 const PrivacyPage = () => {
@@ -108,8 +109,7 @@ const PrivacyPage = () => {
 
   const pageContainerStyle = {
     backgroundColor: '#FFFFFF',
-    minHeight: '100vh',
-    paddingTop: '80px'
+    minHeight: '100vh'
   };
 
   const heroSectionStyle = {
@@ -117,7 +117,7 @@ const PrivacyPage = () => {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '24px',
-    padding: '60px 40px',
+    padding: '30px 40px',
     maxWidth: '1360px',
     margin: '0 auto'
   };
@@ -153,9 +153,11 @@ const PrivacyPage = () => {
 
   const heroImageStyle = {
     width: '100%',
+    maxHeight: '400px',
     borderRadius: '24px',
     objectFit: 'cover',
-    backgroundColor: '#E1E6F2'
+    backgroundColor: '#E1E6F2',
+    overflow: 'hidden'
   };
 
   const contentWrapperStyle = {
@@ -305,44 +307,14 @@ const PrivacyPage = () => {
 
   return (
     <div style={pageContainerStyle} className="legal-page-container">
-      {/* Header */}
-      <header style={headerStyle} className="legal-page-header">
-        <div style={containerStyle} className="legal-header-content">
-          <Link to="/" style={logoStyle} className="legal-logo">FitCalc</Link>
-          
-          {/* Hamburger Menu Button */}
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{
-              display: 'none',
-              fontSize: '24px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              color: '#161E24'
-            }}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? '✕' : '☰'}
-          </button>
-
-          <nav style={navStyle} className={`legal-nav ${isMenuOpen ? 'active' : ''}`}>
-            <Link to="/" style={navLinkStyle}>Fitness</Link>
-            <Link to="/" style={navLinkStyle}>Pregnancy</Link>
-            <Link to="/" style={navLinkStyle}>Metabolism</Link>
-            <Link to="/blog" style={navLinkStyle}>Blog</Link>
-          </nav>
-        </div>
-      </header>
+      <Banner />
 
       {/* Hero Section */}
-      <section style={heroSectionStyle}>
+      <section style={heroSectionStyle} className="legal-hero-section">
         <p style={lastUpdatedStyle}>Last updated: December 17, 2024</p>
-        <h1 style={pageTitleStyle}>Privacy Policy</h1>
-        <p style={pageSubtitleStyle}>Please read these policies carefully before using our services</p>
-        <div style={heroImageStyle}>
+        <h1 style={pageTitleStyle} className="legal-page-title">Privacy Policy</h1>
+        <p style={pageSubtitleStyle} className="legal-page-subtitle">Please read these policies carefully before using our services</p>
+        <div style={heroImageStyle} className="legal-hero-image">
           <img 
             src="https://www.figma.com/api/mcp/asset/d9a985fd-6c4f-4761-89df-d1c3d6211427" 
             alt="Privacy Policy Illustration" 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+import Banner from '../components/Banner';
 
 const TermsPage = () => {
   const [activeSection, setActiveSection] = useState('introduction');
@@ -107,8 +108,7 @@ const TermsPage = () => {
 
   const pageContainerStyle = {
     backgroundColor: '#FFFFFF',
-    minHeight: '100vh',
-    paddingTop: '80px'
+    minHeight: '100vh'
   };
 
   const heroSectionStyle = {
@@ -116,7 +116,7 @@ const TermsPage = () => {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '24px',
-    padding: '60px 40px',
+    padding: '30px 40px',
     maxWidth: '1360px',
     margin: '0 auto'
   };
@@ -152,9 +152,11 @@ const TermsPage = () => {
 
   const heroImageStyle = {
     width: '100%',
+    maxHeight: '400px',
     borderRadius: '24px',
     objectFit: 'cover',
-    backgroundColor: '#E1E6F2'
+    backgroundColor: '#E1E6F2',
+    overflow: 'hidden'
   };
 
   const contentWrapperStyle = {
@@ -304,55 +306,7 @@ const TermsPage = () => {
 
   return (
     <div style={pageContainerStyle} className="legal-page-container">
-      {/* Header */}
-      <header style={headerStyle} className="legal-page-header">
-        <div style={containerStyle} className="legal-header-content">
-          <Link to="/" style={logoStyle} className="legal-logo">FitCalc</Link>
-          
-          {/* Hamburger Menu Button */}
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{
-              display: 'none',
-              fontSize: '24px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              color: '#161E24'
-            }}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? '✕' : '☰'}
-          </button>
-
-          <nav style={navStyle} className={`legal-nav ${isMenuOpen ? 'active' : ''}`}>
-            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Fitness</Link>
-            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Pregnancy</Link>
-            <Link to="/" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Metabolism</Link>
-            <Link to="/blog" style={navLinkStyle} className="legal-nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Overlay */}
-      {isMenuOpen && (
-        <div 
-          className="mobile-menu-overlay"
-          onClick={() => setIsMenuOpen(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 999
-          }}
-        />
-      )}
-
+      <Banner />
       {/* Hero Section */}
       <section style={heroSectionStyle} className="legal-hero-section">
         <p style={lastUpdatedStyle}>Last updated: December 17, 2024</p>
