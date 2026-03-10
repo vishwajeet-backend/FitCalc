@@ -167,6 +167,7 @@ body {
   gap: 32px;
   margin-top: 48px;
   margin-bottom: 100px;
+  flex: 1;
 }
 
 /* Form Container */

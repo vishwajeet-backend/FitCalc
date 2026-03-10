@@ -1,6 +1,6 @@
 # FitCalc - Full-Stack Fitness Calculator Application
 
-A comprehensive fitness and health calculator platform built with the MERN stack (MongoDB-less version: Express, React, Node.js).
+A comprehensive fitness and health calculator platform built with the MERN stack (MongoDB, Express, React, Node.js).
 
 ## 🎯 Features
 
