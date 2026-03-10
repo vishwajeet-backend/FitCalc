@@ -11,6 +11,15 @@ function OvulationCalculatorPage() {
   });
   const [result, setResult] = useState(null);
 
+  // Responsive styles for mobile
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .calc-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  `;
+
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const handleInputChange = (e) => {
@@ -271,6 +280,7 @@ function OvulationCalculatorPage() {
 
   return (
     <div>
+      <style>{responsiveStyles}</style>
       {/* Header Banner */}
       <header style={{
         backgroundColor: '#FFFFFF',
@@ -347,7 +357,7 @@ function OvulationCalculatorPage() {
         <span style={styles.breadcrumbLink}>ovulation calculator</span>
       </div>
 
-      <div style={styles.grid}>
+      <div style={styles.grid} className="calc-responsive-grid">
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Ovulation Calculator</h1>
           <p style={styles.description}>

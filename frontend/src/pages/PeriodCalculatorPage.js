@@ -283,8 +283,21 @@ function PeriodCalculatorPage() {
     },
   };
 
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .period-calculator-container {
+        flex-direction: column !important;
+      }
+      .period-calculator-container > div {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  `;
+
   return (
     <div>
+      <style>{responsiveStyles}</style>
       {/* Header Banner */}
       <header style={{
         backgroundColor: '#FFFFFF',
@@ -361,7 +374,7 @@ function PeriodCalculatorPage() {
         <span style={styles.breadcrumbLink}>period calculator</span>
       </div>
 
-      <div style={styles.grid}>
+      <div style={styles.grid} className="calc-responsive-grid">
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Period Calculator</h1>
           <p style={styles.description}>

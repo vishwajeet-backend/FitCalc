@@ -262,8 +262,21 @@ function ConceptionCalculatorPage() {
     },
   };
 
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .conception-calculator-container {
+        flex-direction: column !important;
+      }
+      .conception-calculator-container > div {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  `;
+
   return (
     <div>
+      <style>{responsiveStyles}</style>
       {/* Header Banner */}
       <header style={{
         backgroundColor: '#FFFFFF',
@@ -340,7 +353,7 @@ function ConceptionCalculatorPage() {
         <span style={styles.breadcrumbLink}>conception calculator</span>
       </div>
 
-      <div style={styles.grid}>
+      <div style={styles.grid} className="calc-responsive-grid">
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Conception Calculator</h1>
           <p style={styles.description}>

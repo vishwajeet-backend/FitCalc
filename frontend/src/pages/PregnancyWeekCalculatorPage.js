@@ -12,6 +12,15 @@ function PregnancyWeekCalculatorPage() {
   });
   const [result, setResult] = useState(null);
 
+  // Responsive styles for mobile
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .calc-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  `;
+
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const calculationTypes = [
     { value: 'lastPeriod', label: 'Last menstrual period' },
@@ -324,6 +333,7 @@ function PregnancyWeekCalculatorPage() {
 
   return (
     <div>
+      <style>{responsiveStyles}</style>
       {/* Header Banner */}
       <header style={{
         backgroundColor: '#FFFFFF',
@@ -400,7 +410,7 @@ function PregnancyWeekCalculatorPage() {
         <span style={styles.breadcrumbLink}>pregnancy week calculator</span>
       </div>
 
-      <div style={styles.grid}>
+      <div style={styles.grid} className="calc-responsive-grid">
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Pregnancy Week Calculator</h1>
           <p style={styles.description}>

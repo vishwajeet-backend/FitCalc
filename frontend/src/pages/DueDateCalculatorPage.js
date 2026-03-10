@@ -292,8 +292,21 @@ function DueDateCalculatorPage() {
     },
   };
 
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .duedate-calculator-container {
+        flex-direction: column !important;
+      }
+      .duedate-calculator-container > div {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  `;
+
   return (
     <div>
+      <style>{responsiveStyles}</style>
       {/* Header Banner */}
       <header style={{
         backgroundColor: '#FFFFFF',
@@ -372,7 +385,7 @@ function DueDateCalculatorPage() {
       </div>
 
       {/* Main Grid */}
-      <div style={styles.grid}>
+      <div style={styles.grid} className="calc-responsive-grid">
         {/* Form Section */}
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Pregnancy Calculator</h1>
