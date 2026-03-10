@@ -294,12 +294,8 @@ function DueDateCalculatorPage() {
 
   const responsiveStyles = `
     @media (max-width: 768px) {
-      .duedate-calculator-container {
-        flex-direction: column !important;
-      }
-      .duedate-calculator-container > div {
-        width: 100% !important;
-        max-width: 100% !important;
+      .duedate-calculator-grid {
+        grid-template-columns: 1fr !important;
       }
     }
   `;
@@ -385,7 +381,7 @@ function DueDateCalculatorPage() {
       </div>
 
       {/* Main Grid */}
-      <div style={styles.grid} className="calc-responsive-grid">
+      <div style={styles.grid} className="duedate-calculator-grid">
         {/* Form Section */}
         <div style={styles.formContainer}>
           <h1 style={styles.title}>Pregnancy Calculator</h1>

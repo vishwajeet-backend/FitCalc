@@ -78,6 +78,15 @@ function PeriodCalculatorPage() {
     setResult(null);
   };
 
+  // Responsive styles for mobile
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .calc-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  `;
+
   const styles = {
     container: {
       maxWidth: '1400px',
@@ -282,18 +291,6 @@ function PeriodCalculatorPage() {
       fontWeight: '600',
     },
   };
-
-  const responsiveStyles = `
-    @media (max-width: 768px) {
-      .period-calculator-container {
-        flex-direction: column !important;
-      }
-      .period-calculator-container > div {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-    }
-  `;
 
   return (
     <div>

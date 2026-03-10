@@ -334,12 +334,8 @@ function BodyFatCalculatorPage() {
 
   const responsiveStyles = `
     @media (max-width: 768px) {
-      .bodyfat-calculator-container {
-        flex-direction: column !important;
-      }
-      .bodyfat-calculator-container > div {
-        width: 100% !important;
-        max-width: 100% !important;
+      .bodyfat-calculator-grid {
+        grid-template-columns: 1fr !important;
       }
     }
   `;
@@ -363,7 +359,7 @@ function BodyFatCalculatorPage() {
       </p>
 
       {/* Main Grid */}
-      <div style={styles.grid} className="calc-responsive-grid">
+      <div style={styles.grid} className="bodyfat-calculator-grid">
         {/* Form Section */}
         <div style={styles.formContainer}>
           {/* Unit Toggle */}

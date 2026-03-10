@@ -76,6 +76,15 @@ function ConceptionCalculatorPage() {
     setResult(null);
   };
 
+  // Responsive styles for mobile
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .calc-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  `;
+
   const styles = {
     container: {
       maxWidth: '1400px',
@@ -261,18 +270,6 @@ function ConceptionCalculatorPage() {
       whiteSpace: 'pre-line',
     },
   };
-
-  const responsiveStyles = `
-    @media (max-width: 768px) {
-      .conception-calculator-container {
-        flex-direction: column !important;
-      }
-      .conception-calculator-container > div {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-    }
-  `;
 
   return (
     <div>
