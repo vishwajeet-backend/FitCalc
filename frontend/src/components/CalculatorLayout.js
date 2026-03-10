@@ -42,8 +42,8 @@ const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
       </header>
 
       {/* Main Content */}
-      <main>
-        <div style={{ maxWidth: '1376px', margin: '0 auto', padding: '48px 32px 0' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ maxWidth: '1376px', margin: '0 auto', padding: '48px 32px 0', width: '100%', flex: 1 }}>
           {/* Breadcrumb */}
           <div className="calculator-breadcrumb">
             <Link to="/">home</Link>
@@ -54,7 +54,7 @@ const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
           </div>
 
           {/* Two Column Layout */}
-          <div className="calculator-main-content" style={{ marginTop: '20px', marginBottom: 0 }}>
+          <div className="calculator-main-content" style={{ marginTop: '20px', marginBottom: '48px' }}>
             {/* Left Column - Form */}
             <div className="calculator-form-container">
               <h1 className="calculator-title">{title}</h1>
