@@ -67,17 +67,17 @@ const BMIGauge = ({ bmi, category, categoryColor }) => {
           <circle cx="0" cy="0" r="8" fill="#3d568f" />
         </g>
 
-        {/* Labels positioned around the gauge */}
-        <text x="68" y="240" textAnchor="middle" className="gauge-label-v2 under" fill="#ff8c42">Under</text>
-        <text x="44" y="40" textAnchor="middle" className="gauge-label-v2 normal" fill="#10b981">Normal</text>
-        <text x="241" y="46" textAnchor="middle" className="gauge-label-v2 over" fill="#f59e0b">Over</text>
-        <text x="316" y="240" textAnchor="middle" className="gauge-label-v2 obese" fill="#ef4444">Obese</text>
+        {/* Category Labels positioned around the gauge */}
+        <text x="80" y="240" textAnchor="middle" className="gauge-label-v2 under" fill="#ff8c42" fontSize="18" fontWeight="600">Under</text>
+        <text x="20" y="75" textAnchor="start" className="gauge-label-v2 normal" fill="#10b981" fontSize="18" fontWeight="600">Normal</text>
+        <text x="340" y="75" textAnchor="end" className="gauge-label-v2 over" fill="#f59e0b" fontSize="18" fontWeight="600">Over</text>
+        <text x="304" y="240" textAnchor="middle" className="gauge-label-v2 obese" fill="#ef4444" fontSize="18" fontWeight="600">Obese</text>
         
-        {/* Number labels */}
-        <text x="68" y="155" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">15</text>
-        <text x="123" y="84" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">18.5</text>
-        <text x="261" y="84" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">30</text>
-        <text x="316" y="155" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">40</text>
+        {/* Number labels - positioned at segment boundaries */}
+        <text x="80" y="210" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">15</text>
+        <text x="148" y="66" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">18.5</text>
+        <text x="236" y="66" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">30</text>
+        <text x="304" y="210" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">40</text>
       </svg>
     </div>
   );
