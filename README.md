@@ -232,6 +232,7 @@ This creates an optimized production build in the `frontend/build` directory.
 - Frontend uses React Scripts with some deprecated webpack middleware warnings (non-breaking)
 
 ## 🔮 Future Enhancements
+
 - [ ] Complete calculator logic for all 20+ calculators
 - [ ] Add user authentication and profiles
 - [ ] Implement calculation history with database
