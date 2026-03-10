@@ -198,6 +198,15 @@ API_URL=http://localhost:5000
 - 🔄 Body Fat Calculator
 - 🔄 Lean Body Mass Calculator
 - 🔄 Ideal Weight Calculator
+
+## 🚀 Deployment
+
+This application is deployed using:
+- **Frontend**: Vercel (automatically deploys from the `main` branch)
+- **Backend**: Render (automatically deploys from the `main` branch)
+- **Database**: MongoDB Atlas
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
 - 🔄 Pace Calculator
 - 🔄 Army Body Fat Calculator
 - 🔄 Navy Body Fat Calculator
