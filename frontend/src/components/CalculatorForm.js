@@ -153,4 +153,6 @@ export const HeightInput = ({ unit, feet, inches, cm, onFeetChange, onInchesChan
   );
 };
 
+CalculatorForm.displayName = 'CalculatorForm';
+
 export default CalculatorForm;

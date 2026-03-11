@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Footer from './Footer';
 import useAdblockDetector from '../hooks/useAdblockDetector';
 import AdblockModal from './AdblockModal';
+import CalculatorForm from './CalculatorForm';
 
 const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
   const { detected, loading, retry } = useAdblockDetector({
@@ -16,7 +17,7 @@ const CalculatorLayout = ({ title, description, breadcrumbPath, children }) => {
   let foundForm = false;
   childArray.forEach(child => {
     // CalculatorForm is the form, everything after it goes to results column
-    const isForm = child?.type?.name === 'CalculatorForm' || 
+    const isForm = child?.type === CalculatorForm ||
                    child?.type?.displayName === 'CalculatorForm';
     
     if (isForm) {
