@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Banner from '../components/Banner';
+import Footer from '../components/Footer';
 
 function BodyFatCalculatorPage() {
   const [unit, setUnit] = useState('us');
@@ -107,39 +109,6 @@ function BodyFatCalculatorPage() {
   };
 
   const styles = {
-    container: {
-      maxWidth: '1400px',
-      margin: '0 auto',
-      padding: '2rem 1rem',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    },
-    breadcrumb: {
-      fontSize: '0.875rem',
-      marginBottom: '1.5rem',
-      color: '#6b7280',
-    },
-    breadcrumbLink: {
-      color: '#3b82f6',
-      textDecoration: 'none',
-    },
-    title: {
-      fontSize: '2rem',
-      fontWeight: '600',
-      marginBottom: '0.5rem',
-      color: '#111827',
-    },
-    description: {
-      fontSize: '0.875rem',
-      color: '#6b7280',
-      marginBottom: '2rem',
-      lineHeight: '1.6',
-      maxWidth: '900px',
-    },
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '2rem',
-    },
     formContainer: {
       background: 'white',
       border: '1px solid #e5e7eb',
@@ -334,34 +303,42 @@ function BodyFatCalculatorPage() {
 
   const responsiveStyles = `
     @media (max-width: 768px) {
-      .bodyfat-calculator-grid {
-        grid-template-columns: 1fr !important;
+      .calculator-main-content {
+        flex-direction: column !important;
+      }
+      .calculator-form-container {
+        width: 100% !important;
+        max-width: 100% !important;
       }
     }
   `;
 
   return (
-    <div style={styles.container}>
+    <div className="calculator-page-container">
+      <Banner />
       <style>{responsiveStyles}</style>
-      {/* Breadcrumb */}
-      <div style={styles.breadcrumb}>
-        <Link to="/" style={styles.breadcrumbLink}>home</Link>
-        {' / '}
-        <Link to="/fitness" style={styles.breadcrumbLink}>fitness & health</Link>
-        {' / '}
-        <span>target heart rate calculator</span>
-      </div>
+      
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ maxWidth: '1376px', margin: '0 auto', padding: '48px 32px 0', width: '100%', flex: 1 }}>
+          {/* Breadcrumb */}
+          <div className="calculator-breadcrumb">
+            <Link to="/">home</Link>
+            {' / '}
+            <Link to="/calculators">fitness & health</Link>
+            {' / '}
+            <span>body fat calculator</span>
+          </div>
 
-      {/* Title */}
-      <h1 style={styles.title}>Body Fat Calculator</h1>
-      <p style={styles.description}>
-        The Body Fat Calculator can be used to estimate your total body fat based on specific measurements. Use the "Metric Units" tab for the International System of Units or the "Other Units" tab to convert units into either US or metric units. Your ideal body fat percentage is determined by age and gender according to the International System of Units (SI).
-      </p>
-
-      {/* Main Grid */}
-      <div style={styles.grid} className="bodyfat-calculator-grid">
-        {/* Form Section */}
-        <div style={styles.formContainer}>
+          {/* Two Column Layout */}
+          <div className="calculator-main-content" style={{ marginTop: '20px', marginBottom: '48px' }}>
+            {/* Left Column - Form */}
+            <div className="calculator-form-container">
+              <h1 className="calculator-title">Body Fat Calculator</h1>
+              <p className="calculator-description">
+                The Body Fat Calculator can be used to estimate your total body fat based on specific measurements. Use the "Metric Units" tab for the International System of Units or the "Other Units" tab to convert units into either US or metric units. Your ideal body fat percentage is determined by age and gender according to the International System of Units (SI).
+              </p>
+              {/* Form Section */}
+              <div style={styles.formContainer}>
           {/* Unit Toggle */}
           <div style={styles.toggleContainer}>
             <button
@@ -545,9 +522,11 @@ function BodyFatCalculatorPage() {
           >
             Clear
           </button>
-        </div>
+              </div>
+            </div>
 
-        {/* Results Section */}
+            {/* Results Section */}
+            <div style={{ flex: 1 }}>
         {result && (
           <div style={styles.resultsContainer}>
             <div style={styles.resultsHeader}>
@@ -629,7 +608,12 @@ function BodyFatCalculatorPage() {
             </div>
           </div>
         )}
-      </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

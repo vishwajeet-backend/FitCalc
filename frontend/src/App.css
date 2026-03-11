@@ -4905,7 +4905,7 @@ body {
     line-height: 40px !important;
   }
 
-  /* Blog page specific responsive styles */
+  /* Blog page mobile styles */
   .blog-hero-section {
     height: 250px !important;
     margin: 30px 16px 0 !important;
@@ -4936,7 +4936,7 @@ body {
   }
 
   .blog-content-container {
-    padding: 40px 20px 60px !important;
+    padding: 40px 20px 40px !important;
     gap: 50px !important;
   }
 
@@ -4978,61 +4978,41 @@ body {
     width: 100% !important;
   }
 
-  .blog-cta-section {
-    padding: 50px 24px !important;
-    margin: 40px 16px 50px !important;
-    display: block !important;
-    width: calc(100% - 32px) !important;
-    max-width: calc(100% - 32px) !important;
-    box-sizing: border-box !important;
+  .blog-page-container .final-cta-wrapper {
+    width: 100% !important;
+    overflow: hidden !important;
   }
 
-  .blog-cta-section h2 {
-    font-size: 32px !important;
-    word-wrap: break-word !important;
+  .blog-page-container .final-cta {
+    padding: 20px 16px !important;
   }
 
-  .blog-cta-section p {
-    font-size: 18px !important;
-    word-wrap: break-word !important;
+  .blog-page-container .cta-container {
+    padding: 40px 20px !important;
+    border-radius: 10px !important;
   }
 
-  .blog-cta-section a {
+  .blog-page-container .cta-title {
+    font-size: 24px !important;
+  }
+
+  .blog-page-container .cta-description {
     font-size: 16px !important;
-    padding: 12px 20px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
   }
 
-  .blog-cta-section > div {
-    max-width: 100% !important;
+  .blog-page-container .footer {
+    margin-top: 0 !important;
   }
 
-  /* Ensure footer doesn't overlap */
   .blog-page-container > footer {
     display: block !important;
     width: 100% !important;
   }
 
-  .blog-page-header {
-    height: 70px !important;
-    padding: 0 20px !important;
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 1001 !important;
-    float: none !important;
-  }
-
-  .blog-header-content {
-    padding: 0 !important;
-  }
-
-  .blog-logo {
-    font-size: 28px !important;
-  }
-
-  /* Ensure sections flow in order */
   .blog-hero-section,
-  .blog-content-container,
-  .blog-cta-section {
+  .blog-content-container {
     float: none !important;
     clear: both !important;
   }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+import FinalCTA from '../components/FinalCTA';
 import Banner from '../components/Banner';
 
 function BlogPage() {
@@ -172,6 +173,7 @@ function BlogPage() {
       maxWidth: '1375px',
       marginLeft: 'auto',
       marginRight: 'auto',
+      marginBottom: '10px'
     },
     ctaContainer: {
       display: 'flex',
@@ -408,10 +410,8 @@ function BlogPage() {
         </section>
       </div>
 
-      
-
-      {/* Footer 
-      <Footer />*/}
+      <FinalCTA />
+      <Footer />
     </div>
     
   );
