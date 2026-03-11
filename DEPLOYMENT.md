@@ -187,4 +187,3 @@ When you make code changes:
 5. Add analytics (Google Analytics, etc.)
 6. Set up monitoring/alerts for downtime
 
-Good luck with your deployment! 🚀
