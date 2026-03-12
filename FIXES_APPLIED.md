@@ -82,5 +82,5 @@
 - ✅ Submit button shows loading state
 - ✅ Success popup on successful submission
 
-Many issues occured while deployment.
+
 
