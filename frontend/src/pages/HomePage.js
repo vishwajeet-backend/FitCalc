@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Banner from '../components/Banner';
 import BMICalculator from '../components/BMICalculator';
 import ResultsDisplay from '../components/ResultsDisplay';
@@ -16,6 +17,7 @@ import Footer from '../components/Footer';
 import FeedbackForm from '../components/FeedbackForm';
 
 const HomePage = () => {
+  const { t } = useTranslation();
   const [bmiData, setBmiData] = useState(null);
 
   const handleBMICalculation = (data) => {
@@ -28,10 +30,13 @@ const HomePage = () => {
       
       <main className="main-content">
         <section className="hero-section">
-          <h1 className="hero-title">Most Popular Fitness Calculators</h1>
+          <h1 className="hero-title">
+            {t('homeHeroTitle', { defaultValue: 'Most Popular Fitness Calculators' })}
+          </h1>
           <p className="hero-description">
-            The Calorie Calculator can be used to estimate the number of calories a person needs to consume each day. 
-            This calculator can also provide some simple guidelines for gaining or losing weight.
+            {t('homeHeroDescription', {
+              defaultValue: 'The BMI Calculator helps you estimate whether your weight is in a healthy range for your height. Use it as a quick screening tool, then pair the result with nutrition, activity, and lifestyle habits to build a sustainable fitness plan.',
+            })}
           </p>
         </section>
 

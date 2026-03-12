@@ -1,17 +1,20 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const FinalCTA = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="final-cta-wrapper">
       <section className="final-cta">
         <div className="cta-container">
           <div className="cta-content">
-            <h2 className="cta-title">Start Calculating Your Fitness Goals Today</h2>
+            <h2 className="cta-title">{t('finalCta.title', { defaultValue: 'Start Calculating Your Fitness Goals Today' })}</h2>
             <p className="cta-description">
-              FitCalc helps you track your health, fitness, pregnancy, and nutrition calculations in seconds.
+              {t('finalCta.description', { defaultValue: 'FitCalc helps you track your health, fitness, pregnancy, and nutrition calculations in seconds.' })}
             </p>
             <button className="cta-button">
-              Use calculators →
+              {t('finalCta.button', { defaultValue: 'Use calculators ->' })}
             </button>
           </div>
         </div>

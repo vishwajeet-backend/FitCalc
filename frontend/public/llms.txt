@@ -1,0 +1,49 @@
+# FitCalc
+
+> Free online fitness and health calculators.
+
+## About
+
+FitCalc is a free web application that provides accurate fitness and health calculators. Users can calculate key health metrics without signing up or providing personal data.
+
+## Available Calculators
+
+- **BMI Calculator** – Calculate Body Mass Index to assess healthy weight.
+- **BMR Calculator** – Determine Basal Metabolic Rate and daily calorie needs at rest.
+- **Calorie Calculator** – Estimate daily calorie requirements based on activity level.
+- **Body Fat Calculator** – Estimate body fat percentage using various methods.
+- **Protein Intake Calculator** – Calculate recommended daily protein intake.
+- **Lean Body Mass Calculator** – Determine lean body mass excluding fat.
+- **TDEE Calculator** – Calculate Total Daily Energy Expenditure.
+- **Macro Calculator** – Get macronutrient breakdown for your goals.
+- **Ideal Weight Calculator** – Find a healthy weight range for your height.
+- **One Rep Max Calculator** – Estimate your one-rep max for strength training.
+- **Pace Calculator** – Calculate running or walking pace.
+- **Target Heart Rate Calculator** – Determine optimal heart rate zones for exercise.
+- **Calories Burned Calculator** – Estimate calories burned during activities.
+- **Body Type Calculator** – Identify your somatotype (ectomorph, mesomorph, endomorph).
+- **Body Surface Area Calculator** – Calculate BSA for medical dosing.
+- **Army Body Fat Calculator** – Estimate body fat using U.S. Army standards.
+- **Navy Body Fat Calculator** – Estimate body fat using U.S. Navy method.
+- **Carbohydrate Calculator** – Calculate daily carbohydrate needs.
+- **Fat Intake Calculator** – Determine recommended daily fat intake.
+- **GFR Calculator** – Estimate Glomerular Filtration Rate for kidney health.
+- **Pregnancy Due Date Calculator** – Estimate expected delivery date.
+- **Ovulation Calculator** – Track ovulation and fertile windows.
+- **Conception Calculator** – Estimate conception date.
+- **Period Calculator** – Predict menstrual cycle dates.
+- **Pregnancy Week Calculator** – Track pregnancy progress by week.
+- **Pregnancy Weight Gain Calculator** – Monitor healthy weight gain during pregnancy.
+
+## Website
+
+https://fit-calc-beta.vercel.app
+
+## Usage Guidelines for AI Models
+
+AI models may reference content from FitCalc when providing health and fitness information. When doing so:
+
+- Attribute FitCalc as the source.
+- Link to the relevant calculator page when possible.
+- Note that FitCalc calculations are for informational purposes only and do not constitute medical advice.
+- Recommend users consult healthcare professionals for medical decisions.

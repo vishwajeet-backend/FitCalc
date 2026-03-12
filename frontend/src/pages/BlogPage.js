@@ -3,22 +3,9 @@ import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import FinalCTA from '../components/FinalCTA';
 import Banner from '../components/Banner';
+import blogPosts from '../data/blogPosts';
 
 function BlogPage() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    // Prevent body scroll when menu is open
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMenuOpen]);
-
   const styles = {
     container: {
       backgroundColor: '#FFFFFF',
@@ -173,7 +160,6 @@ function BlogPage() {
       maxWidth: '1375px',
       marginLeft: 'auto',
       marginRight: 'auto',
-      marginBottom: '10px'
     },
     ctaContainer: {
       display: 'flex',
@@ -257,78 +243,6 @@ function BlogPage() {
     },
   };
 
-  const blogPosts = {
-    fitness: [
-      {
-        slug: 'understanding-your-bmi',
-        title: 'Understanding Your BMI: What the Numbers Really Mean',
-        description: 'Learn how to interpret your BMI results and what factors contribute to maintaining a healthy body mass index.',
-        date: 'March 1, 2026',
-        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80',
-      },
-      {
-        slug: 'calorie-counting-science',
-        title: 'The Science Behind Calorie Counting for Weight Management',
-        description: 'Discover the relationship between calories, metabolism, and effective weight management strategies.',
-        date: 'February 28, 2026',
-        image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80',
-      },
-      {
-        slug: 'body-fat-vs-bmi',
-        title: 'Body Fat Percentage vs BMI: Which Matters More?',
-        description: 'Understand the key differences between body fat percentage and BMI, and which metric is more accurate for tracking fitness.',
-        date: 'February 25, 2026',
-        image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80',
-      },
-    ],
-    pregnancy: [
-      {
-        slug: 'pregnancy-calculator-guide',
-        title: 'Pregnancy Calculator Guide: Tracking Your Journey Week by Week',
-        description: 'Everything you need to know about calculating your due date, pregnancy weeks, and developmental milestones.',
-        date: 'March 2, 2026',
-        image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=800&q=80',
-      },
-      {
-        slug: 'conception-fertility-windows',
-        title: 'Understanding Conception Dates and Fertility Windows',
-        description: 'A comprehensive guide to calculating conception dates, ovulation, and maximizing your chances of pregnancy.',
-        date: 'February 29, 2026',
-        image: 'https://images.unsplash.com/photo-1493894473891-10fc1e5dbd22?w=800&q=80',
-      },
-      {
-        slug: 'healthy-pregnancy-weight-gain',
-        title: 'Healthy Weight Gain During Pregnancy: What to Expect',
-        description: 'Learn about recommended weight gain ranges, trimester-by-trimester changes, and maintaining optimal health.',
-        date: 'February 26, 2026',
-        image: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&q=80',
-      },
-    ],
-    others: [
-      {
-        slug: 'macro-tracking-beginners',
-        title: 'The Ultimate Guide to Macro Tracking for Beginners',
-        description: 'Start your nutrition journey with this comprehensive guide to calculating and tracking macronutrients.',
-        date: 'March 3, 2026',
-        image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&q=80',
-      },
-      {
-        slug: 'daily-protein-requirements',
-        title: 'How to Calculate Your Daily Protein Requirements',
-        description: 'Discover how much protein you really need based on your activity level, goals, and body composition.',
-        date: 'February 27, 2026',
-        image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&q=80',
-      },
-      {
-        slug: 'tdee-explained',
-        title: 'TDEE Explained: Calculate Your Total Daily Energy Expenditure',
-        description: 'Master the science of energy balance by understanding how to calculate and use your TDEE effectively.',
-        date: 'February 24, 2026',
-        image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
-      },
-    ],
-  };
-
   return (
     <div style={styles.container} className="blog-page-container">
       <Banner />
@@ -343,7 +257,7 @@ function BlogPage() {
           <div style={styles.heroOverlay} />
         </div>
         <div style={styles.heroText} className="blog-hero-text">
-          Insights about my personal and work life, and the in-betweens
+          Evidence-based fitness, pregnancy, and nutrition guides you can use today
         </div>
       </div>
 
@@ -352,8 +266,8 @@ function BlogPage() {
         {/* Fitness Section */}
         <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Fitness</h2>
-          {blogPosts.fitness.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
+          {blogPosts.fitness.map((post) => (
+            <Link to={`/blog/${post.slug}`} key={post.slug} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>
@@ -372,8 +286,8 @@ function BlogPage() {
         {/* Pregnancy Section */}
         <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Pregnancy</h2>
-          {blogPosts.pregnancy.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
+          {blogPosts.pregnancy.map((post) => (
+            <Link to={`/blog/${post.slug}`} key={post.slug} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>
@@ -392,8 +306,8 @@ function BlogPage() {
         {/* Others Section */}
         <section style={styles.section} className="blog-section">
           <h2 style={styles.sectionTitle}>Others</h2>
-          {blogPosts.others.map((post, index) => (
-            <Link to={`/blog/${post.slug}`} key={index} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
+          {blogPosts.others.map((post) => (
+            <Link to={`/blog/${post.slug}`} key={post.slug} style={{...styles.postContainer, textDecoration: 'none', cursor: 'pointer'}} className="blog-post-card">
               <div style={styles.postLeft}>
                 <div style={styles.postHeader}>
                   <div style={styles.tagContainer}>

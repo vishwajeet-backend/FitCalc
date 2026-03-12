@@ -1,16 +1,40 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie, Bar, Line, Doughnut } from 'react-chartjs-2';
+import { getCalculationEventByPath, trackCalculationCompleted } from '../utils/analytics';
+import { translateText } from '../utils/translateText';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 // Results container with green header
 const ResultsContainer = ({ title = "Your Results", children, downloadable = false }) => {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const hasTracked = useRef(false);
+
+  useEffect(() => {
+    if (hasTracked.current) {
+      return;
+    }
+
+    const eventName = getCalculationEventByPath(location.pathname);
+    if (!eventName) {
+      return;
+    }
+
+    trackCalculationCompleted(eventName, location.pathname);
+    hasTracked.current = true;
+  }, [location.pathname]);
+
+  const translatedTitle = translateText(title, t, { prefix: 'results' });
+
   return (
     <div className="calculator-results-container">
       <div className="calculator-results-header">
-        <h2 className="calculator-results-title">{title}</h2>
+        <h2 className="calculator-results-title">{translatedTitle}</h2>
         {downloadable && (
           <button className="calculator-download-button">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -28,6 +52,8 @@ const ResultsContainer = ({ title = "Your Results", children, downloadable = fal
 
 // Result card component
 export const ResultCard = ({ title, value, subtitle, unit, variant, color, percentage }) => {
+  const { t } = useTranslation();
+
   // For backward compatibility with color prop
   const cardVariant = variant || (color === '#10b981' || color === '#3b82f6' || color === '#f59e0b' || color === '#ef4444' ? 'light-blue' : 'dark-blue');
   
@@ -37,8 +63,8 @@ export const ResultCard = ({ title, value, subtitle, unit, variant, color, perce
   return (
     <div className={`calculator-result-card ${cardVariant}`} style={style}>
       <div className="calculator-result-card-left">
-        <h3 className="calculator-result-card-title">{title}</h3>
-        {subtitle && <p className="calculator-result-card-subtitle">{subtitle}</p>}
+        <h3 className="calculator-result-card-title">{translateText(title, t, { prefix: 'results.card' })}</h3>
+        {subtitle && <p className="calculator-result-card-subtitle">{translateText(subtitle, t, { prefix: 'results.card' })}</p>}
       </div>
       <div className="calculator-result-card-right">
         {percentage !== undefined ? (
@@ -70,18 +96,24 @@ export const ResultsGrid = ({ children, columns = 2 }) => {
 
 // Info row for displaying key-value pairs
 export const InfoRow = ({ label, value, highlight = false }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="calculator-info-row">
-      <span className="calculator-info-label">{label}</span>
-      <span className={`calculator-info-value ${highlight ? 'highlight' : ''}`}>{value}</span>
+      <span className="calculator-info-label">{translateText(label, t, { prefix: 'results.info' })}</span>
+      <span className={`calculator-info-value ${highlight ? 'highlight' : ''}`}>
+        {typeof value === 'string' ? translateText(value, t, { prefix: 'results.value' }) : value}
+      </span>
     </div>
   );
 };
 
 // Chart wrappers
 export const BMIChart = ({ bmi, category }) => {
+  const { t } = useTranslation();
+
   const data = {
-    labels: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+    labels: [t('underweight'), t('normalWeight'), t('overweight'), t('obese')],
     datasets: [
       {
         data: [18.5, 6.5, 5, 10], // BMI ranges
@@ -117,8 +149,10 @@ export const BMIChart = ({ bmi, category }) => {
 };
 
 export const CalorieChart = ({ maintain, mildLoss, moderateLoss, extremeLoss }) => {
+  const { t } = useTranslation();
+
   const data = {
-    labels: ['Maintain', 'Mild Loss', 'Weight Loss', 'Extreme Loss'],
+    labels: [t('maintain'), t('mildWeightLoss'), t('weightLoss'), t('extremeWeightLoss')],
     datasets: [
       {
         label: 'Calories/day',
@@ -187,8 +221,14 @@ export const WeightProgressChart = ({ currentWeight, idealWeight, healthyRange }
 };
 
 export const MacroChart = ({ protein, carbs, fat }) => {
+  const { t } = useTranslation();
+
   const data = {
-    labels: ['Protein', 'Carbs', 'Fat'],
+    labels: [
+      translateText('Protein', t, { prefix: 'macro' }),
+      translateText('Carbs', t, { prefix: 'macro' }),
+      translateText('Fat', t, { prefix: 'macro' }),
+    ],
     datasets: [
       {
         data: [protein, carbs, fat],
@@ -221,12 +261,14 @@ export const MacroChart = ({ protein, carbs, fat }) => {
 };
 
 export const BodyFatChart = ({ bodyFatPercentage, gender }) => {
+  const { t } = useTranslation();
+
   const categories = ['Essential', 'Athletes', 'Fitness', 'Average', 'Obese'];
   const maleRanges = [3, 11, 7, 7, 20];
   const femaleRanges = [12, 9, 7, 8, 20];
   
   const data = {
-    labels: categories,
+    labels: categories.map((item) => translateText(item, t, { prefix: 'bodyFat.categories' })),
     datasets: [
       {
         label: 'Body Fat % Range',

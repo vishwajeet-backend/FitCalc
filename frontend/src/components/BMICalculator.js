@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const BMICalculator = ({ onCalculate }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     age: 25,
     gender: 'male',
@@ -44,20 +47,20 @@ const BMICalculator = ({ onCalculate }) => {
     
     const bmi = weightInKg / (heightInMeters * heightInMeters);
     
-    let category = '';
+    let categoryKey = '';
     let categoryColor = '';
     
     if (bmi < 18.5) {
-      category = 'Under';
+      categoryKey = 'underweight';
       categoryColor = '#ff8c42';
     } else if (bmi < 25) {
-      category = 'Normal';
+      categoryKey = 'normalWeight';
       categoryColor = '#10b981';
     } else if (bmi < 30) {
-      category = 'Over';
+      categoryKey = 'overweight';
       categoryColor = '#f59e0b';
     } else {
-      category = 'Obese';
+      categoryKey = 'obese';
       categoryColor = '#ef4444';
     }
     
@@ -70,7 +73,7 @@ const BMICalculator = ({ onCalculate }) => {
     
     const result = {
       bmi: parseFloat(bmi.toFixed(1)),
-      category,
+      categoryKey,
       categoryColor,
       healthyBMIRange: '18.5',
       bmiPrime: parseFloat(bmiPrime.toFixed(2)),
@@ -85,8 +88,10 @@ const BMICalculator = ({ onCalculate }) => {
   return (
     <div className="bmi-calculator-v2">
       <div className="calculator-header-v2">
-        <h2 className="calculator-title-v2">BMI Calculator</h2>
-        <p className="calculator-subtitle-v2">Estimate your Body Mass Index using height and weight.</p>
+        <h2 className="calculator-title-v2">{t('bmiCalculator')}</h2>
+        <p className="calculator-subtitle-v2">
+          {t('bmiCalculatorSubtitle', { defaultValue: 'Estimate your Body Mass Index using height and weight.' })}
+        </p>
       </div>
 
       <div className="unit-toggle-v2">
@@ -94,19 +99,19 @@ const BMICalculator = ({ onCalculate }) => {
           className={`unit-button-v2 ${formData.unit === 'us' ? 'active-v2' : 'inactive-v2'}`}
           onClick={() => handleInputChange('unit', 'us')}
         >
-          US Units
+          {t('usUnits')}
         </button>
         <button 
           className={`unit-button-v2 ${formData.unit === 'metric' ? 'active-v2' : 'inactive-v2'}`}
           onClick={() => handleInputChange('unit', 'metric')}
         >
-          Metric Units
+          {t('metricUnits')}
         </button>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); calculateBMI(); }} className="calculator-form-v2">
         <div className="form-group-v2">
-          <label className="form-label-v2">Age</label>
+          <label className="form-label-v2">{t('age')}</label>
           <input
             type="number"
             value={formData.age}
@@ -118,25 +123,25 @@ const BMICalculator = ({ onCalculate }) => {
         </div>
 
         <div className="form-group-v2">
-          <label className="form-label-v2">Gender</label>
+          <label className="form-label-v2">{t('gender')}</label>
           <div className="gender-options-v2">
             <div className="gender-option-v2" onClick={() => handleInputChange('gender', 'male')}>
               <div className={`gender-radio-v2 ${formData.gender === 'male' ? 'selected-v2' : ''}`}>
                 {formData.gender === 'male' && <div className="radio-inner-v2"></div>}
               </div>
-              <span className={`gender-label-v2 ${formData.gender === 'male' ? '' : 'inactive-text'}`}>Male</span>
+              <span className={`gender-label-v2 ${formData.gender === 'male' ? '' : 'inactive-text'}`}>{t('male')}</span>
             </div>
             <div className="gender-option-v2" onClick={() => handleInputChange('gender', 'female')}>
               <div className={`gender-radio-v2 ${formData.gender === 'female' ? 'selected-v2' : ''}`}>
                 {formData.gender === 'female' && <div className="radio-inner-v2"></div>}
               </div>
-              <span className={`gender-label-v2 ${formData.gender === 'female' ? '' : 'inactive-text'}`}>Female</span>
+              <span className={`gender-label-v2 ${formData.gender === 'female' ? '' : 'inactive-text'}`}>{t('female')}</span>
             </div>
           </div>
         </div>
 
         <div className="form-group-v2">
-          <label className="form-label-v2">Height</label>
+          <label className="form-label-v2">{t('height')}</label>
           <div className="height-inputs-v2">
             <input
               type="number"
@@ -164,7 +169,7 @@ const BMICalculator = ({ onCalculate }) => {
         </div>
 
         <div className="form-group-v2">
-          <label className="form-label-v2">Weight</label>
+          <label className="form-label-v2">{t('weight')}</label>
           <div className="weight-row-v2">
             <input
               type="number"
@@ -179,7 +184,7 @@ const BMICalculator = ({ onCalculate }) => {
         </div>
 
         <div className="form-group-v2">
-          <label className="form-label-v2">Activity</label>
+          <label className="form-label-v2">{t('activityLevel')}</label>
           <input
             type="number"
             value={formData.activity}
@@ -191,7 +196,7 @@ const BMICalculator = ({ onCalculate }) => {
         </div>
 
         <button type="submit" className="calculate-button-v2">
-          Start Calculating
+          {t('calculate')}
         </button>
       </form>
     </div>

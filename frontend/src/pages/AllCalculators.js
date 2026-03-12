@@ -1,42 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Banner from '../components/Banner';
 import Footer from '../components/Footer';
 
 const AllCalculators = () => {
+  const { t } = useTranslation();
+
   const fitnessCalculators = [
-    { name: 'BMI Calculator', path: '/calculator/bmi' },
-    { name: 'Calorie Calculator', path: '/calculator/calorie' },
-    { name: 'Body Fat Calculator', path: '/calculator/body-fat' },
-    { name: 'BMR Calculator', path: '/calculator/bmr' },
-    { name: 'Ideal Weight Calculator', path: '/calculator/ideal-weight' },
-    { name: 'Pace Calculator', path: '/calculator/pace' },
-    { name: 'Army Body Fat Calculator', path: '/calculator/army-body-fat' },
-    { name: 'Lean Body Mass Calculator', path: '/calculator/lean-body-mass' },
-    { name: 'Healthy Weight Calculator', path: '/calculator/healthy-weight' },
-    { name: 'Calories Burned Calculator', path: '/calculator/calories-burned' },
-    { name: 'One Rep Max Calculator', path: '/calculator/one-rep-max' },
-    { name: 'Target Heart Rate Calculator', path: '/calculator/target-heart-rate' }
+    { key: 'bmiCalculator', path: '/bmi-calculator' },
+    { key: 'calorieCalculator', path: '/calorie-calculator' },
+    { key: 'bodyFatCalculator', path: '/body-fat-calculator' },
+    { key: 'bmrCalculator', path: '/bmr-calculator' },
+    { key: 'idealWeightCalculator', path: '/ideal-weight-calculator' },
+    { key: 'paceCalculator', path: '/pace-calculator' },
+    { key: 'armyBodyFatCalculator', path: '/army-body-fat-calculator' },
+    { key: 'leanBodyMassCalculator', path: '/lean-body-mass-calculator' },
+    { key: 'healthyWeightCalculator', path: '/healthy-weight-calculator' },
+    { key: 'caloriesBurnedCalculator', path: '/calories-burned-calculator' },
+    { key: 'oneRepMaxCalculator', path: '/one-rep-max-calculator' },
+    { key: 'targetHeartRateCalculator', path: '/target-heart-rate-calculator' }
   ];
 
   const pregnancyCalculators = [
-    { name: 'Due Date Calculator', path: '/calculator/pregnancy-due-date' },
-    { name: 'Pregnancy Week Calculator', path: '/calculator/pregnancy-week' },
-    { name: 'Pregnancy Weight Gain Calculator', path: '/calculator/pregnancy-weight-gain' },
-    { name: 'Conception Calculator', path: '/calculator/conception' },
-    { name: 'Ovulation Calculator', path: '/calculator/ovulation' },
-    { name: 'Period Calculator', path: '/calculator/period' }
+    { key: 'dueDateCalculator', path: '/due-date-calculator' },
+    { key: 'pregnancyWeekCalculator', path: '/pregnancy-week-calculator' },
+    { key: 'pregnancyWeightGainCalculator', path: '/pregnancy-weight-gain-calculator' },
+    { key: 'conceptionCalculator', path: '/conception-calculator' },
+    { key: 'ovulationCalculator', path: '/ovulation-calculator' },
+    { key: 'periodCalculator', path: '/period-calculator' }
   ];
 
   const otherCalculators = [
-    { name: 'Macro Calculator', path: '/calculator/macro' },
-    { name: 'Carbohydrate Calculator', path: '/calculator/carbohydrate' },
-    { name: 'Protein Calculator', path: '/calculator/protein' },
-    { name: 'Fat Intake Calculator', path: '/calculator/fat-intake' },
-    { name: 'TDEE Calculator', path: '/calculator/tdee' },
-    { name: 'GFR Calculator', path: '/calculator/gfr' },
-    { name: 'Body Type Calculator', path: '/calculator/body-type' },
-    { name: 'Body Surface Area Calculator', path: '/calculator/body-surface-area' }
+    { key: 'macroCalculator', path: '/macro-calculator' },
+    { key: 'carbohydrateCalculator', path: '/carbohydrate-calculator' },
+    { key: 'proteinCalculator', path: '/protein-intake-calculator' },
+    { key: 'fatIntakeCalculator', path: '/fat-intake-calculator' },
+    { key: 'tdeeCalculator', path: '/tdee-calculator' },
+    { key: 'gfrCalculator', path: '/gfr-calculator' },
+    { key: 'bodyTypeCalculator', path: '/body-type-calculator' },
+    { key: 'bodySurfaceAreaCalculator', path: '/body-surface-area-calculator' }
   ];
 
   return (
@@ -45,47 +48,47 @@ const AllCalculators = () => {
       
       <main className="all-calculators-content">
         <div className="breadcrumb">
-          <Link to="/">home</Link>
+          <Link to="/">{t('home').toLowerCase()}</Link>
           <span> / </span>
-          <Link to="/fitness">fitness & health</Link>
+          <Link to="/fitness">{t('fitnessAndHealth').toLowerCase()}</Link>
           <span> / </span>
-          <span>target heart rate calculator</span>
+          <span>{t('allCalculators').toLowerCase()}</span>
         </div>
 
         <div className="calculators-header">
-          <h1 className="page-title">Fitness Calculators</h1>
+          <h1 className="page-title">{t('allCalculators')}</h1>
         </div>
 
         <div className="calculators-grid-section">
           <div className="calculators-categories">
             <div className="calculator-category">
-              <h3 className="category-subtitle">Fitness Calculators</h3>
+              <h3 className="category-subtitle">{t('fitness')}</h3>
               <div className="calculator-links">
                 {fitnessCalculators.map((calc, index) => (
                   <Link key={index} to={calc.path} className="calculator-link">
-                    {calc.name}
+                    {t(calc.key)}
                   </Link>
                 ))}
               </div>
             </div>
 
             <div className="calculator-category">
-              <h3 className="category-subtitle">Pregnancy</h3>
+              <h3 className="category-subtitle">{t('pregnancy')}</h3>
               <div className="calculator-links">
                 {pregnancyCalculators.map((calc, index) => (
                   <Link key={index} to={calc.path} className="calculator-link">
-                    {calc.name}
+                    {t(calc.key)}
                   </Link>
                 ))}
               </div>
             </div>
 
             <div className="calculator-category">
-              <h3 className="category-subtitle">Other</h3>
+              <h3 className="category-subtitle">{t('otherCategory', { defaultValue: 'Other' })}</h3>
               <div className="calculator-links">
                 {otherCalculators.map((calc, index) => (
                   <Link key={index} to={calc.path} className="calculator-link">
-                    {calc.name}
+                    {t(calc.key)}
                   </Link>
                 ))}
               </div>

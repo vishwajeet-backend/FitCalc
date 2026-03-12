@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Banner = () => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Close menu when clicking outside
@@ -52,7 +55,7 @@ const Banner = () => {
     <header className="banner">
       <div className="banner-container">
         <div className="banner-inner">
-          <Link to="/" className="logo" onClick={closeMenu}>FitCalc</Link>
+          <Link to="/" className="logo" onClick={closeMenu}>{t('siteName')}</Link>
           
           {/* Hamburger Button */}
           <button 
@@ -68,10 +71,11 @@ const Banner = () => {
 
           {/* Navigation Menu */}
           <nav className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-            <Link to="/calculators" className="nav-item" onClick={closeMenu}>Fitness</Link>
-            <Link to="/pregnancy" className="nav-item" onClick={closeMenu}>Pregnancy</Link>
-            <Link to="/metabolism" className="nav-item" onClick={closeMenu}>Metabolism</Link>
-            <Link to="/blog" className="nav-item" onClick={closeMenu}>Blog</Link>
+            <Link to="/calculators" className="nav-item" onClick={closeMenu}>{t('fitness')}</Link>
+            <Link to="/pregnancy" className="nav-item" onClick={closeMenu}>{t('pregnancy')}</Link>
+            <Link to="/metabolism" className="nav-item" onClick={closeMenu}>{t('metabolism')}</Link>
+            <Link to="/blog" className="nav-item" onClick={closeMenu}>{t('blog')}</Link>
+            <LanguageSwitcher className="nav-language-switcher" />
           </nav>
 
           {/* Mobile Menu Overlay */}

@@ -39,6 +39,14 @@ app.use('/api/users', userRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/log/adblock', adblockRoutes);
 
+// API 404 handler
+app.use('/api', (req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: 'API endpoint does not exist',
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1,6 +1,31 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const BMIGauge = ({ bmi, category, categoryColor }) => {
+const normalizeCategoryKey = (categoryValue) => {
+  switch (categoryValue) {
+    case 'Under':
+    case 'Underweight':
+    case 'underweight':
+      return 'underweight';
+    case 'Normal':
+    case 'Normal weight':
+    case 'normalWeight':
+      return 'normalWeight';
+    case 'Over':
+    case 'Overweight':
+    case 'overweight':
+      return 'overweight';
+    case 'Obese':
+    case 'obese':
+      return 'obese';
+    default:
+      return 'normalWeight';
+  }
+};
+
+const BMIGauge = ({ bmi }) => {
+  const { t } = useTranslation();
+
   // Calculate the angle for the needle based on BMI value
   const calculateNeedleAngle = (bmiValue) => {
     if (bmiValue < 15) return -80;
@@ -68,10 +93,10 @@ const BMIGauge = ({ bmi, category, categoryColor }) => {
         </g>
 
         {/* Category Labels positioned around the gauge */}
-        <text x="80" y="240" textAnchor="middle" className="gauge-label-v2 under" fill="#ff8c42" fontSize="18" fontWeight="600">Under</text>
-        <text x="20" y="75" textAnchor="start" className="gauge-label-v2 normal" fill="#10b981" fontSize="18" fontWeight="600">Normal</text>
-        <text x="340" y="75" textAnchor="end" className="gauge-label-v2 over" fill="#f59e0b" fontSize="18" fontWeight="600">Over</text>
-        <text x="304" y="240" textAnchor="middle" className="gauge-label-v2 obese" fill="#ef4444" fontSize="18" fontWeight="600">Obese</text>
+        <text x="80" y="240" textAnchor="middle" className="gauge-label-v2 under" fill="#ff8c42" fontSize="18" fontWeight="600">{t('underweight')}</text>
+        <text x="20" y="75" textAnchor="start" className="gauge-label-v2 normal" fill="#10b981" fontSize="18" fontWeight="600">{t('normalWeight')}</text>
+        <text x="340" y="75" textAnchor="end" className="gauge-label-v2 over" fill="#f59e0b" fontSize="18" fontWeight="600">{t('overweight')}</text>
+        <text x="304" y="240" textAnchor="middle" className="gauge-label-v2 obese" fill="#ef4444" fontSize="18" fontWeight="600">{t('obese')}</text>
         
         {/* Number labels - positioned at segment boundaries */}
         <text x="80" y="210" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">15</text>
@@ -84,36 +109,40 @@ const BMIGauge = ({ bmi, category, categoryColor }) => {
 };
 
 const ResultsDisplay = ({ bmiData }) => {
+  const { t } = useTranslation();
+
   if (!bmiData) {
     return (
       <div className="results-section-v2">
         <div className="results-header-v2">
-          <h2 className="results-title-v2">Your Results</h2>
+          <h2 className="results-title-v2">{t('results')}</h2>
           <div className="save-icon-v2">💾</div>
         </div>
         <div className="results-placeholder">
-          Calculate your BMI to see results
+          {t('bmiResultsPlaceholder', { defaultValue: 'Calculate your BMI to see results' })}
         </div>
       </div>
     );
   }
 
-  const getCategoryBgColor = (category) => {
-    switch(category) {
-      case 'Normal': return '#dcfce7';
-      case 'Under': return '#fed7aa';
-      case 'Over': return '#fef3c7';
-      case 'Obese': return '#fecaca';
+  const categoryKey = normalizeCategoryKey(bmiData.categoryKey || bmiData.category);
+
+  const getCategoryBgColor = (resolvedCategoryKey) => {
+    switch(resolvedCategoryKey) {
+      case 'normalWeight': return '#dcfce7';
+      case 'underweight': return '#fed7aa';
+      case 'overweight': return '#fef3c7';
+      case 'obese': return '#fecaca';
       default: return '#dcfce7';
     }
   };
 
-  const getCategoryTextColor = (category) => {
-    switch(category) {
-      case 'Normal': return '#008236';
-      case 'Under': return '#ff8c42';
-      case 'Over': return '#f59e0b';
-      case 'Obese': return '#ef4444';
+  const getCategoryTextColor = (resolvedCategoryKey) => {
+    switch(resolvedCategoryKey) {
+      case 'normalWeight': return '#008236';
+      case 'underweight': return '#ff8c42';
+      case 'overweight': return '#f59e0b';
+      case 'obese': return '#ef4444';
       default: return '#008236';
     }
   };
@@ -121,7 +150,7 @@ const ResultsDisplay = ({ bmiData }) => {
   return (
     <div className="results-section-v2">
       <div className="results-header-v2">
-        <h2 className="results-title-v2">Your Results</h2>
+        <h2 className="results-title-v2">{t('results')}</h2>
         <div className="save-icon-v2">💾</div>
       </div>
 
@@ -132,33 +161,33 @@ const ResultsDisplay = ({ bmiData }) => {
           <div 
             className="bmi-category-badge-v2" 
             style={{ 
-              backgroundColor: getCategoryBgColor(bmiData.category),
-              color: getCategoryTextColor(bmiData.category)
+              backgroundColor: getCategoryBgColor(categoryKey),
+              color: getCategoryTextColor(categoryKey)
             }}
           >
-            {bmiData.category}
+            {t(categoryKey)}
           </div>
         </div>
         
-        <BMIGauge bmi={bmiData.bmi} category={bmiData.category} categoryColor={bmiData.categoryColor} />
+        <BMIGauge bmi={bmiData.bmi} />
         
         <div className="stats-grid-v2">
           <div className="stat-card-v2">
-            <div className="stat-label-v2">Healthy BMI Range</div>
+            <div className="stat-label-v2">{t('healthyBMIRange')}</div>
             <div className="stat-value-v2">
               18.5 <span className="stat-unit-v2">kg/m²</span>
             </div>
           </div>
           
           <div className="stat-card-v2 primary-v2">
-            <div className="stat-label-v2">BMI Prime</div>
+            <div className="stat-label-v2">{t('bmiPrime')}</div>
             <div className="stat-value-v2">
               {bmiData.bmiPrime} <span className="stat-unit-v2">kg/m²</span>
             </div>
           </div>
           
           <div className="stat-card-v2">
-            <div className="stat-label-v2">Healthy Weight Range</div>
+            <div className="stat-label-v2">{t('healthyWeightRange')}</div>
             <div className="stat-value-v2">{bmiData.healthyWeightRange}</div>
           </div>
         </div>

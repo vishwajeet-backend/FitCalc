@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * AdblockModal — Accessible, non-dismissible modal shown when adblock is detected.
@@ -8,6 +9,7 @@ import React, { useEffect, useRef } from 'react';
  *   loading   — whether a retry detection is in progress
  */
 const AdblockModal = ({ onRetry, loading }) => {
+  const { t } = useTranslation();
   const retryRef = useRef(null);
 
   // Trap focus inside the modal and prevent Escape from closing it
@@ -90,13 +92,11 @@ const AdblockModal = ({ onRetry, loading }) => {
         </div>
 
         <h2 id="adblock-modal-title" style={styles.title}>
-          Ad Blocker Detected
+          {t('adblock.title', { defaultValue: 'Ad Blocker Detected' })}
         </h2>
 
         <p id="adblock-modal-desc" style={styles.description}>
-          It looks like you're using an ad blocker. FitCalc relies on ads to remain
-          free. Please disable your ad blocker for this site and click{' '}
-          <strong>Retry</strong> to continue using the calculators.
+          {t('adblock.description', { defaultValue: "It looks like you are using an ad blocker. FitCalc relies on ads to remain free. Please disable your ad blocker for this site and click Retry to continue using the calculators." })}
         </p>
 
         <div style={styles.actions}>
@@ -110,14 +110,14 @@ const AdblockModal = ({ onRetry, loading }) => {
               cursor: loading ? 'not-allowed' : 'pointer',
             }}
           >
-            {loading ? 'Checking…' : 'Retry'}
+            {loading ? t('adblock.checking', { defaultValue: 'Checking...' }) : t('adblock.retry', { defaultValue: 'Retry' })}
           </button>
 
           <a
             href="/help/disable-adblock"
             style={styles.helpLink}
           >
-            How to disable your ad blocker
+            {t('adblock.helpLink', { defaultValue: 'How to disable your ad blocker' })}
           </a>
         </div>
       </div>

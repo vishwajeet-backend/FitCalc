@@ -2,80 +2,12 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
+import { findPostBySlug, getRelatedPosts } from '../data/blogPosts';
 
 const BlogArticlePage = () => {
   const { slug } = useParams();
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    // Prevent body scroll when menu is open
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMenuOpen]);
-
-  // Sample article data (in production, this would be fetched based on slug)
-  const article = {
-    title: 'Insights about my personal and work life, and the in-betweens',
-    date: 'August 13, 2021',
-    category: 'Fitness',
-    heroImage: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&h=445&fit=crop',
-    content: [
-      {
-        type: 'paragraph',
-        text: "Design comps, layouts, wireframes - will your clients accept that you go about things the facile way? Authorities in our business will tell in no uncertain terms that Lorem Ipsum is that huge, huge no no to forswear forever.\n\nNot so fast, I would say, there are some redeeming factors in favor of greeking text, as its use is merely the symptom of a worse problem to take into consideration.\n\nThe toppings you may chose for that TV dinner pizza slice when you forgot to shop for foods, the paint you may slap on your face to impress the new boss is your business. But what about your daily bread?"
-      },
-      {
-        type: 'image',
-        src: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=490&fit=crop'
-      },
-      {
-        type: 'paragraph',
-        text: "The toppings you may chose for that TV dinner pizza slice when you forgot to shop for foods, the paint you may slap on your face to impress the new boss is your business. But what about your daily bread? Not so fast, I would say, there are some redeeming factors in favor of greeking text, as its use is merely the symptom of a worse problem to take into consideration.\n\nDesign comps, layouts, wireframes - will your clients accept that you go about things the facile way? Authorities in our business will tell in no uncertain terms that Lorem Ipsum is that huge, huge no no to forswear forever."
-      },
-      {
-        type: 'blockquote',
-        text: "Design comps, layouts, wireframes - will your clients accept that you go about things the facile way? Authorities in our business will tell in no uncertain terms that Lorem Ipsum is that huge, huge no no to forswear forever."
-      },
-      {
-        type: 'paragraph',
-        text: "Design comps, layouts, wireframes - will your clients accept that you go about things the facile way? Authorities in our business will tell in no uncertain terms that Lorem Ipsum is that huge, huge no no to forswear forever.\n\nThe toppings you may chose for that TV dinner pizza slice when you forgot to shop for foods, the paint you may slap on your face to impress the new boss is your business. But what about your daily bread? Not so fast, I would say, there are some redeeming factors in favor of greeking text, as its use is merely the symptom of a worse problem to take into consideration.\n\nNot so fast, I would say, there are some redeeming factors in favor of greeking text, as its use is merely the symptom of a worse problem to take into consideration.\n\nDesign comps, layouts, wireframes - will your clients accept that you go about things the facile way? Authorities in our business will tell in no uncertain terms that Lorem Ipsum is that huge, huge no no to forswear forever."
-      }
-    ]
-  };
-
-  // Related posts data
-  const relatedPosts = [
-    {
-      id: 'programming-cartoons',
-      title: '10 Hilarious Cartoons That Depict Real-Life Problems of Programmers',
-      description: 'Redefined the user acquisition and redesigned the onboarding experience, all within 3 working weeks.',
-      date: 'August 13, 2021',
-      category: 'Fitness',
-      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=502&h=210&fit=crop'
-    },
-    {
-      id: 'design-workflow',
-      title: '10 Hilarious Cartoons That Depict Real-Life Problems of Programmers',
-      description: 'Redefined the user acquisition and redesigned the onboarding experience, all within 3 working weeks.',
-      date: 'August 13, 2021',
-      category: 'Fitness',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=502&h=210&fit=crop'
-    },
-    {
-      id: 'ux-patterns',
-      title: '10 Hilarious Cartoons That Depict Real-Life Problems of Programmers',
-      description: 'Redefined the user acquisition and redesigned the onboarding experience, all within 3 working weeks.',
-      date: 'August 13, 2021',
-      category: 'Fitness',
-      image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=502&h=210&fit=crop'
-    }
-  ];
+  const article = findPostBySlug(slug) || findPostBySlug('understanding-your-bmi');
+  const relatedPosts = getRelatedPosts(article.slug);
 
   const styles = {
     pageContainer: {
@@ -168,6 +100,27 @@ const BlogArticlePage = () => {
       display: 'flex',
       flexDirection: 'column',
       gap: '52px'
+    },
+    articleMeta: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      marginTop: '-20px'
+    },
+    articleCategory: {
+      backgroundColor: '#EBF2FE',
+      borderRadius: '999px',
+      padding: '6px 12px',
+      fontFamily: "'IBM Plex Sans', sans-serif",
+      fontSize: '13px',
+      fontWeight: 600,
+      color: '#232E52',
+      textTransform: 'uppercase'
+    },
+    articleDate: {
+      fontFamily: "'Graphik', sans-serif",
+      fontSize: '14px',
+      color: '#4A5678'
     },
     articleParagraph: {
       fontFamily: "'IBM Plex Sans', sans-serif",
@@ -303,6 +256,10 @@ const BlogArticlePage = () => {
       {/* Article Content */}
       <div style={styles.contentWrapper} className="article-content-wrapper">
         <article style={styles.articleContainer} className="article-container">
+          <div style={styles.articleMeta}>
+            <span style={styles.articleCategory}>{article.category}</span>
+            <span style={styles.articleDate}>{article.date}</span>
+          </div>
           {article.content.map((block, index) => {
             if (block.type === 'paragraph') {
               return (
@@ -315,7 +272,7 @@ const BlogArticlePage = () => {
                 <img 
                   key={index} 
                   src={block.src} 
-                  alt="Article content" 
+                  alt={block.alt || article.title}
                   style={styles.contentImage}
                   className="article-content-image"
                 />
@@ -333,10 +290,10 @@ const BlogArticlePage = () => {
 
         {/* Related Posts */}
         <div style={styles.relatedSection} className="article-related-section">
-          <h2 style={styles.relatedHeading}>Fitness</h2>
+          <h2 style={styles.relatedHeading}>{article.category}</h2>
           <div style={styles.relatedPostsContainer}>
             {relatedPosts.map((post) => (
-              <Link key={post.id} to={`/blog/${post.id}`} style={styles.postCard} className="article-post-card">
+              <Link key={post.slug} to={`/blog/${post.slug}`} style={styles.postCard} className="article-post-card">
                 <div style={styles.postLeft}>
                   <div style={styles.postTop}>
                     <div style={styles.tagContainer}>

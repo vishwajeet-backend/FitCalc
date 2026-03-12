@@ -1,50 +1,53 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-grid">
           <div className="footer-section">
-            <h3>Fitness</h3>
+            <h3>{t('fitness')}</h3>
             <ul>
-              <li><Link to="/calculator/bmi">BMI Calculator</Link></li>
-              <li><Link to="/calculator/calorie">Calorie Calculator</Link></li>
-              <li><Link to="/calculator/body-fat">Body Fat Calculator</Link></li>
-              <li><Link to="/calculator/tdee">TDEE Calculator</Link></li>
+              <li><Link to="/bmi-calculator">{t('bmiCalculator')}</Link></li>
+              <li><Link to="/calorie-calculator">{t('calorieCalculator')}</Link></li>
+              <li><Link to="/body-fat-calculator">{t('bodyFatCalculator')}</Link></li>
+              <li><Link to="/tdee-calculator">{t('tdeeCalculator')}</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
-            <h3>Pregnancy</h3>
+            <h3>{t('pregnancy')}</h3>
             <ul>
-              <li><Link to="/calculator/due-date">Due Date Calculator</Link></li>
-              <li><Link to="/calculator/pregnancy-week">Pregnancy Week</Link></li>
+              <li><Link to="/due-date-calculator">{t('dueDateCalculator')}</Link></li>
+              <li><Link to="/pregnancy-week-calculator">{t('pregnancyWeekCalculator')}</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Nutrition</h3>
             <ul>
-              <li><Link to="/calculator/protein">Protein Calculator</Link></li>
-              <li><Link to="/calculator/macro">Macro Calculator</Link></li>
+              <li><Link to="/protein-intake-calculator">{t('proteinCalculator')}</Link></li>
+              <li><Link to="/macro-calculator">{t('macroCalculator')}</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Company</h3>
             <ul>
-              <li><Link to="/blog">Blog</Link></li>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
-              <li><Link to="/terms">Terms & Disclaimer</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
+              <li><Link to="/blog">{t('blog')}</Link></li>
+              <li><Link to="/privacy">{t('privacyPolicy')}</Link></li>
+              <li><Link to="/terms">{t('termsDisclaimer')}</Link></li>
+              <li><Link to="/contact">{t('contact')}</Link></li>
             </ul>
           </div>
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; 2024 FitCalc. All rights reserved. Not medical advice. Consult a professional for health decisions.</p>
+          <p>&copy; 2026 FitCalc. {t('copyright')}</p>
         </div>
       </div>
     </footer>

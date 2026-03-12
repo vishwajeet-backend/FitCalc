@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
 import AllCalculators from './pages/AllCalculators';
@@ -35,7 +35,16 @@ import BlogArticlePage from './pages/BlogArticlePage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import DisableAdblockPage from './pages/help/DisableAdblockPage';
+import NotFoundPage from './pages/NotFoundPage';
+import RouteMetaTracker from './components/RouteMetaTracker';
 import './pages/AllCalculators.css';
+
+const withMeta = (element, noIndex = false) => (
+  <>
+    <RouteMetaTracker noIndex={noIndex} />
+    {element}
+  </>
+);
 
 function App() {
   return (
@@ -43,55 +52,87 @@ function App() {
       <div className="App">
         <Routes>
           {/* Home */}
-          <Route path="/" element={<HomePage />} />
-          
+          <Route path="/" element={withMeta(<HomePage />)} />
+
           {/* All Calculators Page */}
-          <Route path="/calculators" element={<AllCalculators />} />
-          
-          {/* Specific Calculator Pages */}
-          <Route path="/calculator/bmi" element={<BMICalculatorPage />} />
-          <Route path="/calculator/calorie" element={<CalorieCalculatorPage />} />
-          <Route path="/calculator/body-fat" element={<BodyFatCalculatorPage />} />
-          <Route path="/calculator/lean-body-mass" element={<LeanBodyMassCalculatorPage />} />
-          <Route path="/calculator/ideal-weight" element={<IdealWeightCalculatorPage />} />
-          <Route path="/calculator/pace" element={<PaceCalculatorPage />} />
-          <Route path="/calculator/army-body-fat" element={<ArmyBodyFatCalculatorPage />} />
-          <Route path="/calculator/navy-body-fat" element={<NavyBodyFatCalculatorPage />} />
-          <Route path="/calculator/bmr" element={<BMRCalculatorPage />} />
-          <Route path="/calculator/macro" element={<MacroCalculatorPage />} />
-          <Route path="/calculator/protein" element={<ProteinCalculatorPage />} />
-          <Route path="/calculator/one-rep-max" element={<OneRepMaxCalculatorPage />} />
-          <Route path="/calculator/carbohydrate" element={<CarbohydrateCalculatorPage />} />
-          <Route path="/calculator/fat-intake" element={<FatIntakeCalculatorPage />} />
-          <Route path="/calculator/tdee" element={<TDEECalculatorPage />} />
-          <Route path="/calculator/gfr" element={<GFRCalculatorPage />} />
-          <Route path="/calculator/body-type" element={<BodyTypeCalculatorPage />} />
-          <Route path="/calculator/body-surface-area" element={<BodySurfaceAreaCalculatorPage />} />
-          <Route path="/calculator/healthy-weight" element={<HealthyWeightCalculatorPage />} />
-          <Route path="/calculator/calories-burned" element={<CaloriesBurnedCalculatorPage />} />
-          <Route path="/calculator/target-heart-rate" element={<TargetHeartRateCalculatorPage />} />
-          
+          <Route path="/calculators" element={withMeta(<AllCalculators />)} />
+
+          {/* Specific Calculator Pages (Clean SEO URLs) */}
+          <Route path="/bmi-calculator" element={withMeta(<BMICalculatorPage />)} />
+          <Route path="/calorie-calculator" element={withMeta(<CalorieCalculatorPage />)} />
+          <Route path="/body-fat-calculator" element={withMeta(<BodyFatCalculatorPage />)} />
+          <Route path="/lean-body-mass-calculator" element={withMeta(<LeanBodyMassCalculatorPage />)} />
+          <Route path="/ideal-weight-calculator" element={withMeta(<IdealWeightCalculatorPage />)} />
+          <Route path="/pace-calculator" element={withMeta(<PaceCalculatorPage />)} />
+          <Route path="/army-body-fat-calculator" element={withMeta(<ArmyBodyFatCalculatorPage />)} />
+          <Route path="/navy-body-fat-calculator" element={withMeta(<NavyBodyFatCalculatorPage />)} />
+          <Route path="/bmr-calculator" element={withMeta(<BMRCalculatorPage />)} />
+          <Route path="/macro-calculator" element={withMeta(<MacroCalculatorPage />)} />
+          <Route path="/protein-intake-calculator" element={withMeta(<ProteinCalculatorPage />)} />
+          <Route path="/one-rep-max-calculator" element={withMeta(<OneRepMaxCalculatorPage />)} />
+          <Route path="/carbohydrate-calculator" element={withMeta(<CarbohydrateCalculatorPage />)} />
+          <Route path="/fat-intake-calculator" element={withMeta(<FatIntakeCalculatorPage />)} />
+          <Route path="/tdee-calculator" element={withMeta(<TDEECalculatorPage />)} />
+          <Route path="/gfr-calculator" element={withMeta(<GFRCalculatorPage />)} />
+          <Route path="/body-type-calculator" element={withMeta(<BodyTypeCalculatorPage />)} />
+          <Route path="/body-surface-area-calculator" element={withMeta(<BodySurfaceAreaCalculatorPage />)} />
+          <Route path="/healthy-weight-calculator" element={withMeta(<HealthyWeightCalculatorPage />)} />
+          <Route path="/calories-burned-calculator" element={withMeta(<CaloriesBurnedCalculatorPage />)} />
+          <Route path="/target-heart-rate-calculator" element={withMeta(<TargetHeartRateCalculatorPage />)} />
+
           {/* Pregnancy Calculators */}
-          <Route path="/calculator/pregnancy-weight-gain" element={<PregnancyWeightGainCalculatorPage />} />
-          <Route path="/calculator/pregnancy-due-date" element={<DueDateCalculatorPage />} />
-          <Route path="/calculator/ovulation" element={<OvulationCalculatorPage />} />
-          <Route path="/calculator/conception" element={<ConceptionCalculatorPage />} />
-          <Route path="/calculator/period" element={<PeriodCalculatorPage />} />
-          <Route path="/calculator/pregnancy-week" element={<PregnancyWeekCalculatorPage />} />
-          
+          <Route path="/pregnancy-weight-gain-calculator" element={withMeta(<PregnancyWeightGainCalculatorPage />)} />
+          <Route path="/due-date-calculator" element={withMeta(<DueDateCalculatorPage />)} />
+          <Route path="/ovulation-calculator" element={withMeta(<OvulationCalculatorPage />)} />
+          <Route path="/conception-calculator" element={withMeta(<ConceptionCalculatorPage />)} />
+          <Route path="/period-calculator" element={withMeta(<PeriodCalculatorPage />)} />
+          <Route path="/pregnancy-week-calculator" element={withMeta(<PregnancyWeekCalculatorPage />)} />
+
+          {/* Legacy URL redirects */}
+          <Route path="/calculator/bmi" element={<Navigate to="/bmi-calculator" replace />} />
+          <Route path="/calculator/calorie" element={<Navigate to="/calorie-calculator" replace />} />
+          <Route path="/calculator/body-fat" element={<Navigate to="/body-fat-calculator" replace />} />
+          <Route path="/calculator/lean-body-mass" element={<Navigate to="/lean-body-mass-calculator" replace />} />
+          <Route path="/calculator/ideal-weight" element={<Navigate to="/ideal-weight-calculator" replace />} />
+          <Route path="/calculator/pace" element={<Navigate to="/pace-calculator" replace />} />
+          <Route path="/calculator/army-body-fat" element={<Navigate to="/army-body-fat-calculator" replace />} />
+          <Route path="/calculator/navy-body-fat" element={<Navigate to="/navy-body-fat-calculator" replace />} />
+          <Route path="/calculator/bmr" element={<Navigate to="/bmr-calculator" replace />} />
+          <Route path="/calculator/macro" element={<Navigate to="/macro-calculator" replace />} />
+          <Route path="/calculator/protein" element={<Navigate to="/protein-intake-calculator" replace />} />
+          <Route path="/calculator/one-rep-max" element={<Navigate to="/one-rep-max-calculator" replace />} />
+          <Route path="/calculator/carbohydrate" element={<Navigate to="/carbohydrate-calculator" replace />} />
+          <Route path="/calculator/fat-intake" element={<Navigate to="/fat-intake-calculator" replace />} />
+          <Route path="/calculator/tdee" element={<Navigate to="/tdee-calculator" replace />} />
+          <Route path="/calculator/gfr" element={<Navigate to="/gfr-calculator" replace />} />
+          <Route path="/calculator/body-type" element={<Navigate to="/body-type-calculator" replace />} />
+          <Route path="/calculator/body-surface-area" element={<Navigate to="/body-surface-area-calculator" replace />} />
+          <Route path="/calculator/healthy-weight" element={<Navigate to="/healthy-weight-calculator" replace />} />
+          <Route path="/calculator/calories-burned" element={<Navigate to="/calories-burned-calculator" replace />} />
+          <Route path="/calculator/target-heart-rate" element={<Navigate to="/target-heart-rate-calculator" replace />} />
+          <Route path="/calculator/pregnancy-weight-gain" element={<Navigate to="/pregnancy-weight-gain-calculator" replace />} />
+          <Route path="/calculator/pregnancy-due-date" element={<Navigate to="/due-date-calculator" replace />} />
+          <Route path="/calculator/ovulation" element={<Navigate to="/ovulation-calculator" replace />} />
+          <Route path="/calculator/conception" element={<Navigate to="/conception-calculator" replace />} />
+          <Route path="/calculator/period" element={<Navigate to="/period-calculator" replace />} />
+          <Route path="/calculator/pregnancy-week" element={<Navigate to="/pregnancy-week-calculator" replace />} />
+
           {/* Category Pages */}
-          <Route path="/fitness" element={<AllCalculators />} />
-          <Route path="/pregnancy" element={<AllCalculators />} />
-          <Route path="/metabolism" element={<AllCalculators />} />
-          
+          <Route path="/fitness" element={withMeta(<AllCalculators />)} />
+          <Route path="/pregnancy" element={withMeta(<AllCalculators />)} />
+          <Route path="/metabolism" element={withMeta(<AllCalculators />)} />
+
           {/* Other Pages */}
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogArticlePage />} />
-          <Route path="/about" element={<HomePage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/contact" element={<HomePage />} />
-          <Route path="/help/disable-adblock" element={<DisableAdblockPage />} />
+          <Route path="/blog" element={withMeta(<BlogPage />)} />
+          <Route path="/blog/:slug" element={withMeta(<BlogArticlePage />)} />
+          <Route path="/about" element={withMeta(<HomePage />)} />
+          <Route path="/privacy" element={withMeta(<PrivacyPage />)} />
+          <Route path="/terms" element={withMeta(<TermsPage />)} />
+          <Route path="/contact" element={withMeta(<HomePage />)} />
+          <Route path="/help/disable-adblock" element={withMeta(<DisableAdblockPage />, true)} />
+
+          {/* 404 */}
+          <Route path="*" element={withMeta(<NotFoundPage />, true)} />
         </Routes>
       </div>
     </Router>

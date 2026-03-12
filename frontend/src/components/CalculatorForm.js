@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { translateText } from '../utils/translateText';
 
 // Reusable calculator form component with Figma design
 const CalculatorForm = ({ 
@@ -10,6 +12,8 @@ const CalculatorForm = ({
   submitLabel = "Start Calculating",
   isCalculating = false 
 }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       {showUnitToggle && (
@@ -19,14 +23,14 @@ const CalculatorForm = ({
             className={`calculator-unit-button ${unit === 'us' ? 'active' : ''}`}
             onClick={() => onUnitChange('us')}
           >
-            US Units
+            {t('usUnits')}
           </button>
           <button
             type="button"
             className={`calculator-unit-button ${unit === 'metric' ? 'active' : ''}`}
             onClick={() => onUnitChange('metric')}
           >
-            Metric Units
+            {t('metricUnits')}
           </button>
         </div>
       )}
@@ -38,7 +42,7 @@ const CalculatorForm = ({
           className="calculator-submit-button"
           disabled={isCalculating}
         >
-          {isCalculating ? 'Calculating...' : submitLabel}
+          {isCalculating ? t('calculating') : translateText(submitLabel, t, { prefix: 'form' })}
         </button>
       </form>
     </>
@@ -47,9 +51,11 @@ const CalculatorForm = ({
 
 // Form field components
 export const FormGroup = ({ label, children, fullWidth = false }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="calculator-form-group">
-      <label className="calculator-label">{label}</label>
+      <label className="calculator-label">{translateText(label, t)}</label>
       {children}
     </div>
   );
@@ -74,6 +80,8 @@ export const Input = ({ type = 'number', value, onChange, min, max, step, placeh
 };
 
 export const Select = ({ value, onChange, options = [], children, style }) => {
+  const { t } = useTranslation();
+
   // Support both patterns: options prop or children
   return (
     <select
@@ -84,7 +92,7 @@ export const Select = ({ value, onChange, options = [], children, style }) => {
     >
       {children || options.map((opt) => (
         <option key={opt.value} value={opt.value}>
-          {opt.label}
+          {translateText(opt.label, t)}
         </option>
       ))}
     </select>
@@ -92,6 +100,8 @@ export const Select = ({ value, onChange, options = [], children, style }) => {
 };
 
 export const RadioGroup = ({ value, onChange, options }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="calculator-radio-group">
       {options.map((opt) => (
@@ -101,7 +111,9 @@ export const RadioGroup = ({ value, onChange, options }) => {
           onClick={() => onChange(opt.value)}
         >
           <div className={`calculator-radio-circle ${value === opt.value ? 'selected' : ''}`} />
-          <span className={`calculator-radio-label ${value === opt.value ? 'selected' : ''}`}>{opt.label}</span>
+          <span className={`calculator-radio-label ${value === opt.value ? 'selected' : ''}`}>
+            {translateText(opt.label, t)}
+          </span>
         </div>
       ))}
     </div>

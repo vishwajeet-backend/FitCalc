@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const FeedbackForm = () => {
+  const { t } = useTranslation();
   // Form state
   const [formData, setFormData] = useState({
     name: "",
@@ -90,28 +92,28 @@ const FeedbackForm = () => {
 
     // Name validation
     if (!formData.name || formData.name.trim() === "") {
-      errors.name = "Name is required";
+      errors.name = t('feedback.errors.nameRequired', { defaultValue: 'Name is required' });
       console.log("❌ [FeedbackForm] Validation failed: Name is empty");
     }
 
     // Email validation
     if (!formData.email || formData.email.trim() === "") {
-      errors.email = "Email is required";
+      errors.email = t('feedback.errors.emailRequired', { defaultValue: 'Email is required' });
       console.log("❌ [FeedbackForm] Validation failed: Email is empty");
     } else if (!isValidEmail(formData.email)) {
-      errors.email = "Please enter a valid email address";
+      errors.email = t('feedback.errors.emailInvalid', { defaultValue: 'Please enter a valid email address' });
       console.log("❌ [FeedbackForm] Validation failed: Invalid email format");
     }
 
     // Rating validation
     if (!formData.rating || formData.rating === 0) {
-      errors.rating = "Please select a star rating";
+      errors.rating = t('feedback.errors.ratingRequired', { defaultValue: 'Please select a star rating' });
       console.log("❌ [FeedbackForm] Validation failed: No rating selected");
     }
 
     // Privacy policy validation
     if (!formData.acceptPrivacy) {
-      errors.acceptPrivacy = "You must accept the privacy policy";
+      errors.acceptPrivacy = t('feedback.errors.privacyRequired', { defaultValue: 'You must accept the privacy policy' });
       console.log("❌ [FeedbackForm] Validation failed: Privacy policy not accepted");
     }
 
@@ -137,7 +139,7 @@ const FeedbackForm = () => {
       console.log("⛔ [FeedbackForm] Submission aborted due to validation errors");
       setSubmitStatus({
         type: "error",
-        message: "Please fix the errors in the form"
+        message: t('feedback.errors.fixForm', { defaultValue: 'Please fix the errors in the form' })
       });
       return;
     }
@@ -195,7 +197,7 @@ const FeedbackForm = () => {
         setShowSuccessPopup(true);
         setSubmitStatus({
           type: "success",
-          message: result.message || "Thank you for your feedback!"
+          message: result.message || t('feedback.success.thanks', { defaultValue: 'Thank you for your feedback!' })
         });
 
         // Reset form
@@ -224,7 +226,7 @@ const FeedbackForm = () => {
         console.error("❌ [FeedbackForm] Backend returned error:", result);
         setSubmitStatus({
           type: "error",
-          message: result.message || "Failed to send feedback. Please try again."
+          message: result.message || t('feedback.errors.submitFailed', { defaultValue: 'Failed to send feedback. Please try again.' })
         });
       }
     } catch (error) {
@@ -237,7 +239,7 @@ const FeedbackForm = () => {
 
       setSubmitStatus({
         type: "error",
-        message: "Network error. Please check your connection and try again."
+        message: t('feedback.errors.network', { defaultValue: 'Network error. Please check your connection and try again.' })
       });
     } finally {
       setIsSubmitting(false);
@@ -251,10 +253,9 @@ const FeedbackForm = () => {
         <div className="feedback-container">
 
           <div className="feedback-header">
-            <h2 className="feedback-title">Help Us Improve FitCalc</h2>
+            <h2 className="feedback-title">{t('feedback.title', { defaultValue: 'Help Us Improve FitCalc' })}</h2>
             <p className="feedback-description">
-              Your feedback helps us improve calculator accuracy, user experience, and add more health & fitness tools.
-              Share your suggestions anytime — users help us build.
+              {t('feedback.description', { defaultValue: 'Your feedback helps us improve calculator accuracy, user experience, and add more health and fitness tools. Share your suggestions anytime - users help us build.' })}
             </p>
           </div>
 
@@ -263,11 +264,11 @@ const FeedbackForm = () => {
             {/* Name + Email */}
             <div className="form-row">
               <div className="form-group">
-                <label>Name *</label>
+                <label>{t('feedback.fields.name', { defaultValue: 'Name' })} *</label>
                 <input
                   type="text"
                   value={formData.name}
-                  placeholder="John Carter"
+                  placeholder={t('feedback.placeholders.name', { defaultValue: 'John Carter' })}
                   className={`form-input ${validationErrors.name ? "error" : ""}`}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   disabled={isSubmitting}
@@ -278,11 +279,11 @@ const FeedbackForm = () => {
               </div>
 
               <div className="form-group">
-                <label>Email *</label>
+                <label>{t('feedback.fields.email', { defaultValue: 'Email' })} *</label>
                 <input
                   type="email"
                   value={formData.email}
-                  placeholder="Email address"
+                  placeholder={t('feedback.placeholders.email', { defaultValue: 'Email address' })}
                   className={`form-input ${validationErrors.email ? "error" : ""}`}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   disabled={isSubmitting}
@@ -296,11 +297,11 @@ const FeedbackForm = () => {
             {/* Phone + Company */}
             <div className="form-row">
               <div className="form-group">
-                <label>Phone number</label>
+                <label>{t('feedback.fields.phone', { defaultValue: 'Phone number' })}</label>
                 <input
                   type="tel"
                   value={formData.phone}
-                  placeholder="(555) 456-7890"
+                  placeholder={t('feedback.placeholders.phone', { defaultValue: '(555) 456-7890' })}
                   className="form-input"
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   disabled={isSubmitting}
@@ -308,11 +309,11 @@ const FeedbackForm = () => {
               </div>
 
               <div className="form-group">
-                <label>Company</label>
+                <label>{t('feedback.fields.company', { defaultValue: 'Company' })}</label>
                 <input
                   type="text"
                   value={formData.company}
-                  placeholder="Your company name"
+                  placeholder={t('feedback.placeholders.company', { defaultValue: 'Your company name' })}
                   className="form-input"
                   onChange={(e) => handleInputChange("company", e.target.value)}
                   disabled={isSubmitting}
@@ -322,7 +323,7 @@ const FeedbackForm = () => {
 
             {/* Star Rating */}
             <div className="form-group rating-group">
-              <label>Your service rating *</label>
+              <label>{t('feedback.fields.rating', { defaultValue: 'Your service rating' })} *</label>
 
               <div
                 className="star-rating"
@@ -340,7 +341,7 @@ const FeedbackForm = () => {
                       onClick={() => !isSubmitting && handleStarRating(starValue)}
                       onMouseEnter={() => !isSubmitting && setHoveredStar(starValue)}
                       disabled={isSubmitting}
-                      aria-label={`Rate ${starValue} out of 5 stars`}
+                      aria-label={t('feedback.ratingAria', { defaultValue: 'Rate {{value}} out of 5 stars', value: starValue })}
                     >
                       ★
                     </button>
@@ -349,7 +350,7 @@ const FeedbackForm = () => {
 
                 {formData.rating > 0 && (
                   <span className="rating-text">
-                    {formData.rating} out of 5
+                    {t('feedback.ratingValue', { defaultValue: '{{value}} out of 5', value: formData.rating })}
                   </span>
                 )}
               </div>
@@ -361,10 +362,10 @@ const FeedbackForm = () => {
 
             {/* Additional Feedback */}
             <div className="form-group">
-              <label>Additional feedback</label>
+              <label>{t('feedback.fields.additional', { defaultValue: 'Additional feedback' })}</label>
               <textarea
                 value={formData.feedback}
-                placeholder="If you have more to add, please leave it here..."
+                placeholder={t('feedback.placeholders.additional', { defaultValue: 'If you have more to add, please leave it here...' })}
                 className="form-textarea"
                 rows="5"
                 onChange={(e) => handleInputChange("feedback", e.target.value)}
@@ -383,9 +384,9 @@ const FeedbackForm = () => {
                   className={validationErrors.acceptPrivacy ? "error" : ""}
                 />
                 <span>
-                  I have read and accept the{" "}
+                  {t('feedback.privacyPrefix', { defaultValue: 'I have read and accept the' })}{" "}
                   <Link to="/privacy" className="checkbox-link">
-                    Privacy Policy
+                    {t('privacyPolicy')}
                   </Link>
                 </span>
               </label>
@@ -412,10 +413,10 @@ const FeedbackForm = () => {
             >
               {isSubmitting ? (
                 <>
-                  <span className="spinner"></span> Sending...
+                  <span className="spinner"></span> {t('feedback.sending', { defaultValue: 'Sending...' })}
                 </>
               ) : (
-                "Send Feedback"
+                t('feedback.send', { defaultValue: 'Send Feedback' })
               )}
             </button>
 
@@ -436,18 +437,17 @@ const FeedbackForm = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="success-icon">✓</div>
-            <h3 id="success-title">Message Sent Successfully!</h3>
+            <h3 id="success-title">{t('feedback.success.title', { defaultValue: 'Message Sent Successfully!' })}</h3>
             <p>
-              Thank you for your feedback. We appreciate your input and
-              will use it to improve FitCalc.
+              {t('feedback.success.message', { defaultValue: 'Thank you for your feedback. We appreciate your input and will use it to improve FitCalc.' })}
             </p>
 
             <button
               className="popup-close-btn"
               onClick={() => setShowSuccessPopup(false)}
-              aria-label="Close success message"
+              aria-label={t('feedback.success.closeAria', { defaultValue: 'Close success message' })}
             >
-              Close
+              {t('feedback.success.close', { defaultValue: 'Close' })}
             </button>
           </div>
         </div>
