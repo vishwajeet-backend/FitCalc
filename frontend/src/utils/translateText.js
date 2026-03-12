@@ -79,18 +79,32 @@ export const textKeyMap = {
 };
 
 const toAutoKey = (text, prefix = 'auto') => {
-  const slug = text
+  const normalizedText = text
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const slug = normalizedText
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '');
 
+  // Small deterministic hash avoids key collisions for similar slugs.
+  let hash = 0;
+  for (let index = 0; index < normalizedText.length; index += 1) {
+    hash = ((hash << 5) - hash) + normalizedText.charCodeAt(index);
+    hash |= 0;
+  }
+  const hashSuffix = Math.abs(hash).toString(36).slice(0, 5) || '0';
+
   if (!slug) {
-    return prefix;
+    return `${prefix}.${hashSuffix}`;
   }
 
-  return `${prefix}.${slug}`;
+  return `${prefix}.${slug}_${hashSuffix}`;
 };
+
+export const buildAutoTranslationKey = (text, prefix = 'auto') => toAutoKey(text, prefix);
 
 export const translateText = (text, t, options = {}) => {
   if (typeof text !== 'string') {

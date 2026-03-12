@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const REVEAL_SELECTORS = [
@@ -78,6 +78,27 @@ const collectRevealTargets = () => {
 
 const GlobalScrollReveal = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.history || !('scrollRestoration' in window.history)) {
+      return undefined;
+    }
+
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {

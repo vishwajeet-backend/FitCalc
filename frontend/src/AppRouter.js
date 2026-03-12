@@ -38,6 +38,7 @@ import DisableAdblockPage from './pages/help/DisableAdblockPage';
 import NotFoundPage from './pages/NotFoundPage';
 import RouteMetaTracker from './components/RouteMetaTracker';
 import GlobalScrollReveal from './components/GlobalScrollReveal';
+import GlobalTextTranslator from './components/GlobalTextTranslator';
 import './pages/AllCalculators.css';
 
 const withMeta = (element, noIndex = false) => (
@@ -51,6 +52,7 @@ function App() {
   return (
     <Router>
       <GlobalScrollReveal />
+      <GlobalTextTranslator />
       <div className="App">
         <Routes>
           {/* Home */}
