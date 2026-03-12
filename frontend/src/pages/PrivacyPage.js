@@ -152,8 +152,8 @@ const PrivacyPage = () => {
   };
 
   const heroImageStyle = {
-    width: '100%',
-    maxHeight: '400px',
+    width: '80%',
+    maxHeight: '80%',
     borderRadius: '24px',
     objectFit: 'cover',
     backgroundColor: '#E1E6F2',
@@ -311,7 +311,7 @@ const PrivacyPage = () => {
 
       {/* Hero Section */}
       <section style={heroSectionStyle} className="legal-hero-section">
-        <p style={lastUpdatedStyle}>Last updated: December 17, 2024</p>
+        <p style={lastUpdatedStyle}>Last updated: March 17, 2026</p>
         <h1 style={pageTitleStyle} className="legal-page-title">Privacy Policy</h1>
         <p style={pageSubtitleStyle} className="legal-page-subtitle">Please read these policies carefully before using our services</p>
         <div style={heroImageStyle} className="legal-hero-image">

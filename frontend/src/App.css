@@ -41,6 +41,27 @@ body {
   position: relative;
 }
 
+.fc-scroll-reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) scale(0.985);
+  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1), transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--fc-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.fc-scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;

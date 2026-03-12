@@ -151,8 +151,8 @@ const TermsPage = () => {
   };
 
   const heroImageStyle = {
-    width: '100%',
-    maxHeight: '400px',
+    width: '80%',
+    maxHeight: '80%',
     borderRadius: '24px',
     objectFit: 'cover',
     backgroundColor: '#E1E6F2',

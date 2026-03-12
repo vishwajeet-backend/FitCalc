@@ -37,6 +37,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import DisableAdblockPage from './pages/help/DisableAdblockPage';
 import NotFoundPage from './pages/NotFoundPage';
 import RouteMetaTracker from './components/RouteMetaTracker';
+import GlobalScrollReveal from './components/GlobalScrollReveal';
 import './pages/AllCalculators.css';
 
 const withMeta = (element, noIndex = false) => (
@@ -49,6 +50,7 @@ const withMeta = (element, noIndex = false) => (
 function App() {
   return (
     <Router>
+      <GlobalScrollReveal />
       <div className="App">
         <Routes>
           {/* Home */}
