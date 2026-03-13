@@ -94,14 +94,14 @@ const BMIGauge = ({ bmi }) => {
 
         {/* Category Labels positioned around the gauge */}
         <text x="80" y="240" textAnchor="middle" className="gauge-label-v2 under" fill="#ff8c42" fontSize="18" fontWeight="600">{t('underweight')}</text>
-        <text x="20" y="75" textAnchor="start" className="gauge-label-v2 normal" fill="#10b981" fontSize="18" fontWeight="600">{t('normalWeight')}</text>
+        <text x="30" y="75" textAnchor="start" className="gauge-label-v2 normal" fill="#10b981" fontSize="18" fontWeight="600">{t('normalWeight')}</text>
         <text x="340" y="75" textAnchor="end" className="gauge-label-v2 over" fill="#f59e0b" fontSize="18" fontWeight="600">{t('overweight')}</text>
         <text x="304" y="240" textAnchor="middle" className="gauge-label-v2 obese" fill="#ef4444" fontSize="18" fontWeight="600">{t('obese')}</text>
         
         {/* Number labels - positioned at segment boundaries */}
         <text x="80" y="210" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">15</text>
-        <text x="148" y="66" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">18.5</text>
-        <text x="236" y="66" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">30</text>
+        <text x="148" y="140" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">18.5</text>
+        <text x="236" y="140" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">30</text>
         <text x="304" y="210" textAnchor="middle" fill="#6b7280" fontSize="18" fontWeight="400">40</text>
       </svg>
     </div>

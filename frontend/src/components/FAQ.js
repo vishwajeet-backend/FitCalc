@@ -11,20 +11,20 @@ const FAQ = () => {
       answer: t('faq.a1', { defaultValue: 'Yes! All calculators on FitCalc are completely free to use. There are no hidden fees or premium features.' })
     },
     {
-      question: t('faq.q2', { defaultValue: 'Are results accurate?' }),
-      answer: t('faq.a2', { defaultValue: 'Our calculators use industry-standard formulas and widely accepted health guidelines to provide accurate results. However, always consult with healthcare professionals for medical advice.' })
+      question: t('faq.q2', { defaultValue: 'Do I need to create an account?' }),
+      answer: t('faq.a2', { defaultValue: 'No, you do not need to create an account to use our calculators. All calculations are performed in real-time and your information is not saved or shared.' })
     },
     {
-      question: t('faq.q3', { defaultValue: 'Is my data saved?' }),
-      answer: t('faq.a3', { defaultValue: 'No, we do not store any personal data you enter. All calculations are performed in real-time and your information is not saved or shared.' })
+      question: t('faq.q3', { defaultValue: 'How accurate are the results?' }),
+      answer: t('faq.a3', { defaultValue: 'Our calculators use industry-standard formulas and widely accepted health guidelines to provide accurate results. However, always consult with healthcare professionals for medical advice.' })
     },
     {
-      question: t('faq.q4', { defaultValue: 'Is this medical advice?' }),
-      answer: t('faq.a4', { defaultValue: 'FitCalc provides educational calculations only. Our tools are not intended to replace professional medical advice, diagnosis, or treatment.' })
+      question: t('faq.q4', { defaultValue: 'Can I use this on mobile?' }),
+      answer: t('faq.a4', { defaultValue: 'Yes, FitCalc is fully responsive and can be used on any device with a web browser, including smartphones and tablets.' })
     },
     {
-      question: t('faq.q5', { defaultValue: 'Is this medical advice?' }),
-      answer: t('faq.a5', { defaultValue: 'FitCalc provides educational calculations only. Our tools are not intended to replace professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers.' })
+      question: t('faq.q5', { defaultValue: 'Is my data secure?' }),
+      answer: t('faq.a5', { defaultValue: 'Yes, your data is secure with us. We do not store any personal information you enter into our calculators. All calculations are performed in real-time and your information is not saved or shared.' })
     }
   ];
 

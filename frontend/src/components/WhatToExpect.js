@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ExpandableText from './ExpandableText';
 
 const WhatToExpect = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const WhatToExpect = () => {
                 </svg>
               </div>
               <h3 className="expect-card-title">{expectation.title}</h3>
-              <p className="expect-card-description">{expectation.description}</p>
+              <ExpandableText className="expect-card-description">{expectation.description}</ExpandableText>
             </div>
           ))}
         </div>

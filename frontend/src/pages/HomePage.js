@@ -8,6 +8,7 @@ import FitnessCalculatorsGrid from '../components/FitnessCalculatorsGrid';
 import WhatIsFitCalc from '../components/WhatIsFitCalc';
 import PowerfulFeatures from '../components/PowerfulFeatures';
 import WhyUseFitCalc from '../components/WhyUseFitCalc';
+import AdsSupportSection from '../components/AdsSupportSection';
 import ComparisonTable from '../components/ComparisonTable';
 import PrivacyTrust from '../components/PrivacyTrust';
 import WhatToExpect from '../components/WhatToExpect';
@@ -16,9 +17,16 @@ import FinalCTA from '../components/FinalCTA';
 import Footer from '../components/Footer';
 import FeedbackForm from '../components/FeedbackForm';
 
+const DEFAULT_BMI_RESULT = {
+  bmi: 20.1,
+  categoryKey: 'normalWeight',
+  bmiPrime: 0.8,
+  healthyWeightRange: '179.2 lbs'
+};
+
 const HomePage = () => {
   const { t } = useTranslation();
-  const [bmiData, setBmiData] = useState(null);
+  const [bmiData, setBmiData] = useState(DEFAULT_BMI_RESULT);
 
   const handleBMICalculation = (data) => {
     setBmiData(data);
@@ -50,6 +58,7 @@ const HomePage = () => {
         <WhatIsFitCalc />
         <PowerfulFeatures />
         <WhyUseFitCalc />
+        <AdsSupportSection />
         <ComparisonTable />
         <PrivacyTrust />
         <WhatToExpect />
